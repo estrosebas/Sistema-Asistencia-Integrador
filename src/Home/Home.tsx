@@ -25,6 +25,10 @@ const Home = () => {
               Crear Cuenta
             </Link>
           </div>
+
+          <Link to="/admin" className="btn btn-primary mx-2">
+            Admin(test)
+          </Link>
         </div>
       </div>
 
