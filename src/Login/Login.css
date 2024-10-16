@@ -1,0 +1,65 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.login-half {
+  flex: 1;
+  overflow: hidden;
+  display: flex; /* Asegúrate de que sea un contenedor flex */
+  flex-direction: column; /* Alinea verticalmente */
+  justify-content: flex-end; /* Alinea el contenido al final */
+}
+
+.login-form {
+  width: 75%;
+  max-width: 400px;
+}
+
+.login-top {
+  height: 30%;
+}
+
+.login-bottom {
+  height: 70%;
+  display: flex; /* Alinea los elementos en la parte inferior */
+  justify-content: center; /* Centra el contenido en la parte inferior */
+  align-items: flex-end; /* Alinea el contenido al final */
+}
+
+.login-image {
+  width: 100%; /* Asegúrate de que la imagen use el 100% del contenedor */
+  height: 100%; /* Asegúrate de que la imagen use el 100% del contenedor */
+  object-fit: cover; /* Mantiene la relación de aspecto sin distorsionar */
+}
+
+.login-left {
+  background-color: #001f3f; /* Cambia este valor al color que desees */
+}
+
+@media (max-width: 767px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-half {
+    flex: none;
+    height: 50vh;
+  }
+
+  .login-form {
+    width: 90%;
+  }
+
+  .login-top {
+    height: 20%;
+  }
+
+  .login-bottom {
+    height: 80%;
+    display: flex; /* Alinea los elementos en la parte inferior */
+    justify-content: center; /* Centra el contenido en la parte inferior */
+    align-items: flex-end; /* Alinea el contenido al final */
+  }
+}
