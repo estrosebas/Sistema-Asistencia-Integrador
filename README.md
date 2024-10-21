@@ -1,5 +1,7 @@
 # 📊 Proyecto: Avance de Desarrollo
 
+![Avance del proyecto](image.jpeg)
+
 ## 👥 Integrantes del Equipo
 
 - **Cristofer Torres Castillo**
@@ -13,12 +15,12 @@
 
 Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y el desarrollo del proyecto. El porcentaje de participación para cada miembro es el siguiente:
 
-| Integrante                        | Porcentaje de Contribución |
-|------------------------------------|----------------------------|
-| Cristofer Torres Castillo          | 25%                        |
-| Cristian Huaracha Venturas         | 25%                        |
-| Winston Apaza Mamani               | 25%                        |
-| Diego Sebastian Gonzales Gomez     | 25%                        |
+| Integrante                     | Porcentaje de Contribución |
+| ------------------------------ | -------------------------- |
+| Cristofer Torres Castillo      | 25%                        |
+| Cristian Huaracha Venturas     | 25%                        |
+| Winston Apaza Mamani           | 25%                        |
+| Diego Sebastian Gonzales Gomez | 25%                        |
 
 ---
 
