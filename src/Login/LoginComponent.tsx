@@ -10,7 +10,7 @@ const Login = () => {
         </div>
         <div className="login-bottom d-flex align-items-center justify-content-center">
           <img
-            src="src/assets/image.png"
+            src="/assets/image.png"
             alt="Ilustración"
             className="login-image"
           />

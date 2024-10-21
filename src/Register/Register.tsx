@@ -119,7 +119,7 @@ const Registration = () => {
         </div>
         <div className="registration-bottom d-flex align-items-center justify-content-center">
           <img
-            src="src/assets/calendar.png"
+            src="/assets/calendar.png"
             alt="Ilustración"
             className="registration-image"
           />

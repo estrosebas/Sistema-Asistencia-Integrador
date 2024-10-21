@@ -1,30 +1,42 @@
-# React + TypeScript + Vite
+# 📊 Proyecto: Avance de Desarrollo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 👥 Integrantes del Equipo
 
-Currently, two official plugins are available:
+- **Cristofer Torres Castillo**
+- **Cristian Huaracha Venturas**
+- **Winston Apaza Mamani**
+- **Diego Sebastian Gonzales Gomez**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 📈 Distribución de la Participación
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y el desarrollo del proyecto. El porcentaje de participación para cada miembro es el siguiente:
 
-- Configure the top-level `parserOptions` property like this:
+| Integrante                        | Porcentaje de Contribución |
+|------------------------------------|----------------------------|
+| Cristofer Torres Castillo          | 25%                        |
+| Cristian Huaracha Venturas         | 25%                        |
+| Winston Apaza Mamani               | 25%                        |
+| Diego Sebastian Gonzales Gomez     | 25%                        |
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+---
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## 🚀 Estado Actual del Proyecto
+
+El proyecto se encuentra en proceso, con avances significativos en las siguientes áreas:
+
+- Desarrollo de interfaces graficas responsivas
+- Desarrollo de lector de QR
+
+¡Pronto compartiremos más detalles sobre nuestro progreso!
+
+---
+
+## 🔗 Contacto
+
+Para cualquier consulta o colaboración, no dudes en ponerte en contacto con nosotros a través de nuestros correos electrónicos o plataformas académicas.
+
+---
+
+> **Nota:** Este proyecto es el resultado del esfuerzo colaborativo y el compromiso de todos los miembros del equipo. Continuaremos trabajando para alcanzar los objetivos establecidos en los plazos acordados.
