@@ -307,7 +307,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-secondary rounded p-3 mb-4">
             <div className="text-center mb-3 py-5">
               <img
-                src="src/assets/admin.png"
+                src="/assets/admin.png"
                 alt="Admin"
                 className="rounded-circle"
               />
