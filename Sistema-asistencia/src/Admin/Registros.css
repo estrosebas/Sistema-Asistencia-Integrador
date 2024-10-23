@@ -1,0 +1,36 @@
+.custom-modal .modal-dialog {
+    max-width: 800px;
+  }
+  
+  .custom-modal .modal-header, 
+  .custom-modal .modal-footer {
+    background-color: #f8f9fa;
+    border: none;
+  }
+  
+  .custom-modal .modal-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .custom-modal .form-control {
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ced4da;
+    box-shadow: none;
+  }
+  
+  .custom-modal .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .custom-modal .btn {
+    border-radius: 5px;
+    box-shadow: none;
+  }
+  
+  .custom-modal .btn-add {
+    background-color: #ffffff;
+    color: #007bff;
+    border: 1px solid;
+  }
