@@ -6,7 +6,7 @@ const AdminDashboard: React.FC = () => {
   const [activeView, setActiveView] = useState("historial");
   const [qrCodeData, setQrCodeData] = useState<string>(""); // Almacenar el dato para generar el QR
   const generateQrCode = (data: string) => {
-    const qr = QRCode(0, "M");
+    const qr = QRCode(0, "L");
     qr.addData(data);
     qr.make();
     return qr.createImgTag(4); // Generar el QR como imagen
