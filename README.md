@@ -1,6 +1,6 @@
 # 📊 Proyecto: Avance de Desarrollo
 
-![Avance del proyecto](image.jpeg)
+<p align="center"><img src=image.jpeg></p>
 
 ## 👥 Integrantes del Equipo
 
