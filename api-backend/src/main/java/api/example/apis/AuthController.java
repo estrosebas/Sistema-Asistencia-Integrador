@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import javax.sql.DataSource;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,18 +20,18 @@ import jakarta.annotation.Resource;
 @CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"})
 public class AuthController {
 
-@Resource
+    @Resource
     private DataSource dataSource;  // Inyectar el DataSource de Spring
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try (Connection connection = dataSource.getConnection()) {
-            
+
             // Consulta para obtener el usuario y su rol
-            String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u " +
-                           "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id " +
-                           "INNER JOIN rol r ON ur.rol_id = r.id " +
-                           "WHERE u.email = ? AND u.password = ?";
+            String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u "
+                    + "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id "
+                    + "INNER JOIN rol r ON ur.rol_id = r.id "
+                    + "WHERE u.email = ? AND u.password = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, loginRequest.getEmail());
             statement.setString(2, loginRequest.getPassword());
@@ -49,61 +48,47 @@ public class AuthController {
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                     .body(new LoginResponse(false, "Email o contraseña incorrectos", null, null));
+                        .body(new LoginResponse(false, "Email o contraseña incorrectos", null, null));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(new LoginResponse(false, "Error en el servidor", null, null));
+                    .body(new LoginResponse(false, "Error en el servidor", null, null));
         }
     }
 
-    // Clase para la respuesta del login
-    public static class LoginResponse {
-        private boolean success;
-        private String message;
-        private Long usuario_id;
-        private String nom_rol;
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Verificar si el usuario ya existe
+            String checkUserQuery = "SELECT COUNT(*) FROM usuario WHERE email = ?";
+            PreparedStatement checkUserStatement = connection.prepareStatement(checkUserQuery);
+            checkUserStatement.setString(1, registerRequest.getEmail());
+            ResultSet userCheckResult = checkUserStatement.executeQuery();
+            userCheckResult.next();
 
-        public LoginResponse(boolean success, String message, Long usuario_id, String nom_rol) {
-            this.success = success;
-            this.message = message;
-            this.usuario_id = usuario_id;
-            this.nom_rol = nom_rol;
-        }
+            if (userCheckResult.getInt(1) > 0) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new RegisterResponse(false, "El email ya está registrado"));
+            }
 
-        // Getters y Setters
-        public boolean isSuccess() {
-            return success;
-        }
+            // Insertar nuevo usuario
+            String insertQuery = "INSERT INTO usuario (email, password) VALUES (?, ?)";
+            PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
+            insertStatement.setString(1, registerRequest.getEmail());
+            insertStatement.setString(2, registerRequest.getPassword()); // Asegúrate de encriptar la contraseña
+            insertStatement.executeUpdate();
 
-        public void setSuccess(boolean success) {
-            this.success = success;
-        }
+            // Respuesta de éxito
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new RegisterResponse(true, "Registro exitoso"));
 
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public Long getUsuarioId() {
-            return usuario_id;
-        }
-
-        public void setUsuarioId(Long usuario_id) {
-            this.usuario_id = usuario_id;
-        }
-
-        public String getNomRol() {
-            return nom_rol;
-        }
-
-        public void setNomRol(String nom_rol) {
-            this.nom_rol = nom_rol;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new RegisterResponse(false, "Error en el servidor"));
         }
     }
+
 }

@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "vite build",
-    "deploy": "gh-pages -d dist"
+    "start": "serve dist"
   },
   "dependencies": {
     "@types/react-bootstrap": "^0.32.37",
@@ -23,7 +23,8 @@
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.2.0",
     "react-qr-scanner": "^1.0.0-alpha.11",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.27.0",
+    "serve": "^14.2.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
