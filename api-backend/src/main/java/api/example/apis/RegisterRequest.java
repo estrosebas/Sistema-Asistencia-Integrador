@@ -1,11 +1,13 @@
 package api.example.apis;
 
 
-public class LoginRequest {
+public class RegisterRequest {
     private String email;
     private String password;
 
-   
+    // Constructor
+    public RegisterRequest() {}
+
     public String getEmail() {
         return email;
     }
