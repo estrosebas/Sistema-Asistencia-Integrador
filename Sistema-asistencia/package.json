@@ -24,7 +24,8 @@
     "react-dom": "^18.2.0",
     "react-qr-scanner": "^1.0.0-alpha.11",
     "react-router-dom": "^6.27.0",
-    "serve": "^14.2.4"
+    "serve": "^14.2.4",
+    "sistema-asistencia": "file:"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

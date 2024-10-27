@@ -3,6 +3,7 @@ package api.example.apis;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 import org.springframework.http.HttpStatus;
@@ -67,28 +68,71 @@ public class AuthController {
             checkUserStatement.setString(1, registerRequest.getEmail());
             ResultSet userCheckResult = checkUserStatement.executeQuery();
             userCheckResult.next();
-
+    
             if (userCheckResult.getInt(1) > 0) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new RegisterResponse(false, "El email ya está registrado"));
             }
-
+    
             // Insertar nuevo usuario
-            String insertQuery = "INSERT INTO usuario (email, password) VALUES (?, ?)";
+            String insertQuery = "INSERT INTO usuario (ape_materno, ape_paterno, dni, domicilio, email, fech_nacimiento, genero, nombre, password, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
-            insertStatement.setString(1, registerRequest.getEmail());
-            insertStatement.setString(2, registerRequest.getPassword()); // Asegúrate de encriptar la contraseña
+            insertStatement.setString(1, registerRequest.getApeMaterno());
+            insertStatement.setString(2, registerRequest.getApePaterno());
+            insertStatement.setLong(3, registerRequest.getDni());
+            insertStatement.setString(4, registerRequest.getDomicilio());
+            insertStatement.setString(5, registerRequest.getEmail());
+            insertStatement.setString(6, registerRequest.getFechaNacimiento());
+            insertStatement.setString(7, registerRequest.getGenero());
+            insertStatement.setString(8, registerRequest.getNombres());
+            insertStatement.setString(9, registerRequest.getPassword()); // Asegúrate de encriptar la contraseña
+            insertStatement.setLong(10, registerRequest.getTelefono());
             insertStatement.executeUpdate();
-
+    
+            // Obtener el rol ID
+            long rolId = getRoleIdByName(registerRequest.getRol());
+            
+            // Insertar en la tabla de usuarios_roles
+            String insertRoleQuery = "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)";
+            PreparedStatement insertRoleStatement = connection.prepareStatement(insertRoleQuery);
+            // Suponiendo que obtienes el ID del usuario que acabas de insertar
+            long usuarioId = getLastInsertId(connection); // Método para obtener el ID del último usuario insertado
+            insertRoleStatement.setLong(1, usuarioId);
+            insertRoleStatement.setLong(2, rolId);
+            insertRoleStatement.executeUpdate();
+    
             // Respuesta de éxito
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new RegisterResponse(true, "Registro exitoso"));
-
+    
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new RegisterResponse(false, "Error en el servidor"));
         }
     }
-
+    private long getRoleIdByName(String roleName) throws SQLException {
+        String query = "SELECT id FROM rol WHERE nom_rol = ?"; // Asegúrate de que la tabla se llame correctamente
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, roleName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getLong("id"); // Devuelve el ID del rol
+            } else {
+                throw new SQLException("Rol no encontrado: " + roleName);
+            }
+        }
+    }
+    private long getLastInsertId(Connection connection) throws SQLException {
+        String query = "SELECT LAST_INSERT_ID()";
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+            throw new SQLException("No se pudo obtener el último ID insertado.");
+        }
+    }
+        
 }
