@@ -59,9 +59,9 @@ Sigue los siguientes pasos para instalar y configurar el proyecto:
 ### Instalación de Paquetes del Frontend
 
 1. Dirígete a la carpeta del frontend:
-```
-cd ./Sistema-Asistencia-Integrador/Sistema-asistencia
-```
+      ```
+        cd ./Sistema-Asistencia-Integrador/Sistema-asistencia
+      ```
   
 2. Instala los paquetes necesarios:
       ``` 
@@ -90,9 +90,9 @@ cd ./Sistema-Asistencia-Integrador/Sistema-asistencia
       ```
 
    Ejecuta el siguiente comando para construir y ejecutar los contenedores:
-```
-docker-compose up --build
-```
+      ```
+        docker-compose up --build
+      ```
 Con el comando anterior, el sistema levantará tanto el backend como el frontend del proyecto. Una vez que se haya completado la carga de los contenedores puede ingresar al program Docker Desktop o desde la terminal lavantar el contenedor "Sistema-Asistencia-Integrador".
 
 ---
