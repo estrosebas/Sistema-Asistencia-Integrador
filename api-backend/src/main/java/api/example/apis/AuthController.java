@@ -57,11 +57,11 @@ public class AuthController {
         } catch (IllegalArgumentException e) {
             // Retorna un error de solicitud incorrecta si las validaciones fallan
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new LoginResponse(false, e.getMessage(), null, null));
+                    .body(new LoginResponse(false, e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoginResponse(false, "Error en el servidor", null, null));
+                    .body(new LoginResponse(false, "Error en el servidor"));
         }
     }
 
@@ -80,9 +80,9 @@ public class AuthController {
             if (resultSet.next()) {
                 Long usuarioId = resultSet.getLong("usuario_id");
                 String nomRol = resultSet.getString("nom_rol");
-                return new LoginResponse(true, "Login exitoso", usuarioId, nomRol);
+                return new LoginResponse(true, "Login exitoso");
             } else {
-                return new LoginResponse(false, "Email o contraseña incorrectos", null, null);
+                return new LoginResponse(false, "Email o contraseña incorrectos");
             }
         }
     }

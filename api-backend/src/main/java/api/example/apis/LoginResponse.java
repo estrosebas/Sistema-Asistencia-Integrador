@@ -9,6 +9,9 @@ public class LoginResponse {
         this.message = message;
     }
 
+
+
+
     public boolean isSuccess() {
         return success;
     }
