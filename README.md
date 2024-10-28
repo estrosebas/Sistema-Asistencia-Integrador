@@ -1,6 +1,6 @@
 # 📊 Proyecto: Avance de Desarrollo
 
-![Avance del proyecto](image.jpeg)
+<p align="center"><img src=image.jpeg></p>
 
 ## 👥 Integrantes del Equipo
 
@@ -15,12 +15,12 @@
 
 Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y el desarrollo del proyecto. El porcentaje de participación para cada miembro es el siguiente:
 
-| Integrante                     | Porcentaje de Contribución |
-| ------------------------------ | -------------------------- |
-| Cristofer Torres Castillo      | 25%                        |
-| Cristian Huaracha Venturas     | 25%                        |
-| Winston Apaza Mamani           | 25%                        |
-| Diego Sebastian Gonzales Gomez | 25%                        |
+| Integrante                     | Porcentaje | Contribucion                           |
+| ------------------------------ | ---------- | -------------------------------------- |
+| Cristofer Torres Castillo      | 25%        | Vista principal "home"                 |
+| Cristian Huaracha Venturas     | 25%        | Vista del login y nuevo registro       |
+| Winston Apaza Mamani           | 25%        | Vista del formulario de registro       |
+| Diego Sebastian Gonzales Gomez | 25%        | Backend login y vista de Administrador |
 
 ---
 
@@ -30,6 +30,7 @@ El proyecto se encuentra en proceso, con avances significativos en las siguiente
 
 - Desarrollo de interfaces graficas responsivas
 - Desarrollo de lector de QR
+- Desarrollo de login
 
 ¡Pronto compartiremos más detalles sobre nuestro progreso!
 
