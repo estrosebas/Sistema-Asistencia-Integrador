@@ -1,6 +1,6 @@
 # 📊 Proyecto: Avance de Desarrollo
 
-##⭐ Descripción
+## ⭐ Descripción
 Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asistir en el manejo de asistencia de usuarios. Este proyecto utiliza una arquitectura de frontend-backend y se despliega mediante Docker para simplificar su instalación y ejecución.
 
 ---
@@ -55,8 +55,6 @@ Asegúrate de tener los siguientes programas instalados en tu sistema:
 ## 💾 Instalación
 
 Sigue los siguientes pasos para instalar y configurar el proyecto:
-
-### Instalación de Paquetes del Frontend
 
 1. Dirígete a la carpeta del frontend:
       ```
