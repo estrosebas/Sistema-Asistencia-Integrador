@@ -23,12 +23,14 @@ Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asis
 
 Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y el desarrollo del proyecto. El porcentaje de participación para cada miembro es el siguiente:
 <dir align="center">
+      
 | Integrante                     | %   | Contribucion                                            |
 | ------------------------------ | --- | ------------------------------------------------------- |
 | Cristofer Torres Castillo      | 25% | Vista principal y backend                               |
 | Cristian Huaracha Venturas     | 25% | Vista del login y administrador                         |
 | Winston Apaza Mamani           | 25% | Vista del formulario de registro de usuario             |
 | Diego Sebastian Gonzales Gomez | 25% | Backend login y registro de usuario                     |
+
 </dir>
 ---
 
