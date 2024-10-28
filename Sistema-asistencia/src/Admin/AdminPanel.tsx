@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AdminPanel.css";
+import AttendanceModal from "./RegistrosComponent.tsx"; 
+
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 const AdminDashboard: React.FC = () => {
   const [activeView, setActiveView] = useState("registro");
@@ -9,6 +11,11 @@ const AdminDashboard: React.FC = () => {
   const codeReader = new BrowserMultiFormatReader();
   const [startDate, setStartDate] = useState<string>("2024-01-01");
   const [endDate, setEndDate] = useState<string>("2024-10-10");
+
+  // Nuevo estado para el modal
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const handleOpenModal = () => setShowAttendanceModal(true);
+  const handleCloseModal = () => setShowAttendanceModal(false);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -80,8 +87,10 @@ const AdminDashboard: React.FC = () => {
           <>
             <h2 className="mb-4">Registro</h2>
             <div className="mb-3">
-              <button className="btn btn-success me-2">Nuevo Registro</button>
-              <button className="btn btn-success">Añadir usuario</button>
+
+            <button className="btn btn-success me-2" onClick={handleOpenModal}>Nuevo Registro</button>
+            <button className="btn btn-success">Añadir usuario</button>
+
             </div>
             <table className="table table-bordered table-hover">
               <thead className="table-success">
@@ -351,6 +360,9 @@ const AdminDashboard: React.FC = () => {
         </div>
         <div className="col-md-9 p-4">{renderView()}</div>
       </div>
+
+      {/* Modal de registro de asistencia */}
+      <AttendanceModal show={showAttendanceModal} handleClose={handleCloseModal} />
     </div>
   );
 };

@@ -1,6 +1,5 @@
 package api.example.apis;
 
-
 public class LoginRequest {
     private String email;
     private String password;
