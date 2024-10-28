@@ -1,11 +1,14 @@
 # 📊 Proyecto: Avance de Desarrollo
 
-## Descripción
+##⭐ Descripción
 Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asistir en el manejo de asistencia de usuarios. Este proyecto utiliza una arquitectura de frontend-backend y se despliega mediante Docker para simplificar su instalación y ejecución.
 
+---
 
-## Casos de Uso
+## 💡 Diagrama Casos de Uso
 <p align="center"><img src=image.jpeg></p>
+
+---
 
 ## 👥 Integrantes del Equipo
 
@@ -22,7 +25,7 @@ Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y 
 
 | Integrante                     | %   | Contribucion                                            |
 | ------------------------------ | --- | ------------------------------------------------------- |
-| Cristofer Torres Castillo      | 25% | Vista principal e implementacion de packetes en backend |
+| Cristofer Torres Castillo      | 25% | Vista principal y backend                               |
 | Cristian Huaracha Venturas     | 25% | Vista del login y administrador                         |
 | Winston Apaza Mamani           | 25% | Vista del formulario de registro de usuario             |
 | Diego Sebastian Gonzales Gomez | 25% | Backend login y registro de usuario                     |
@@ -56,44 +59,40 @@ Sigue los siguientes pasos para instalar y configurar el proyecto:
 ### Instalación de Paquetes del Frontend
 
 1. Dirígete a la carpeta del frontend:
-   ```
-     cd ./Sistema-Asistencia-Integrador/Sistema-asistencia
-   ```
+```
+cd ./Sistema-Asistencia-Integrador/Sistema-asistencia
+```
   
 2. Instala los paquetes necesarios:
-
-  ``` 
-    npm install
-  ```
-Compila y ejecuta el proyecto en modo de desarrollo:
-
-  ```
-    npm run build
-    npm run dev
-  ```
+      ``` 
+         npm install
+      ```
+   Compila y ejecuta el proyecto en modo de desarrollo:
+      ```
+         npm run build
+         npm run dev
+      ```
 
 2. Configuración del Backend
-Ve a la carpeta del backend:
-
-  ```
-    cd ./Sistema-Asistencia-Integrador/api-backend
-  ```
-Compila y empaqueta el proyecto sin ejecutar las pruebas:
-  ```
-    mvn clean package -DskipTests
-  ```
+   Ve a la carpeta del backend:
+      ```
+         cd ./Sistema-Asistencia-Integrador/api-backend
+      ```
+   Compila y empaqueta el proyecto sin ejecutar las pruebas:
+      ```
+         mvn clean package -DskipTests
+      ```
 
 3. Levantar el Proyecto con Docker
-Regresa a la carpeta raíz del proyecto:
-  ```
-    cd ./Sistema-Asistencia-Integrador
-  ```
+   Regresa a la carpeta raíz del proyecto:
+      ```
+         cd ./Sistema-Asistencia-Integrador
+      ```
 
-Ejecuta el siguiente comando para construir y ejecutar los contenedores:
-
-  ```
-    docker-compose up --build
-  ```
+   Ejecuta el siguiente comando para construir y ejecutar los contenedores:
+```
+docker-compose up --build
+```
 Con el comando anterior, el sistema levantará tanto el backend como el frontend del proyecto. Una vez que se haya completado la carga de los contenedores puede ingresar al program Docker Desktop o desde la terminal lavantar el contenedor "Sistema-Asistencia-Integrador".
 
 ---
