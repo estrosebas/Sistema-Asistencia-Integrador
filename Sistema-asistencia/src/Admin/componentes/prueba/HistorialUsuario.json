@@ -1,0 +1,222 @@
+[
+    {
+      "id": 1,
+      "nombre": "Danny Venturas",
+      "grupo": ["Grupo A", "Grupo B"],
+      "cantidadAsistencia": 20,
+      "asistencia": {
+        "Grupo A": {
+          "2024-09-30": true,
+          "2024-10-02": false,
+          "2024-10-03": true,
+          "2024-10-04": true,
+          "2024-10-05": false,
+          "2024-10-06": true,
+          "2024-10-07": true,
+          "2024-10-08": false,
+          "2024-10-09": true,
+          "2024-10-10": true
+        },
+        "Grupo B": {
+          "2024-10-01": true,
+          "2024-10-02": true,
+          "2024-10-03": false,
+          "2024-10-04": true,
+          "2024-10-05": true,
+          "2024-10-06": false,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": true,
+          "2024-10-10": true
+        }
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "Diego Sebastián",
+      "grupo": ["Grupo A"],
+      "cantidadAsistencia": 15,
+      "asistencia": {
+        "Grupo A": {
+          "2024-10-01": true,
+          "2024-10-02": false,
+          "2024-10-03": true,
+          "2024-10-04": false,
+          "2024-10-05": true,
+          "2024-10-06": true,
+          "2024-10-07": false,
+          "2024-10-08": true,
+          "2024-10-09": true,
+          "2024-10-10": false
+        }
+      }
+    },
+    {
+      "id": 3,
+      "nombre": "Winston Apaza",
+      "grupo": ["Grupo B", "Grupo C"],
+      "cantidadAsistencia": 18,
+      "asistencia": {
+        "Grupo B": {
+          "2024-10-01": true,
+          "2024-10-02": true,
+          "2024-10-03": false,
+          "2024-10-04": true,
+          "2024-10-05": true,
+          "2024-10-06": false,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": false,
+          "2024-10-10": true
+        },
+        "Grupo C": {
+          "2024-10-01": false,
+          "2024-10-02": true,
+          "2024-10-03": true,
+          "2024-10-04": true,
+          "2024-10-05": false,
+          "2024-10-06": true,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": true,
+          "2024-10-10": true
+        }
+      }
+    },
+    {
+      "id": 4,
+      "nombre": "Cristofer Torres",
+      "grupo": ["Grupo C", "Grupo D"],
+      "cantidadAsistencia": 22,
+      "asistencia": {
+        "Grupo C": {
+          "2024-10-01": true,
+          "2024-10-02": true,
+          "2024-10-03": true,
+          "2024-10-04": true,
+          "2024-10-05": false,
+          "2024-10-06": true,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": true,
+          "2024-10-10": true
+        },
+        "Grupo D": {
+          "2024-10-01": true,
+          "2024-10-02": false,
+          "2024-10-03": true,
+          "2024-10-04": true,
+         "2024-10-05": false,
+          "2024-10-06": true,
+          "2024-10-07": true,
+          "2024-10-08": false,
+          "2024-10-09": true,
+          "2024-10-10": true
+        }
+      }
+    },
+    {
+      "id": 5,
+      "nombre": "Lucía González",
+      "grupo": ["Grupo A", "Grupo E"],
+      "cantidadAsistencia": 14,
+      "asistencia": {
+        "Grupo A": {
+          "2024-10-01": false,
+          "2024-10-02": true,
+          "2024-10-03": false,
+          "2024-10-04": true,
+          "2024-10-05": true,
+          "2024-10-06": false,
+          "2024-10-07": true,
+          "2024-10-08": false,
+          "2024-10-09": true,
+          "2024-10-10": false
+        },
+        "Grupo E": {
+          "2024-10-01": true,
+          "2024-10-02": true,
+          "2024-10-03": false,
+          "2024-10-04": true,
+          "2024-10-05": true,
+          "2024-10-06": false,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": false,
+          "2024-10-10": true
+        }
+      }
+    },
+    {
+      "id": 6,
+      "nombre": "María Pérez",
+      "grupo": ["Grupo B"],
+      "cantidadAsistencia": 16,
+      "asistencia": {
+        "Grupo B": {
+          "2024-10-01": true,
+          "2024-10-02": true,
+          "2024-10-03": false,
+          "2024-10-04": true,
+          "2024-10-05": true,
+          "2024-10-06": false,
+          "2024-10-07": false,
+          "2024-10-08": true,
+          "2024-10-09": true,
+          "2024-10-10": true
+        }
+      }
+    },
+    {
+      "id": 7,
+      "nombre": "Javier López",
+      "grupo": ["Grupo D", "Grupo E"],
+      "cantidadAsistencia": 19,
+      "asistencia": {
+        "Grupo D": {
+          "2024-10-01": true,
+          "2024-10-02": false,
+          "2024-10-03": true,
+          "2024-10-04": true,
+          "2024-10-05": false,
+          "2024-10-06": true,
+          "2024-10-07": true,
+          "2024-10-08": false,
+          "2024-10-09": true,
+          "2024-10-10": true
+        },
+        "Grupo E": {
+          "2024-10-01": false,
+          "2024-10-02": true,
+          "2024-10-03": true,
+          "2024-10-04": true,
+          "2024-10-05": false,
+          "2024-10-06": true,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": true,
+          "2024-10-10": true
+        }
+      }
+    },
+    {
+      "id": 8,
+      "nombre": "Sofía Gómez",
+      "grupo": ["Grupo C"],
+      "cantidadAsistencia": 17,
+      "asistencia": {
+        "Grupo C": {
+          "2024-10-01": true,
+          "2024-10-02": true,
+          "2024-10-03": false,
+          "2024-10-04": true,
+          "2024-10-05": true,
+          "2024-10-06": false,
+          "2024-10-07": true,
+          "2024-10-08": true,
+          "2024-10-09": false,
+          "2024-10-10": true
+        }
+      }
+    }
+  ]

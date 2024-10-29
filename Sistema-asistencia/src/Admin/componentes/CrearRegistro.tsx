@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "./Registros.css"; // Asegúrate de tener este archivo CSS
+import "./estilos/Registro.css";
 
 interface AttendanceModalProps {
   show: boolean;
@@ -98,7 +98,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ show, handleClose }) 
                   timeIntervals={15}
                   timeCaption="Hora"
                   dateFormat="h:mm aa"
-                  className="form-control"
+                  className="form-control text-center"
                 />
               </Form.Group>
             </Col>
@@ -128,7 +128,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ show, handleClose }) 
                     />
                   </Col>
                   <Col>
-                    <Button variant="primary" className="btn-add">Añadir</Button>
+                  <button type="button" className="mx-2 btn btn-outline-primary">Añadir</button>
                   </Col>
                 </Row>
               </Form.Group>

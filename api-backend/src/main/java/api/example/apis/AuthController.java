@@ -39,51 +39,37 @@ public class AuthController {
 
             @PostMapping("/login")
             public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-                try {
-                    // Validación de entrada usando Preconditions
-                    Preconditions.checkNotNull(loginRequest.getEmail(), "El email no puede ser nulo");
-                    Preconditions.checkArgument(!loginRequest.getEmail().isEmpty(), "El email no puede estar vacío");
-                    Preconditions.checkNotNull(loginRequest.getPassword(), "La contraseña no puede ser nula");
-                    Preconditions.checkArgument(!loginRequest.getPassword().isEmpty(), "La contraseña no puede estar vacía");
+                String email = loginRequest.getEmail();
+                String password = loginRequest.getPassword(); // Asumiendo que tienes un método para obtener la contraseña
+                try (Connection connection = dataSource.getConnection()) {
+                    String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u " +
+                                   "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id " +
+                                   "INNER JOIN rol r ON ur.rol_id = r.id " +
+                                   "WHERE u.email = ? AND u.password = ?"; // Agregar verificación de contraseña
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    statement.setString(1, email);
+                    statement.setString(2, password); // Aquí se establece la contraseña
             
-                    // Consulta la caché para obtener la respuesta (si decides habilitar esta lógica en el futuro)
-                    /*LoginResponse response = loginCache.get(loginRequest.getEmail());
-                    return ResponseEntity.ok(response);*/
+                    ResultSet resultSet = statement.executeQuery();
             
-                    // Devolver respuesta predeterminada si no hay un login exitoso
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            .body(new LoginResponse(false, "Credenciales inválidas"));
-                } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new LoginResponse(false, e.getMessage()));
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    if (resultSet.next()) {
+                        Long usuarioId = resultSet.getLong("usuario_id");
+                        String nomRol = resultSet.getString("nom_rol");
+                        return ResponseEntity.ok(new LoginResponse(true, "Login exitoso")); // Agregué los datos del usuario
+                    } else {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                             .body(new LoginResponse(false, "Email o contraseña incorrectos"));
+                    }
+                } catch (SQLException e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(new LoginResponse(false, "Error en el servidor"));
+                                         .body(new LoginResponse(false, "Error en el servidor"));
                 }
             }
             
 
     // Método auxiliar para realizar la autenticación en la base de datos si no está en caché
     /*private LoginResponse autenticarUsuarioDesdeDB(String email) throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u " +
-                    "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id " +
-                    "INNER JOIN rol r ON ur.rol_id = r.id " +
-                    "WHERE u.email = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, email);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                Long usuarioId = resultSet.getLong("usuario_id");
-                String nomRol = resultSet.getString("nom_rol");
-                return new LoginResponse(true, "Login exitoso");
-            } else {
-                return new LoginResponse(false, "Email o contraseña incorrectos");
-            }
-        }
+        
     }*/
 
     @PostMapping("/register")
