@@ -1,0 +1,33 @@
+/* Configurar.css */
+.configurar-container {
+  padding: 20px;
+}
+
+.dias-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dia-checkbox {
+  margin-bottom: 10px;
+}
+
+.date-time-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.date-time-label {
+  margin-bottom: 5px;
+}
+
+.form-control {
+  width: 100%;
+}
+
+/* Ajusta la altura del campo de descripción */
+.descripcion-textarea {
+  height: calc(135px);
+}
