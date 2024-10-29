@@ -1,5 +1,6 @@
 # 📊 Proyecto: Avance de Desarrollo
 
+
 ## ⭐ Descripción
 Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asistir en el manejo de asistencia de usuarios. Este proyecto utiliza una arquitectura de frontend-backend y se despliega mediante Docker para simplificar su instalación y ejecución.
 
@@ -9,6 +10,7 @@ Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asis
 <p align="center"><img src=image.jpeg></p>
 
 ---
+
 
 ## 👥 Integrantes del Equipo
 
@@ -22,12 +24,14 @@ Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asis
 ## 📈 Distribución de la Participación
 
 Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y el desarrollo del proyecto. El porcentaje de participación para cada miembro es el siguiente:
+
 | Integrante                     | %   | Contribucion                                            |
 | ------------------------------ | --- | ------------------------------------------------------- |
 | Cristofer Torres Castillo      | 25% | Vista principal y backend                               |
 | Cristian Huaracha Venturas     | 25% | Vista del login y administrador                         |
 | Winston Apaza Mamani           | 25% | Vista del formulario de registro de usuario             |
 | Diego Sebastian Gonzales Gomez | 25% | Backend login y registro de usuario                     |
+
 ---
 
 ## 🚀 Estado Actual del Proyecto
@@ -37,6 +41,7 @@ El proyecto se encuentra en proceso, con avances significativos en las siguiente
 - Desarrollo de interfaces graficas responsivas
 - Desarrollo de lector de QR
 - Desarrollo de login y registro de usuario
+
 
 ¡Pronto compartiremos más detalles sobre nuestro progreso!
 
