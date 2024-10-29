@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import usuariosData from "./prueba/HistorialUsuario.json";
 import { Table, Form, Button, ButtonGroup } from "react-bootstrap";
@@ -13,6 +14,7 @@ const Reporte: React.FC = () => {
   const handleSearch = () => {
     if (searchId) {
       const filtered = usuariosData.filter((user) => user.id === searchId);
+
       setFilteredUsers(filtered);
     } else {
       setFilteredUsers(usuariosData);
@@ -100,5 +102,5 @@ const Reporte: React.FC = () => {
     </div>
   );
 };
-
 export default Reporte;
+
