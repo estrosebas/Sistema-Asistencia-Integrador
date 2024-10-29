@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
-import usuariosData from './prueba/HistorialUsuario.json';
-import { Table, Form, Button, ButtonGroup } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
+import React, { useState } from "react";
+import usuariosData from "./prueba/HistorialUsuario.json";
+import { Table, Form, Button, ButtonGroup } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Reporte: React.FC = () => {
-  const [searchId, setSearchId] = useState<number | ''>('');
+  const [searchId, setSearchId] = useState<number | "">("");
   const [filteredUsers, setFilteredUsers] = useState(usuariosData);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const handleSearch = () => {
     if (searchId) {
-      const filtered = usuariosData.filter(user => user.id === searchId);
+      const filtered = usuariosData.filter((user) => user.id === searchId);
+
       setFilteredUsers(filtered);
     } else {
       setFilteredUsers(usuariosData);
@@ -21,12 +23,12 @@ const Reporte: React.FC = () => {
 
   const handleGenerateReport = () => {
     // Lógica para generar el reporte
-    alert('Reporte generado');
+    alert("Reporte generado");
   };
 
   const handleExportReport = () => {
     // Lógica para exportar el reporte
-    alert('Reporte exportado');
+    alert("Reporte exportado");
   };
 
   return (
@@ -52,11 +54,11 @@ const Reporte: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map(user => (
+          {filteredUsers.map((user) => (
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.nombre}</td>
-              <td>{user.grupo.join(', ')}</td>
+              <td>{user.grupo.join(", ")}</td>
               <td>{user.cantidadAsistencia}</td>
             </tr>
           ))}
@@ -69,7 +71,7 @@ const Reporte: React.FC = () => {
           <label>Fecha Inicio:</label>
           <DatePicker
             selected={startDate}
-            onChange={(date) => setStartDate(date)}
+            onChange={(date: Date | null) => setStartDate(date)}
             dateFormat="yyyy/MM/dd"
             className="form-control"
           />
@@ -78,7 +80,7 @@ const Reporte: React.FC = () => {
           <label>Fecha Fin:</label>
           <DatePicker
             selected={endDate}
-            onChange={(date) => setEndDate(date)}
+            onChange={(date: Date | null) => setEndDate(date)}
             dateFormat="yyyy/MM/dd"
             className="form-control"
           />
@@ -86,11 +88,19 @@ const Reporte: React.FC = () => {
       </div>
 
       <ButtonGroup className="mt-3">
-        <Button variant="success" onClick={handleGenerateReport} className="me-2">Generar Reporte</Button>
-        <Button variant="success" onClick={handleExportReport} className="me-2">Exportar Reporte</Button>
+        <Button
+          variant="success"
+          onClick={handleGenerateReport}
+          className="me-2"
+        >
+          Generar Reporte
+        </Button>
+        <Button variant="success" onClick={handleExportReport} className="me-2">
+          Exportar Reporte
+        </Button>
       </ButtonGroup>
     </div>
   );
 };
-
 export default Reporte;
+

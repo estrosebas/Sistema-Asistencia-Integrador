@@ -195,8 +195,6 @@ const Registration = () => {
                 >
                   <option value="">Seleccione</option>
                   <option value="usuario">Usuario</option>{" "}
-                  <option value="gerente">Gerente</option>{" "}
-                  <option value="administrador">Administrador</option>{" "}
                   {/* Asegúrate que este rol existe en la base de datos */}
                 </select>
               </div>
