@@ -1,0 +1,58 @@
+/*CrearRegistro.css*/
+.crear-registro-modal .modal-content {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .crear-registro-modal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eaeaea;
+    padding: 1.5rem;
+  }
+  
+  .crear-registro-modal .modal-title {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .crear-registro-modal .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .crear-registro-modal .form-label { font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .crear-registro-modal .form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+  }
+  
+  .crear-registro-modal .form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .crear-registro-modal .gerentes-lista {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #eaeaea;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+  }
+  
+  .crear-registro-modal .gerente-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .crear-registro-modal .gerente-item span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c3e50;
+  }
