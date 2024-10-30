@@ -55,7 +55,7 @@ public class AuthController {
                     if (resultSet.next()) {
                         Long usuarioId = resultSet.getLong("usuario_id");
                         String nomRol = resultSet.getString("nom_rol");
-                        return ResponseEntity.ok(new LoginResponse(true, "Login exitoso")); // Agregué los datos del usuario
+                        return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", usuarioId, nomRol)); // Agregué los datos del usuario
                     } else {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                              .body(new LoginResponse(false, "Email o contraseña incorrectos"));
