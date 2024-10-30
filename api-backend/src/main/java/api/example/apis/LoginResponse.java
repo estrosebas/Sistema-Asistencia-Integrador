@@ -34,8 +34,6 @@ public class LoginResponse {
         this.nomRol = nomRol;
     }
 
-    
-
 
     public boolean isSuccess() {
         return success;
