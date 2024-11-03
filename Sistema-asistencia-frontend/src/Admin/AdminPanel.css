@@ -1,0 +1,242 @@
+/* AdminPanel.css */
+
+@media (min-width: 768px){
+/* Contenedor principal */
+#admin-panel .body {
+  height: 100%;
+}
+
+#admin-panel .container-fluid {
+  display: flex;
+  height: 100%;
+}
+
+/* Panel lateral */
+#admin-panel .panel-lateral {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100px;
+  height: 100vh;
+  background-color: #1a3a6e;
+  padding: 10px;
+  padding-top: 25px;
+  transition: width 0.5s ease; /* Solo aquí */
+  overflow-y: auto; /* Permite  */
+  overflow-x: hidden; /* Evita*/
+  scrollbar-width: none;
+}
+
+#admin-panel .panel-lateral.collapsed {
+  width: 85px;
+}
+
+#admin-panel .panel-lateral.show {
+  width: 270px;
+}
+
+/* Estilos para los botones */
+#admin-panel .container-fluid {
+  display: flex;
+  height: 100%;
+}
+#admin-panel .panel-lateral button {
+  background-color: transparent;
+  border: none;
+  padding: 25px 20px; /* Espaciado interno del botón */
+  font-size: 16px;
+  cursor: pointer;
+  color: #ffffff;
+  width: 100%; /* Asegura que el ancho de los botones sea constante */
+  text-align: left; /* Alinea el texto a la izquierda */
+  white-space: nowrap; /* Mantiene el texto en una sola línea */
+  overflow: hidden; /* Esconde el texto que no cabe */
+  display: flex; /* Usar flexbox para centrar el contenido */
+  align-items: center; /* Centrar verticalmente */
+  margin-bottom: 10px; /* Añadir separación entre botones */
+  transition: transform 0.2s ease, opacity 0.2s ease; /* Transiciones suaves */
+}
+
+/* Estilo del ícono */
+#admin-panel .nav-item .icono {
+  font-size: 30px; /* Ajusta el tamaño del ícono */
+  flex-shrink: 0; /* Evita que el ícono se reduzca */
+  width: 40px; /* Establece un ancho fijo para todos los iconos */
+  margin-right: 20px; /* Espacio entre el ícono y el texto */
+  text-align: center; /* Centra el ícono */
+}
+
+/* Estilo para el botón activo */
+#admin-panel .panel-lateral button.activo {
+  background-color: #ffffff;
+  color: #1a3a6e;
+  border-radius: 8px; /* Añadir bordes redondeados */
+}
+
+/* Opcional: Estilo para el hover en los botones */
+#admin-panel .panel-lateral button:not(.activo):hover {
+  background-color: #3888ff; /* Cambia el color al pasar el mouse */
+  border-radius: 8px; /* Asegúrate de que los bordes se mantengan redondeados al hacer hover */
+  transform: translateY(-5px); /* Mueve ligeramente hacia arriba al pasar el ratón */
+  opacity: 5; /* Reduce ligeramente la opacidad al pasar el ratón */
+}
+
+/* Contenido principal */
+#admin-panel .contenido-principal {
+  flex-grow: 1;
+  padding: 20px;
+  transition: margin-left 0.5s ease;
+  background-color: #faf8f9;
+  height: 100vh; /* O usa height: 100%; */
+  box-sizing: border-box;
+  position: relative;
+}
+
+#admin-panel .contenido-principal.expanded {
+  margin-left: 270px;
+}
+
+#admin-panel .contenido-principal.collapsed {
+  margin-left: 100px; /* Cambiado a 85px para coincidir con el ancho colapsado */
+}
+
+
+#admin-panel .modo-oscuro {
+  background-color: #333; /* Color de fondo oscuro */
+  color: #fff; /* Color de texto claro */
+}
+
+#admin-panel .modo-oscuro .panel-lateral {
+  background-color: #444; /* Color de fondo del panel lateral oscuro */
+}
+
+#admin-panel .modo-oscuro .panel-lateral button {
+  color: #fff; /* Color de texto claro en los botones */
+}
+
+#admin-panel .modo-oscuro .panel-lateral button.activo {
+  color: #000000; /* Color de texto claro en los botones */
+  background-color: #ffffff; /* Color de fondo oscuro en los botones */
+}
+
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  /* =================================================================*/
+
+  #admin-panel .body {
+    height: 100%;
+}
+
+#admin-panel .container-fluid {
+    display: flex;
+    height: 100%;
+}
+
+/* Panel lateral */
+#admin-panel .panel-lateral {
+    position: fixed; /* Mantiene el panel lateral fijo en la pantalla */
+    top: 0;
+    left: 0;
+    min-width: 0px; /* Ancho mínimo del panel lateral */
+    padding: 10px;
+    padding-top: 25px;    
+    z-index: 10; /* Asegúrate de que el panel lateral esté por encima */
+}
+
+#admin-panel .panel-lateral.collapsed {
+  width: 70px; /* Ancho del panel lateral colapsado */
+  height: 70px; /* Mantiene la altura completa */
+  overflow-y: hidden; /* Evitar el desplazamiento vertical */        
+  scrollbar-width: none; /* Oculta el scrollbar en navegadores compatibles */    
+  overflow-x: hidden; /* Evita el desplazamiento horizontal */
+  opacity: 0.5; /* Opacidad en estado colapsado */      
+  transition: width 0.5s ease, opacity 0.5s ease; /* Añadir transición de opacidad */
+}
+
+#admin-panel .panel-lateral.show {
+  width: 270px; /* Ancho del panel lateral expandido */
+  height: 100vh; /* Mantiene la altura completa */    
+  background-color: rgba(26, 58, 110, 0.9); /* Color de fondo con opacidad */    
+  overflow-y: auto; /* Permite el desplazamiento vertical */    
+  scrollbar-width: none; /* Oculta el scrollbar en navegadores compatibles */    
+  overflow-x: hidden; /* Evita el desplazamiento horizontal */
+  opacity: 1; /* Opacidad en estado expandido */
+
+  transition: width 0.5s ease, opacity 0.5s ease; /* Añadir transición de opacidad */
+}
+
+/* Contenido principal */
+#admin-panel .contenido-principal {
+  
+    position: relative; /* Posición relativa para el contenido */
+    top: 20px; /* Alinea al top */
+    left: 0; /* Alinea a la izquierda */
+    right: 0; /* Asegura que ocupe todo el ancho */
+    bottom: 0; /* Asegura que ocupe toda la altura */
+    padding: 0px; /* Espaciado interno */
+    background-color: #faf8f9; /* Color de fondo del contenido principal */
+    box-sizing: border-box; /* Incluir padding en el cálculo de ancho y alto */
+}
+
+/* Estilos para los botones */
+#admin-panel .panel-lateral button {
+    border: none;
+    padding: 15px 5px; /* Espaciado interno del botón */
+    font-size: 15px;
+    cursor: pointer;
+    color: #ffffff;
+    width: 100%; /* Asegura que el ancho de los botones sea constante */
+    text-align: left; /* Alinea el texto a la izquierda */
+    white-space: nowrap; /* Mantiene el texto en una sola línea */
+    overflow: hidden; /* Esconde el texto que no cabe */
+    display: flex; /* Usar flexbox para centrar el contenido */
+    align-items: center; /* Centrar verticalmente */
+    margin-bottom: 10px; /* Añadir separación entre botones */
+    transition: transform 0.2s ease, opacity 0.2s ease; /* Transiciones suaves */
+}
+
+/* Estilos específicos para los botones cuando el panel lateral está expandido */
+#admin-panel .panel-lateral.show button {  
+    background-color: transparent;
+    padding: 15px 20px; /* Aumenta el espaciado interno del botón en estado expandido */
+    font-size: 16px; /* Aumenta el tamaño de fuente en estado expandido */
+}
+
+/* Estilos específicos para los botones cuando el panel lateral está colapsado */
+#admin-panel .panel-lateral.collapsed button {  
+    background-color: rgba(26, 58, 110, 0.1);
+    border-radius: 8px;
+    color: #000000;
+    padding: 15px 5px; /* Mantiene el espaciado interno del botón en estado colapsado */
+    font-size: 15px; /* Mantiene el tamaño de fuente en estado colapsado */
+}
+
+/* Estilo del ícono */
+#admin-panel .nav-item .icono {
+    font-size: 15px; /* Ajusta el tamaño del ícono */
+    flex-shrink: 0; /* Evita que el ícono se reduzca */
+    width: 40px; /* Establece un ancho fijo para todos los iconos */
+    margin-right: 20px; /* Espacio entre el ícono y el texto */
+    text-align: center; /* Centra el ícono */
+}
+
+/* Estilo para el botón activo */
+#admin-panel .panel-lateral button.activo {
+    background-color: #ffffff;
+    color: #1a3a6e;
+    border-radius: 8px; /* Añadir bordes redondeados */
+}
+
+/* Opcional: Estilo para el hover en los botones */
+#admin-panel .panel-lateral button:not(.activo):hover {
+    background-color: #3888ff; /* Cambia el color al pasar el mouse */
+    border-radius: 8px; /* Asegúrate de que los bordes se mantengan redondeados al hacer hover */
+    transform: translateY(-5px); /* Mueve ligeramente hacia arriba al pasar el ratón */
+    opacity: 1; /* Cambiar a 1 para que la opacidad sea normal al pasar el ratón */
+}
+
+
+}/* =================================================================*/
+

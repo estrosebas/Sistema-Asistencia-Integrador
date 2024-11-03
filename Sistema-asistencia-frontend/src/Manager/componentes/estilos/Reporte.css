@@ -1,0 +1,23 @@
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 400px;
+    width: 100%;
+  }
+  
+  .container-fluid {
+    padding: 20px;
+  }
+  
+  .table {
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .form-control {
+    margin-bottom: 10px;
+  }
+  
+  .btn {
+    margin-bottom: 10px;
+  }
