@@ -1,13 +1,14 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Registration.css"; // Asegúrate de tener este archivo CSS
+import "./Registration.css";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const Registration = () => {
   const [nombres, setNombres] = useState("");
   const [correo, setCorreo] = useState("");
-  const [apellidos, setApellidos] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [apeMaterno, setApeMaterno] = useState("");
+  const [apePaterno, setApePaterno] = useState("");
+  const [contrasena, setContrasena] = useState(""); 
   const [dni, setDni] = useState("");
   const [telefono, setTelefono] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
@@ -19,21 +20,21 @@ const Registration = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Resetear el error
+    setError(""); // Resetear mensaje de error
 
-    // Modificando el objeto registrationData para que coincida con la estructura requerida
+    // Objeto con los datos de registro
     const registrationData = {
-      nombre: nombres,
-      ape_paterno: apellidos.split(" ")[0], // Suponiendo que el apellido paterno es el primer apellido
-      ape_materno: apellidos.split(" ")[1] || "", // Si no hay segundo apellido, asignamos vacío
-      dni: Number(dni), // Convertir a número
+      nombres,
+      apePaterno,
+      apeMaterno,
+      dni: Number(dni),
       domicilio,
       email: correo,
-      fech_nacimiento: new Date(fechaNacimiento).toISOString(), // Convertir a formato ISO
+      fechaNacimiento,
       genero,
-      telefono: Number(telefono), // Convertir a número
       password: contrasena,
-      rol: rol.charAt(0).toUpperCase() + rol.slice(1).toLowerCase(), // Asegurarse que el rol inicie con mayúscula
+      telefono: Number(telefono),
+      rol
     };
 
     try {
@@ -60,6 +61,7 @@ const Registration = () => {
   };
 
   return (
+  <div className="register-vista">  
     <div className="registration-container">
       <div className="registration-half">
         <div className="registration-form">
@@ -93,26 +95,26 @@ const Registration = () => {
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
-                <label htmlFor="apellidos">Apellidos</label>
+                <label htmlFor="apePaterno">Apellido Paterno</label>
                 <input
                   type="text"
                   className="form-control"
-                  id="apellidos"
-                  placeholder="Ingrese sus apellidos"
-                  value={apellidos}
-                  onChange={(e) => setApellidos(e.target.value)}
+                  id="apePaterno"
+                  placeholder="Ingrese su apellido paterno"
+                  value={apePaterno}
+                  onChange={(e) => setApePaterno(e.target.value)}
                   required
                 />
               </div>
               <div className="col-md-6 mb-3">
-                <label htmlFor="contrasena">Contraseña</label>
+                <label htmlFor="apeMaterno">Apellido Materno</label>
                 <input
-                  type="password"
+                  type="text"
                   className="form-control"
-                  id="contrasena"
-                  placeholder="Ingrese su contraseña"
-                  value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
+                  id="apeMaterno"
+                  placeholder="Ingrese su apellido materno"
+                  value={apeMaterno}
+                  onChange={(e) => setApeMaterno(e.target.value)}
                   required
                 />
               </div>
@@ -170,6 +172,18 @@ const Registration = () => {
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
+                <label htmlFor="contrasena">Contraseña</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  id="contrasena"
+                  placeholder="Ingrese su contraseña"
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
                 <label htmlFor="genero">Género</label>
                 <select
                   className="form-control"
@@ -184,6 +198,8 @@ const Registration = () => {
                   <option value="otro">Otro</option>
                 </select>
               </div>
+            </div>
+            <div className="row">
               <div className="col-md-6 mb-3">
                 <label htmlFor="rol">Rol</label>
                 <select
@@ -194,16 +210,18 @@ const Registration = () => {
                   required
                 >
                   <option value="">Seleccione</option>
-                  <option value="usuario">Usuario</option>{" "}
-                  {/* Asegúrate que este rol existe en la base de datos */}
+                  <option value="usuario">Usuario</option>
+                  <option value="gerente">Gerente</option>
+                  <option value="administrador">Administrador</option>
                 </select>
               </div>
             </div>
             {error && <div className="alert alert-danger">{error}</div>}
-            <button type="submit" className="btn btn-primary w-100">
+
+            <button className="btn btn-success w-100">
               Registrarse
             </button>
-            <Link to="/login" className="btn btn-secondary w-100 mt-3">
+            <Link to="/login" className="btn btn-primary w-100 mt-3">
               Ya tengo cuenta
             </Link>
           </form>
@@ -222,6 +240,7 @@ const Registration = () => {
         </div>
       </div>
     </div>
+  </div>  
   );
 };
 

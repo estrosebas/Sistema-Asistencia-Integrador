@@ -1,0 +1,610 @@
+package api.example.apis;
+
+/**
+ * Clase que representa una solicitud de registro de un usuario.
+ * Contiene los datos necesarios para registrar un nuevo usuario en el sistema.
+ *
+ * @author Sebastian
+ */
+public class RegisterRequest {
+    private String apeMaterno;
+    private String apePaterno;
+    private long dni;
+    private String domicilio;
+    private String email;
+    private String fechaNacimiento; // Usar formato "yyyy-MM-dd HH:mm:ss" o "yyyy-MM-dd"
+    private String genero;
+    private String nombres;
+    private String password;
+    private long telefono;
+    private String rol; // Rol asignado al usuario
+
+    /**
+     * Obtiene el apellido materno del usuario.
+     *
+     * @return Apellido materno.
+     */
+    public String getApeMaterno() {
+        return apeMaterno;
+    }
+
+    /**
+     * Establece el apellido materno del usuario.
+     *
+     * @param apeMaterno Apellido materno.
+     */
+    public void setApeMaterno(String apeMaterno) {
+        this.apeMaterno = apeMaterno;
+    }
+
+    /**
+     * Obtiene el apellido paterno del usuario.
+     *
+     * @return Apellido paterno.
+     */
+    public String getApePaterno() {
+        return apePaterno;
+    }
+
+    /**
+     * Establece el apellido paterno del usuario.
+     *
+     * @param apePaterno Apellido paterno.
+     */
+    public void setApePaterno(String apePaterno) {
+        this.apePaterno = apePaterno;
+    }
+
+    /**
+     * Obtiene el DNI del usuario.
+     *
+     * @return DNI del usuario.
+     */
+    public long getDni() {
+        return dni;
+    }
+
+    /**
+     * Establece el DNI del usuario.
+     *
+     * @param dni DNI del usuario.
+     */
+    public void setDni(long dni) {
+        this.dni = dni;
+    }
+
+    /**
+     * Obtiene el domicilio del usuario.
+     *
+     * @return Domicilio del usuario.
+     */
+    public String getDomicilio() {
+        return domicilio;
+    }
+
+    /**
+     * Establece el domicilio del usuario.
+     *
+     * @param domicilio Domicilio del usuario.
+     */
+    public void setDomicilio(String domicilio) {
+        this.domicilio = domicilio;
+    }
+
+    /**
+     * Obtiene el email del usuario.
+     *
+     * @return Email del usuario.
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Establece el email del usuario.
+     *
+     * @param email Email del usuario.
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * Obtiene la fecha de nacimiento del usuario.
+     *
+     * @return Fecha de nacimiento en formato "yyyy-MM-dd HH:mm:ss" o "yyyy-MM-dd".
+     */
+    public String getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    /**
+     * Establece la fecha de nacimiento del usuario.
+     *
+     * @param fechaNacimiento Fecha de nacimiento en formato "yyyy-MM-dd HH:mm:ss" o "yyyy-MM-dd".
+     */
+    public void setFechaNacimiento(String fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    /**
+     * Obtiene el género del usuario.
+     *
+     * @return Género del usuario.
+     */
+    public String getGenero() {
+        return genero;
+    }
+
+    /**
+     * Establece el género del usuario.
+     *
+     * @param genero Género del usuario.
+     */
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    /**
+     * Obtiene el nombre del usuario.
+     *
+     * @return Nombres del usuario.
+     */
+    public String getNombres() {
+        return nombres;
+    }
+
+    /**
+     * Establece el nombre del usuario.
+     *
+     * @param nombres Nombres del usuario.
+     */
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    /**
+     * Obtiene la contraseña del usuario.
+     *
+     * @return Contraseña del usuario.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Establece la contraseña del usuario.
+     *
+     * @param password Contraseña del usuario.
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * Obtiene el número de teléfono del usuario.
+     *
+     * @return Teléfono del usuario.
+     */
+    public long getTelefono() {
+        return telefono;
+    }
+
+    /**
+     * Establece el número de teléfono del usuario.
+     *
+     * @param telefono Teléfono del usuario.
+     */
+    public void setTelefono(long telefono) {
+        this.telefono = telefono;
+    }
+
+    /**
+     * Obtiene el rol asignado al usuario.
+     *
+     * @return Rol del usuario.
+     */
+    public String getRol() {
+        return rol;
+    }
+
+    /**
+     * Establece el rol del usuario.
+     *
+     * @param rol Rol del usuario.
+     */
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+}
+package api.example.apis;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import com.google.common.base.Preconditions;
+
+import jakarta.annotation.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.sql.DataSource;
+
+/**
+ * Controlador de autenticación que gestiona el login y registro de usuarios.
+ *
+ * @author Sebastian
+ */
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"})
+public class AuthController {
+
+    @Resource
+    private DataSource dataSource;
+
+    /**
+     * Método que permite iniciar sesión.
+     *
+     * @param loginRequest Objeto que contiene el email y la contraseña.
+     * @return ResponseEntity con la respuesta de autenticación.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword(); // Asumiendo que tienes un método para obtener la contraseña
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u " +
+                    "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id " +
+                    "INNER JOIN rol r ON ur.rol_id = r.id " +
+                    "WHERE u.email = ? AND u.password = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, password);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Long usuarioId = resultSet.getLong("usuario_id");
+                String nomRol = resultSet.getString("nom_rol");
+                return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", usuarioId, nomRol));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new LoginResponse(false, "Email o contraseña incorrectos"));
+            }
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new LoginResponse(false, "Error en el servidor"));
+        }
+    }
+
+    /**
+     * Método que permite registrar un nuevo usuario.
+     *
+     * @param registerRequest Objeto que contiene los datos del usuario.
+     * @return ResponseEntity con la respuesta de registro.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Verificar si el usuario ya existe
+            String checkUserQuery = "SELECT COUNT(*) FROM usuario WHERE email = ?";
+            PreparedStatement checkUserStatement = connection.prepareStatement(checkUserQuery);
+            checkUserStatement.setString(1, registerRequest.getEmail());
+            ResultSet userCheckResult = checkUserStatement.executeQuery();
+            userCheckResult.next();
+
+            if (userCheckResult.getInt(1) > 0) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new RegisterResponse(false, "El email ya está registrado"));
+            }
+
+            // Insertar nuevo usuario
+            String insertQuery = "INSERT INTO usuario (ape_materno, ape_paterno, dni, domicilio, email, fech_nacimiento, genero, nombre, password, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
+            insertStatement.setString(1, registerRequest.getApeMaterno());
+            insertStatement.setString(2, registerRequest.getApePaterno());
+            insertStatement.setLong(3, registerRequest.getDni());
+            insertStatement.setString(4, registerRequest.getDomicilio());
+            insertStatement.setString(5, registerRequest.getEmail());
+            insertStatement.setString(6, registerRequest.getFechaNacimiento());
+            insertStatement.setString(7, registerRequest.getGenero());
+            insertStatement.setString(8, registerRequest.getNombres());
+            insertStatement.setString(9, registerRequest.getPassword()); // Asegúrate de encriptar la contraseña
+            insertStatement.setLong(10, registerRequest.getTelefono());
+            insertStatement.executeUpdate();
+
+            // Obtener el rol ID
+            long rolId = getRoleIdByName(registerRequest.getRol());
+
+            // Insertar en la tabla de usuarios_roles
+            String insertRoleQuery = "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)";
+            PreparedStatement insertRoleStatement = connection.prepareStatement(insertRoleQuery);
+            long usuarioId = getLastInsertId(connection);
+            insertRoleStatement.setLong(1, usuarioId);
+            insertRoleStatement.setLong(2, rolId);
+            insertRoleStatement.executeUpdate();
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new RegisterResponse(true, "Registro exitoso"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new RegisterResponse(false, "Error en el servidor"));
+        }
+    }
+
+    /**
+     * Obtiene el ID de un rol dado su nombre.
+     *
+     * @param roleName Nombre del rol.
+     * @return ID del rol.
+     * @throws SQLException Si ocurre un error en la base de datos.
+     */
+    private long getRoleIdByName(String roleName) throws SQLException {
+        String query = "SELECT id FROM rol WHERE nom_rol = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, roleName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getLong("id");
+            } else {
+                throw new SQLException("Rol no encontrado: " + roleName);
+            }
+        }
+    }
+
+    /**
+     * Obtiene el último ID insertado en la base de datos.
+     *
+     * @param connection Conexión a la base de datos.
+     * @return Último ID insertado.
+     * @throws SQLException Si ocurre un error en la base de datos.
+     */
+    private long getLastInsertId(Connection connection) throws SQLException {
+        String query = "SELECT LAST_INSERT_ID()";
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+            throw new SQLException("No se pudo obtener el último ID insertado.");
+        }
+    }
+}
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./Registration.css"; // Asegúrate de tener este archivo CSS
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+const Registration = () => {
+  const [nombres, setNombres] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [apellidos, setApellidos] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [dni, setDni] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [domicilio, setDomicilio] = useState("");
+  const [genero, setGenero] = useState("");
+  const [rol, setRol] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(""); // Resetear el error
+
+    // Modificando el objeto registrationData para que coincida con la estructura requerida
+    const registrationData = {
+      nombre: nombres,
+      ape_paterno: apellidos.split(" ")[0], // Suponiendo que el apellido paterno es el primer apellido
+      ape_materno: apellidos.split(" ")[1] || "", // Si no hay segundo apellido, asignamos vacío
+      dni: Number(dni), // Convertir a número
+      domicilio,
+      email: correo,
+      fech_nacimiento: new Date(fechaNacimiento).toISOString(), // Convertir a formato ISO
+      genero,
+      telefono: Number(telefono), // Convertir a número
+      password: contrasena,
+      rol: rol.charAt(0).toUpperCase() + rol.slice(1).toLowerCase(), // Asegurarse que el rol inicie con mayúscula
+    };
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message); // Mensaje de éxito
+        navigate("/login"); // Redirigir a la página de inicio de sesión
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message); // Mostrar mensaje de error del backend
+      }
+    } catch (error) {
+      setError("Error en el registro. Inténtalo de nuevo.");
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="registration-container">
+      <div className="registration-half">
+        <div className="registration-form">
+          <h3>Ingrese sus datos</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="nombres">Nombres</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="nombres"
+                  placeholder="Ingrese sus nombres"
+                  value={nombres}
+                  onChange={(e) => setNombres(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="correo">Correo</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="correo"
+                  placeholder="Ingrese su correo"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="apellidos">Apellidos</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="apellidos"
+                  placeholder="Ingrese sus apellidos"
+                  value={apellidos}
+                  onChange={(e) => setApellidos(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="contrasena">Contraseña</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  id="contrasena"
+                  placeholder="Ingrese su contraseña"
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="dni">DNI</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="dni"
+                  placeholder="Ingrese su DNI"
+                  value={dni}
+                  onChange={(e) => setDni(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="telefono">Teléfono</label>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="telefono"
+                  placeholder="Ingrese su teléfono"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  id="fechaNacimiento"
+                  value={fechaNacimiento}
+                  onChange={(e) => setFechaNacimiento(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="domicilio">Domicilio</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="domicilio"
+                  placeholder="Ingrese su domicilio"
+                  value={domicilio}
+                  onChange={(e) => setDomicilio(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="genero">Género</label>
+                <select
+                  className="form-control"
+                  id="genero"
+                  value={genero}
+                  onChange={(e) => setGenero(e.target.value)}
+                  required
+                >
+                  <option value="">Seleccione</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="femenino">Femenino</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="rol">Rol</label>
+                <select
+                  className="form-control"
+                  id="rol"
+                  value={rol}
+                  onChange={(e) => setRol(e.target.value)}
+                  required
+                >
+                  <option value="">Seleccione</option>
+                  <option value="usuario">Usuario</option>{" "}
+                  {/* Asegúrate que este rol existe en la base de datos */}
+                </select>
+              </div>
+            </div>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <button type="submit" className="btn btn-primary w-100">
+              Registrarse
+            </button>
+            <Link to="/login" className="btn btn-secondary w-100 mt-3">
+              Ya tengo cuenta
+            </Link>
+          </form>
+        </div>
+      </div>
+      <div className="registration-half bg-primary text-white d-flex flex-column">
+        <div className="registration-top d-flex align-items-center justify-content-center">
+          <h1>Sistema de Asistencia</h1>
+        </div>
+        <div className="registration-bottom d-flex align-items-center justify-content-center">
+          <img
+            src="/assets/calendar.png"
+            alt="Ilustración"
+            className="registration-image"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Registration;

@@ -1,0 +1,106 @@
+/* GenerarQR.css */
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+    #user-generar body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa; /* Fondo claro */
+      color: #333; /* Texto oscuro */
+      margin: 0; /* Elimina márgenes por defecto */
+      padding: 20px; /* Espacio alrededor del contenido */
+    }
+  
+    #user-generar .generar-contenedor {
+      width: 100%; /* Asegura que el contenedor ocupe todo el ancho */
+      max-width: 400px; /* Ancho máximo del contenedor */
+      margin: 45px; /* Centra el contenedor */
+    }
+  
+    #user-generar .form-control {
+      width: 100%; /* Asegura que el input ocupe todo el ancho */
+      max-width: 400px; /* Ancho máximo del input */
+      margin: 0 auto; /* Centra el input */
+      padding: 10px; /* Espacio interno */
+      border: 1px solid #ced4da; /* Borde ligero */
+      border-radius: 5px; /* Bordes redondeados */
+      font-size: 16px; /* Tamaño de fuente */
+    }
+  
+    #user-generar .btn {
+      display: block; /* Hace que el botón ocupe todo el ancho */
+      width: 100%; /* Asegura que el botón ocupe todo el ancho */
+      max-width: 400px; /* Ancho máximo del botón */
+      margin: 10px auto; /* Margen superior e inferior, centrado */
+      padding: 10px; /* Espacio interno */
+      font-size: 16px; /* Tamaño de fuente */
+    }
+  
+    #user-generar .qr-output {
+      margin-top: 20px; /* Espacio superior para el QR */
+    }
+  
+    #user-generar .form-control {
+      padding: 8px; /* Reduce el padding en pantallas pequeñas */
+      font-size: 14px; /* Tamaño de fuente más pequeño */
+    }
+  
+    #user-generar .btn {
+      padding: 8px; /* Reduce el padding en pantallas pequeñas */
+      font-size: 14px; /* Tamaño de fuente más pequeño */
+    }
+  
+    #user-generar .qr-output img {
+      max-width: 100%; /* Asegura que el QR no exceda el ancho del contenedor */
+      height: auto; /* Mantiene la proporción de la imagen */
+    }
+  }
+  
+  /* Media query para pantallas grandes */
+  @media (min-width: 768px) {
+    #user-generar body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa; /* Fondo claro */
+      color: #333; /* Texto oscuro */
+      margin: 0; /* Elimina márgenes por defecto */
+      padding: 20px; /* Espacio alrededor del contenido */
+    }
+  
+    #user-generar .form-control {
+      width: 100%; /* Asegura que el input ocupe todo el ancho */
+      max-width: 400px; /* Ancho máximo del input */
+      margin: 0 auto; /* Centra el input */
+      padding: 10px; /* Espacio interno */
+      border: 1px solid #ced4da; /* Borde ligero */
+      border-radius: 5px; /* Bordes redondeados */
+      font-size: 16px; /* Tamaño de fuente */
+    }
+  
+    #user-generar .btn {
+      display: block; /* Hace que el botón ocupe todo el ancho */
+      width: 100%; /* Asegura que el botón ocupe todo el ancho */
+      max-width: 400px; /* Ancho máximo del botón */
+      margin: 10px auto; /* Margen superior e inferior, centrado */
+      padding: 10px; /* Espacio interno */
+      font-size: 16px; /* Tamaño de fuente */
+    }
+  
+    #user-generar .qr-output {
+      margin-top: 20px; /* Espacio superior para el QR */
+    }
+  
+    #user-generar .form-control {
+      padding: 12px; /* Aumenta el padding en pantallas grandes */
+      font-size: 18px; /* Tamaño de fuente más grande */
+    }
+  
+    #user-generar .btn {
+      padding: 12px; /* Aumenta el padding en pantallas grandes */
+      font-size: 18px; /* Tamaño de fuente más grande */
+    }
+  
+    #user-generar .qr-output img {
+      width: 500px; /* Controla el tamaño máximo del QR */
+      height: auto; /* Mantiene la proporción de la imagen */
+      border-radius: 40px;
+    }
+  }
