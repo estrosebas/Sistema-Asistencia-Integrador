@@ -97,7 +97,7 @@ const Login = () => {
             <button type="submit" className="btn btn-primary w-100 mb-3">
               Iniciar Sesión
             </button>
-            <Link to="/register" className="btn btn-primary w-100 ">
+            <Link to="/register" className="btn btn-success w-100 ">
               Crear cuenta nueva
             </Link>
           </form>
