@@ -2,6 +2,7 @@
   width: 100%;
   overflow-x: hidden;  
   animation: backgroundSlide 5s infinite alternate;
+  position: relative;
 }
 
 @keyframes backgroundSlide {
@@ -9,7 +10,7 @@
     background: #242424;
   }
   100% {
-    background: #0c192c;
+    background: #001f3f;
   }
 }
 

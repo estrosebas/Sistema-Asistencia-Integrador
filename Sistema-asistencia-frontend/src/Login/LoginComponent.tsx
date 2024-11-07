@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import Estrellas from './estrellas';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +32,7 @@ const Login = () => {
         const data = await response.json();
         console.log(data.message); // Aquí puedes manejar el mensaje de la respuesta
         console.log(data.nomRol);
+
         // Redirigir a diferentes páginas según el rol
         if (data.nomRol === "Administrador") {
           navigate("/admin"); // Ruta para administradores
@@ -53,23 +55,26 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="login-half login-left text-white d-flex flex-column">
-        <div className="login-top d-flex align-items-center justify-content-center">
-          <h1>Sistema de Asistencia</h1>
-        </div>
+      <div className="login-left">
+           
+
         <div className="login-bottom d-flex align-items-center justify-content-center">
           <img
-            src="/assets/image.png"
+            src="/assets/login-image.png"
             alt="Ilustración"
             className="login-image"
           />
         </div>
       </div>
-      <div className="login-half d-flex align-items-center justify-content-center">
+
+      <div className="login-rigth">  
+        <div className="login-top">
+          <h1>Sistema de Asistencia</h1>
+        </div>
         <div className="login-form">
           <h3>Ingrese sus datos</h3>
           <form onSubmit={handleSubmit}>
-            <div className="form-group mb-3">
+            <div className="form-group mb-4 my-4">
               <label htmlFor="email">Correo</label>
               <input
                 type="email"
@@ -81,7 +86,7 @@ const Login = () => {
                 required
               />
             </div>
-            <div className="form-group mb-3">
+            <div className="form-group mb-4">
               <label htmlFor="password">Contraseña</label>
               <input
                 type="password"
@@ -93,13 +98,20 @@ const Login = () => {
                 required
               />
             </div>
+
             {error && <div className="alert alert-danger">{error}</div>}
-            <button type="submit" className="btn btn-primary w-100 mb-3">
-              Iniciar Sesión
-            </button>
-            <Link to="/register" className="btn btn-success w-100 ">
-              Crear cuenta nueva
-            </Link>
+
+            <div className="cta-buttons py-3 d-flex row justify-content-center align-items-center gap-2">
+              <button type="submit" className="btn btn-primary w-50 mb-3">
+                Iniciar Sesión
+              </button>
+              <Link to="/register" className="btn btn-success w-50">
+                Crear cuenta nueva
+              </Link>              
+            </div>
+
+            <Estrellas />   
+            
           </form>
         </div>
       </div>
