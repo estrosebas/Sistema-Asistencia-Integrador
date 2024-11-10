@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-import Estrellas from './estrellas';
+import Estrellas from '../../public/efectos/estrellas';
 
 const Login = () => {
   const [email, setEmail] = useState("");

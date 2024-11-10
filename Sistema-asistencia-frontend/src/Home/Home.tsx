@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import './Home.css';
 import FeatureCard from './FeatureCard';
-import Bubbles from './Bubbles';
+import Bubbles from '../../public/efectos/Bubbles';
 
 const Home = () => {
   return (

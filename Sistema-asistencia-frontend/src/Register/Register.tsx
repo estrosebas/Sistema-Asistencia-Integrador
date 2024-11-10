@@ -3,6 +3,8 @@ import "./Registration.css";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
+import Estrellas from '../../public/efectos/estrellas';
+
 const Registration = () => {
   const [nombres, setNombres] = useState("");
   const [correo, setCorreo] = useState("");
@@ -61,11 +63,12 @@ const Registration = () => {
   };
 
   return (
-  <div className="register-vista">  
     <div className="registration-container">
-      <div className="registration-half">
+      
+      <Estrellas /> 
+      <div className="registration-left">         
         <div className="registration-form">
-          <h3>Ingrese sus datos</h3>
+          <h3 className="mb-4">Crear Nueva Cuenta</h3>
           <form onSubmit={handleSubmit}>
             <div className="row">
               <div className="col-md-6 mb-3">
@@ -81,14 +84,14 @@ const Registration = () => {
                 />
               </div>
               <div className="col-md-6 mb-3">
-                <label htmlFor="correo">Correo</label>
+                <label htmlFor="dni">DNI</label>
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
-                  id="correo"
-                  placeholder="Ingrese su correo"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
+                  id="dni"
+                  placeholder="Ingrese su DNI"
+                  value={dni}
+                  onChange={(e) => setDni(e.target.value)}
                   required
                 />
               </div>
@@ -120,18 +123,7 @@ const Registration = () => {
               </div>
             </div>
             <div className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="dni">DNI</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="dni"
-                  placeholder="Ingrese su DNI"
-                  value={dni}
-                  onChange={(e) => setDni(e.target.value)}
-                  required
-                />
-              </div>
+              
               <div className="col-md-6 mb-3">
                 <label htmlFor="telefono">Teléfono</label>
                 <input
@@ -144,19 +136,7 @@ const Registration = () => {
                   required
                 />
               </div>
-            </div>
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="fechaNacimiento"
-                  value={fechaNacimiento}
-                  onChange={(e) => setFechaNacimiento(e.target.value)}
-                  required
-                />
-              </div>
+              
               <div className="col-md-6 mb-3">
                 <label htmlFor="domicilio">Domicilio</label>
                 <input
@@ -172,14 +152,13 @@ const Registration = () => {
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
-                <label htmlFor="contrasena">Contraseña</label>
+                <label htmlFor="fechaNacimiento">Fecha Nacimiento</label>
                 <input
-                  type="password"
+                  type="date"
                   className="form-control"
-                  id="contrasena"
-                  placeholder="Ingrese su contraseña"
-                  value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
+                  id="fechaNacimiento"
+                  value={fechaNacimiento}
+                  onChange={(e) => setFechaNacimiento(e.target.value)}
                   required
                 />
               </div>
@@ -198,9 +177,37 @@ const Registration = () => {
                   <option value="otro">Otro</option>
                 </select>
               </div>
+              
+            </div>
+            <div className="row">
+              <div className="col-md mb-3">
+                <label htmlFor="correo">Correo</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="correo"
+                  placeholder="Ingrese su correo"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  required
+                />
+              </div>
+                            
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
+                <label htmlFor="contrasena">Contraseña</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  id="contrasena"
+                  placeholder="Ingrese su contraseña"
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-6 mb-5">
                 <label htmlFor="rol">Rol</label>
                 <select
                   className="form-control"
@@ -227,20 +234,17 @@ const Registration = () => {
           </form>
         </div>
       </div>
-      <div className="registration-half bg-primary text-white d-flex flex-column">
-        <div className="registration-top d-flex align-items-center justify-content-center">
-          <h1>Sistema de Asistencia</h1>
-        </div>
-        <div className="registration-bottom d-flex align-items-center justify-content-center">
-          <img
-            src="/assets/calendar.png"
-            alt="Ilustración"
-            className="registration-image"
-          />
-        </div>
-      </div>
+      <div className="registration-right">
+          
+          <div className="registration-bottom d-flex align-items-center justify-content-center">
+            <img
+              src="/assets/calendar.png"
+              alt="Ilustración"
+              className="registration-image"
+            />
+          </div>
+      </div> 
     </div>
-  </div>  
   );
 };
 

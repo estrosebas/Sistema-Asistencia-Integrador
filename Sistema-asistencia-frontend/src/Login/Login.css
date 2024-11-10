@@ -11,7 +11,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50%;
+    width: 30%;
     overflow: hidden;
     color: white;
     position: relative;
@@ -21,7 +21,7 @@
                 0px 0px 0px 60px #2b9fc8,
                 0px 0px 0px 80px #2bc7c8, 
                 0px 0px 0px 100px #8bece4;
-    border-radius: 0 200px 200px 0;
+    border-radius: 0 50% 50% 0;
     
     pointer-events: none;
   }
@@ -46,7 +46,9 @@
     width: 60%;    
     margin-inline: 125px 25px;
   }
-
+  .login-container .login-rigth .form-control{
+    background: transparent;
+  }
   .login-container .login-top {
     margin-bottom: 5%;
     margin-top: -100px;
@@ -58,7 +60,7 @@
     width: 100%; 
     max-width: 500px; 
     padding: 40px;
-    background: #fff;
+    background: rgb(255, 255, 255, 0.9);
     border-radius: 40px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); 
   }

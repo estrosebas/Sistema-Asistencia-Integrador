@@ -21,6 +21,6 @@
     "esModuleInterop": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "public/efectos/estrellas.tsx", "public/efectos/Bubbles.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
