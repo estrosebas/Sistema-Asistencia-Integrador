@@ -1,33 +1,32 @@
-import "./Home.css";
-import { Link } from "react-router-dom";
-
-// Define los tipos de las propiedades que recibirá FeatureCard
-interface FeatureCardProps {
-  title: string;
-  description: string;
-}
+import { Link } from 'react-router-dom';
+import './Home.css';
+import FeatureCard from './FeatureCard';
+import Bubbles from '../../public/efectos/Bubbles';
 
 const Home = () => {
   return (
-    <div className="container-fluid-1">
-      <div className="row hero-section align-items-center vh-100"> {/* Agrega vh-100 para ocupar toda la altura de la pantalla */}
-        <div className="col-12 col-md-8 offset-md-2 text-center hero-content">
-          <h1>Bienvenido al Sistema de Asistencia</h1>
-          <p>
-            Gestiona fácilmente la asistencia de tus empleados o estudiantes con
-            nuestro sistema intuitivo y fácil de usar.
-          </p>
-          <div className="cta-buttons">
-            <Link to="/login" className="btn btn-primary mx-2">
-              Iniciar Sesión
-            </Link>
-            <Link to="/register" className="btn btn-secondary mx-2">
-              Crear Cuenta
-            </Link>
-          </div>
-        </div>
-      </div>
+    <div className="home-container">
+      <section className="hero-section">
+        <Bubbles /> {/* Componente de burbujas */}
+        
+        <div className="hero-content">
+          <h1 className='py-4'>Bienvenido al Sistema de Asistencia</h1>
+          <h5>Gestiona fácilmente la asistencia de tus empleados o estudiantes con nuestro sistema intuitivo y fácil de usar.</h5>
 
+          <div className="cta-buttons py-3">
+                <div className="row justify-content-center">
+                  <div className="col-auto py-3">
+                    <Link to="/login" className="btn btn-primary mx-2 px-4">Iniciar Sesión</Link>
+                  </div> 
+                  <div className="col-auto py-3"> 
+                    <Link to="/register" className="btn btn-secondary mx-2 px-4">Crear Cuenta</Link> 
+                  </div> 
+            </div> 
+          </div>
+
+        </div>
+      </section>
+    <div className='features'>
       <div className="features-section text-center py-5">
         <h2>Características del Sistema</h2>
         <div className="row features-grid">
@@ -45,24 +44,11 @@ const Home = () => {
           />
         </div>
       </div>
+      </div>  
 
-      <footer className="footer text-center py-3">
+      <footer className="footer">
         <p>&copy; 2024 Sistema de Asistencia. Todos los derechos reservados.</p>
       </footer>
-    </div>
-  );
-};
-
-// Asegúrate de especificar los tipos de las propiedades en FeatureCard
-const FeatureCard: React.FC<FeatureCardProps> = ({ title, description }) => {
-  return (
-    <div className="col-12 col-md-4 my-3">
-      <div className="card h-100">
-        <div className="card-body">
-          <h3 className="card-title">{title}</h3>
-          <p className="card-text">{description}</p>
-        </div>
-      </div>
     </div>
   );
 };
