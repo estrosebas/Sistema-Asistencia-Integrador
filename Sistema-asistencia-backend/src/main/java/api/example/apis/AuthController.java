@@ -4,16 +4,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.google.common.base.Preconditions;
+//import com.google.common.base.Preconditions;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.Cookie;
 
 import javax.sql.DataSource;
 
@@ -24,7 +29,7 @@ import javax.sql.DataSource;
  */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"} , allowCredentials = "true")
 public class AuthController {
 
     @Resource
@@ -37,9 +42,10 @@ public class AuthController {
      * @return ResponseEntity con la respuesta de autenticación.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         String email = loginRequest.getEmail();
-        String password = loginRequest.getPassword(); // Asumiendo que tienes un método para obtener la contraseña
+        String password = loginRequest.getPassword();
+
         try (Connection connection = dataSource.getConnection()) {
             String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u " +
                     "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id " +
@@ -54,6 +60,11 @@ public class AuthController {
             if (resultSet.next()) {
                 Long usuarioId = resultSet.getLong("usuario_id");
                 String nomRol = resultSet.getString("nom_rol");
+
+                // Guardar datos de usuario en la sesión
+                session.setAttribute("usuarioId", usuarioId);
+                session.setAttribute("nomRol", nomRol);
+
                 return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", usuarioId, nomRol));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -158,6 +169,33 @@ public class AuthController {
                 return resultSet.getLong(1);
             }
             throw new SQLException("No se pudo obtener el último ID insertado.");
+        }
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response, HttpSession session) {
+        // Invalida la sesión
+        session.invalidate();
+
+        // Borra la cookie de sesión (JSESSIONID)
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath("/"); // Asegura que se borra para todo el dominio
+        cookie.setMaxAge(0);  // Hace que expire la cookie inmediatamente
+        cookie.setHttpOnly(true); // Asegura que no puede ser accedida por JavaScript
+        cookie.setSecure(false); // Si usas HTTPS
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Sesión cerrada con éxito");
+    }
+    @GetMapping("/check-session")
+    public ResponseEntity<?> checkSession(HttpSession session) {
+        // Verifica si la sesión contiene atributos específicos
+        if (session.getAttribute("usuarioId") != null) {
+            // La sesión es válida
+            return ResponseEntity.ok(new SessionResponse(true, "Sesión activa"));
+        } else {
+            // La sesión no es válida
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(new SessionResponse(false, "Sesión no activa"));
         }
     }
 }
