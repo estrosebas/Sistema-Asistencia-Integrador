@@ -28,7 +28,7 @@ services:
 
   frontend:
     build:
-      context: ./Sistema-asistencia
+      context: ./Sistema-asistencia-frontend
       dockerfile: Dockerfile
     container_name: frontedasistencia
     ports:
@@ -40,7 +40,7 @@ services:
 
   api:
     build:
-      context: ./api-backend
+      context: ./Sistema-asistencia-backend
       dockerfile: Dockerfile
     container_name: spring_boot_api
     ports:

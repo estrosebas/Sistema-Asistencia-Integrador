@@ -1,0 +1,62 @@
+/* estrellas.css */
+    @keyframes centelleo {
+    0% {
+      opacity: 0;
+      transform: translate(50vw, -50vh) rotate(45deg) scale(2);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50vw, 50vh) rotate(45deg) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50vw, 50vh) rotate(45deg) scale(0);
+    }
+  }
+  .estrella {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: black;
+    border-radius: 50%;
+    opacity: 0;
+    animation: centelleo 5s infinite;
+    box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.5);
+  }  
+
+  
+  .estrellas {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1; /* Asegura que las estrellas estén por debajo del formulario */
+  }
+
+
+  @media (max-width: 768px) {
+    .estrella {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0;
+        animation: centelleo 5s infinite;
+        box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.5);
+      }
+
+    .estrellas {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0; /* Asegura que las estrellas estén por debajo del formulario */
+      }
+  }
