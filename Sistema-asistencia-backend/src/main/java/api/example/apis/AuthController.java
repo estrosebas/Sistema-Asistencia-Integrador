@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import javax.sql.DataSource;
 
@@ -29,7 +30,7 @@ import javax.sql.DataSource;
  */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"} , allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"}, allowCredentials = "true")
 public class AuthController {
 
     @Resource
@@ -42,15 +43,15 @@ public class AuthController {
      * @return ResponseEntity con la respuesta de autenticación.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session, HttpServletResponse response) {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 
         try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT u.id AS usuario_id, r.nom_rol FROM usuario u " +
-                    "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id " +
-                    "INNER JOIN rol r ON ur.rol_id = r.id " +
-                    "WHERE u.email = ? AND u.password = ?";
+            String query = "SELECT u.id AS usuario_id, r.nom_rol, u.dni FROM usuario u "
+                    + "INNER JOIN usuarios_roles ur ON u.id = ur.usuario_id "
+                    + "INNER JOIN rol r ON ur.rol_id = r.id "
+                    + "WHERE u.email = ? AND u.password = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             statement.setString(2, password);
@@ -60,10 +61,31 @@ public class AuthController {
             if (resultSet.next()) {
                 Long usuarioId = resultSet.getLong("usuario_id");
                 String nomRol = resultSet.getString("nom_rol");
-
-                // Guardar datos de usuario en la sesión
                 session.setAttribute("usuarioId", usuarioId);
-                session.setAttribute("nomRol", nomRol);
+                session.setAttribute("nomRol", nomRol); // Opcional si también necesitas validar roles
+
+                int dni = resultSet.getInt("dni");
+                String dniString = String.valueOf(dni);
+
+                Cookie usuarioIdCookie = new Cookie("usuarioId", String.valueOf(usuarioId));
+                Cookie nomRolCookie = new Cookie("nomRol", nomRol);
+                Cookie dniCookie = new Cookie("dni", dniString);
+
+                //usuarioIdCookie.setHttpOnly(true); // Evita acceso desde JavaScript
+                usuarioIdCookie.setMaxAge(7 * 24 * 60 * 60); // Dura 7 días
+                usuarioIdCookie.setPath("/");
+
+                //nomRolCookie.setHttpOnly(true); // Evita acceso desde JavaScript
+                nomRolCookie.setMaxAge(7 * 24 * 60 * 60); // Dura 7 días
+                nomRolCookie.setPath("/");
+
+                //dniCookie.setHttpOnly(true); // Evita acceso desde JavaScript
+                dniCookie.setMaxAge(7 * 24 * 60 * 60); // Dura 7 días
+                dniCookie.setPath("/");
+
+                response.addCookie(usuarioIdCookie);
+                response.addCookie(nomRolCookie);
+                response.addCookie(dniCookie);
 
                 return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", usuarioId, nomRol));
             } else {
@@ -142,8 +164,7 @@ public class AuthController {
      */
     private long getRoleIdByName(String roleName) throws SQLException {
         String query = "SELECT id FROM rol WHERE nom_rol = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, roleName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -163,29 +184,49 @@ public class AuthController {
      */
     private long getLastInsertId(Connection connection) throws SQLException {
         String query = "SELECT LAST_INSERT_ID()";
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 return resultSet.getLong(1);
             }
             throw new SQLException("No se pudo obtener el último ID insertado.");
         }
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response, HttpSession session) {
         // Invalida la sesión
         session.invalidate();
 
+        Cookie usuarioIdCookie = new Cookie("usuarioId", null);
+        usuarioIdCookie.setPath("/"); // Asegura que se borra para todo el dominio
+        usuarioIdCookie.setMaxAge(0); // Hace que expire la cookie inmediatamente
+        usuarioIdCookie.setHttpOnly(true);
+
+        Cookie nomRolCookie = new Cookie("nomRol", null);
+        nomRolCookie.setPath("/");
+        nomRolCookie.setMaxAge(0);
+        nomRolCookie.setHttpOnly(true);
+
+        Cookie dniCookie = new Cookie("dni", null); // Aquí creas la cookie para borrar el dni
+        dniCookie.setPath("/"); // Asegura que se borra para todo el dominio
+        dniCookie.setMaxAge(0); // Hace que expire la cookie inmediatamente
+        dniCookie.setHttpOnly(true); // Se asegura que la cookie es solo accesible por el servidor
+
         // Borra la cookie de sesión (JSESSIONID)
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setPath("/"); // Asegura que se borra para todo el dominio
-        cookie.setMaxAge(0);  // Hace que expire la cookie inmediatamente
-        cookie.setHttpOnly(true); // Asegura que no puede ser accedida por JavaScript
-        cookie.setSecure(false); // Si usas HTTPS
-        response.addCookie(cookie);
+        Cookie sessionCookie = new Cookie("JSESSIONID", null);
+        sessionCookie.setPath("/");
+        sessionCookie.setMaxAge(0);
+        sessionCookie.setHttpOnly(true);
+
+        // Agregar cookies a la respuesta para su eliminación
+        response.addCookie(usuarioIdCookie);
+        response.addCookie(nomRolCookie);
+        response.addCookie(dniCookie); // Aquí añades la cookie para borrar el dni
+        response.addCookie(sessionCookie);
 
         return ResponseEntity.ok("Sesión cerrada con éxito");
     }
+
     @GetMapping("/check-session")
     public ResponseEntity<?> checkSession(HttpSession session) {
         // Verifica si la sesión contiene atributos específicos
@@ -195,7 +236,7 @@ public class AuthController {
         } else {
             // La sesión no es válida
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body(new SessionResponse(false, "Sesión no activa"));
+                    .body(new SessionResponse(false, "Sesión no activa"));
         }
     }
 }
