@@ -20,14 +20,17 @@ const Login = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:3000/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

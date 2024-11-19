@@ -3,14 +3,17 @@ import "./Registration.css";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-import Estrellas from '../../public/efectos/estrellas';
+import Estrellas from "../../public/efectos/estrellas";
+
+// Definir la constante para la URL base
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Registration = () => {
   const [nombres, setNombres] = useState("");
   const [correo, setCorreo] = useState("");
   const [apeMaterno, setApeMaterno] = useState("");
   const [apePaterno, setApePaterno] = useState("");
-  const [contrasena, setContrasena] = useState(""); 
+  const [contrasena, setContrasena] = useState("");
   const [dni, setDni] = useState("");
   const [telefono, setTelefono] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
@@ -36,11 +39,12 @@ const Registration = () => {
       genero,
       password: contrasena,
       telefono: Number(telefono),
-      rol
+      rol,
     };
 
     try {
-      const response = await fetch(`http://localhost:3000/api/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
+        // Usamos la constante API_URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,9 +68,8 @@ const Registration = () => {
 
   return (
     <div className="registration-container">
-      
-      <Estrellas /> 
-      <div className="registration-left">         
+      <Estrellas />
+      <div className="registration-left">
         <div className="registration-form">
           <h3 className="mb-4">Crear Nueva Cuenta</h3>
           <form onSubmit={handleSubmit}>
@@ -123,7 +126,6 @@ const Registration = () => {
               </div>
             </div>
             <div className="row">
-              
               <div className="col-md-6 mb-3">
                 <label htmlFor="telefono">Teléfono</label>
                 <input
@@ -136,7 +138,6 @@ const Registration = () => {
                   required
                 />
               </div>
-              
               <div className="col-md-6 mb-3">
                 <label htmlFor="domicilio">Domicilio</label>
                 <input
@@ -177,7 +178,6 @@ const Registration = () => {
                   <option value="otro">Otro</option>
                 </select>
               </div>
-              
             </div>
             <div className="row">
               <div className="col-md mb-3">
@@ -192,7 +192,6 @@ const Registration = () => {
                   required
                 />
               </div>
-                            
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
@@ -225,9 +224,7 @@ const Registration = () => {
             </div>
             {error && <div className="alert alert-danger">{error}</div>}
 
-            <button className="btn btn-success w-100">
-              Registrarse
-            </button>
+            <button className="btn btn-success w-100">Registrarse</button>
             <Link to="/login" className="btn btn-primary w-100 mt-3">
               Ya tengo cuenta
             </Link>
@@ -235,15 +232,14 @@ const Registration = () => {
         </div>
       </div>
       <div className="registration-right">
-          
-          <div className="registration-bottom d-flex align-items-center justify-content-center">
-            <img
-              src="/assets/calendar.png"
-              alt="Ilustración"
-              className="registration-image"
-            />
-          </div>
-      </div> 
+        <div className="registration-bottom d-flex align-items-center justify-content-center">
+          <img
+            src="/assets/calendar.png"
+            alt="Ilustración"
+            className="registration-image"
+          />
+        </div>
+      </div>
     </div>
   );
 };

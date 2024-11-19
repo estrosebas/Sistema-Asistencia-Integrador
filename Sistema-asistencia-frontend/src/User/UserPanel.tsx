@@ -7,6 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./UserPanel.css";
 
+// Definir la URL base de la API desde la variable de entorno
+const API_URL = import.meta.env.VITE_API_URL;
+
 const UserPanel: React.FC = () => {
   const [vistaActiva, setVistaActiva] = useState<string>("historial");
   const [menuAbierto, setMenuAbierto] = useState<boolean>(false);
@@ -39,7 +42,7 @@ const UserPanel: React.FC = () => {
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-      const response = await fetch("http://localhost:3000/api/auth/logout", {
+      const response = await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
       });
@@ -47,8 +50,6 @@ const UserPanel: React.FC = () => {
       if (response.ok) {
         // Redirigir al usuario a la página de inicio o hacer otras acciones
         console.log("Sesión cerrada correctamente");
-        // Por ejemplo, puedes redirigir al login:
-        // window.location.href = "/login";
         navigate("/");
       } else {
         console.error("Error al cerrar sesión");
@@ -57,17 +58,15 @@ const UserPanel: React.FC = () => {
       console.error("Error en la solicitud de cierre de sesión", error);
     }
   };
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Estado de autenticación
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/auth/check-session",
-          {
-            method: "GET",
-            credentials: "include", // Esto asegura que la cookie sea enviada
-          }
-        );
+        const response = await fetch(`${API_URL}/auth/check-session`, {
+          method: "GET",
+          credentials: "include", // Esto asegura que la cookie sea enviada
+        });
         const data = await response.json();
 
         if (data.authenticated) {
@@ -89,6 +88,7 @@ const UserPanel: React.FC = () => {
   if (!isAuthenticated) {
     return <div>Redirigiendo...</div>; // Muestra algo mientras se verifica el estado
   }
+
   return (
     <div id="user-panel">
       <div className="container-fluid">
