@@ -6,6 +6,7 @@ import Asistencia from "./componentes/Asistencia";
 import Historial from "./componentes/Historial";
 import Reporte from "./componentes/Reporte";
 import { useNavigate } from "react-router-dom";
+
 const ManagerPanel: React.FC = () => {
   const [vistaActiva, setVistaActiva] = useState("asistencia");
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -39,21 +40,23 @@ const ManagerPanel: React.FC = () => {
       action: () => seleccionarVista("reporte"),
     },
   ];
+
   // Función para manejar el cierre de sesión
   const navigate = useNavigate();
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-      const response = await fetch("http://localhost:3000/api/auth/logout", {
-        method: "POST",
-        credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
+        }
+      );
 
       if (response.ok) {
         // Redirigir al usuario a la página de inicio o hacer otras acciones
         console.log("Sesión cerrada correctamente");
-        // Por ejemplo, puedes redirigir al login:
-        // window.location.href = "/login";
         navigate("/");
       } else {
         console.error("Error al cerrar sesión");
@@ -62,12 +65,13 @@ const ManagerPanel: React.FC = () => {
       console.error("Error en la solicitud de cierre de sesión", error);
     }
   };
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Estado de autenticación
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/auth/check-session",
+          `${import.meta.env.VITE_API_URL}/auth/check-session`,
           {
             method: "GET",
             credentials: "include", // Esto asegura que la cookie sea enviada
@@ -94,6 +98,7 @@ const ManagerPanel: React.FC = () => {
   if (!isAuthenticated) {
     return <div>Redirigiendo...</div>; // Muestra algo mientras se verifica el estado
   }
+
   return (
     <div id="manager-panel">
       <div className={`container-fluid-1 ${modoOscuro ? "modo-oscuro" : ""}`}>
