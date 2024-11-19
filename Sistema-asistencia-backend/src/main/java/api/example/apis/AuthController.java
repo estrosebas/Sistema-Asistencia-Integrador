@@ -30,7 +30,8 @@ import javax.sql.DataSource;
  */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"}, allowCredentials = "true")
+
+@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173", "http://149.50.144.68", "https://149.50.144.68"}, allowCredentials = "true")
 public class AuthController {
 
     @Resource
