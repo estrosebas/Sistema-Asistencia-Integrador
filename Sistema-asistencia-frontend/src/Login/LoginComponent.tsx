@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-import Estrellas from '../../public/efectos/estrellas';
+import Estrellas from "../../public/efectos/estrellas";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,13 +20,18 @@ const Login = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:3000/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
+      const response = await fetch(
+        //`${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
+        `http://localhost:3000/api/auth/login`, // Usando localhost
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -56,8 +61,6 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-left">
-           
-
         <div className="login-bottom d-flex align-items-center justify-content-center">
           <img
             src="/assets/login-image.png"
@@ -67,7 +70,7 @@ const Login = () => {
         </div>
       </div>
 
-      <div className="login-rigth">  
+      <div className="login-rigth">
         <div className="login-top">
           <h1>Sistema de Asistencia</h1>
         </div>
@@ -107,11 +110,10 @@ const Login = () => {
               </button>
               <Link to="/register" className="btn btn-success w-50">
                 Crear cuenta nueva
-              </Link>              
+              </Link>
             </div>
 
-            <Estrellas />   
-            
+            <Estrellas />
           </form>
         </div>
       </div>
