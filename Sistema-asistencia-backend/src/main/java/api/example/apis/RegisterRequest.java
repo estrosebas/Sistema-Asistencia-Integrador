@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class RegisterRequest {
     private String apeMaterno;
     private String apePaterno;

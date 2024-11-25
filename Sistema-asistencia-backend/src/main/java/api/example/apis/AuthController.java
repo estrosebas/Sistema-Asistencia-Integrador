@@ -1,9 +1,6 @@
 package api.example.apis;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +29,7 @@ import javax.sql.DataSource;
  */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:80", "http://localhost", "http://localhost:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:80", "http://localhost", "http://localhost:5173"}, allowedHeaders = "*", allowCredentials = "true")
 public class AuthController {
 
     @Resource
@@ -42,6 +39,8 @@ public class AuthController {
      * Método que permite iniciar sesión.
      *
      * @param loginRequest Objeto que contiene el email y la contraseña.
+     * @param session Sesión HTTP.
+     * @param response Respuesta HTTP.
      * @return ResponseEntity con la respuesta de autenticación.
      */
     @PostMapping("/login")
@@ -131,13 +130,19 @@ public class AuthController {
                 connection.commit();
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(new RegisterResponse(true, "Registro exitoso"));
+            } catch (Exception e) {
+                connection.rollback();
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new RegisterResponse(false, "Error en el servidor: " + e.getMessage()));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RegisterResponse(false, "Error en el servidor"));
+                    .body(new RegisterResponse(false, "Error en el servidor: " + e.getMessage()));
         }
     }
+
 
     /**
      * Obtiene el ID de un rol dado su nombre.
@@ -190,8 +195,11 @@ public class AuthController {
         try (PreparedStatement checkUserStatement = connection.prepareStatement(checkUserQuery)) {
             checkUserStatement.setString(1, email);
             ResultSet userCheckResult = checkUserStatement.executeQuery();
-            userCheckResult.next();
-            return userCheckResult.getInt(1) > 0;
+            if (userCheckResult != null && userCheckResult.next()) {
+                return userCheckResult.getInt(1) > 0;
+            } else {
+                throw new SQLException("ResultSet is null or empty");
+            }
         }
     }
 
@@ -226,6 +234,13 @@ public class AuthController {
         statement.setLong(10, registerRequest.getTelefono());
     }
 
+    /**
+     * Método que permite cerrar sesión.
+     *
+     * @param response Respuesta HTTP.
+     * @param session Sesión HTTP.
+     * @return ResponseEntity con la respuesta de cierre de sesión.
+     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response, HttpSession session) {
         // Invalida la sesión
@@ -249,6 +264,12 @@ public class AuthController {
         return ResponseEntity.ok("Sesión cerrada con éxito");
     }
 
+    /**
+     * Método que verifica si la sesión está activa.
+     *
+     * @param session Sesión HTTP.
+     * @return ResponseEntity con la respuesta de verificación de sesión.
+     */
     @GetMapping("/check-session")
     public ResponseEntity<?> checkSession(HttpSession session) {
         if (session.getAttribute("usuarioId") != null) {
@@ -259,6 +280,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que permite agregar un registro de asistencia.
+     *
+     * @param request Objeto que contiene los IDs del usuario y del evento.
+     * @return ResponseEntity con la respuesta de inserción del registro de asistencia.
+     */
     @PostMapping("/add-asiste")
     public ResponseEntity<?> addAsiste(@RequestBody Map<String, Long> request) {
         Long idUsuario = request.get("idUsuario");
@@ -301,6 +328,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que obtiene los registros de asistencia.
+     *
+     * @return ResponseEntity con la lista de registros de asistencia.
+     */
     @GetMapping("/registros-asistencia")
     public ResponseEntity<?> getRegistrosAsistencia() {
         try (Connection connection = dataSource.getConnection()) {
@@ -340,6 +372,86 @@ public class AuthController {
                         put("message", "Error al obtener los registros de asistencia: " + e.getMessage());
                         put("success", false);
                     }});
+        }
+    }
+
+    @GetMapping("/eventos")
+    public ResponseEntity<?> getEventos() {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT * FROM evento";
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Evento> eventos = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Evento evento = new Evento();
+                evento.setId(resultSet.getLong("ID_Evento"));
+                evento.setNombreEvento(resultSet.getString("NombreEvento"));
+                evento.setCapacidad(resultSet.getInt("Capacidad"));
+                evento.setDescripcion(resultSet.getString("Descripcion"));
+                evento.setFechaHoraEntrada(resultSet.getTimestamp("FechaHoraEntrada").toString());
+                evento.setFechaHoraSalida(resultSet.getTimestamp("FechaHoraSalida").toString());
+                eventos.add(evento);
+            }
+
+            if (!eventos.isEmpty()) {
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("success", true);
+                    put("data", eventos);
+                }});
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new HashMap<String, Object>() {{
+                            put("message", "No se encontraron eventos");
+                            put("success", false);
+                        }});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("message", "Error al obtener los eventos: " + e.getMessage());
+                        put("success", false);
+                    }});
+        }
+    }
+
+    @PostMapping("/add-evento")
+    public ResponseEntity<?> addEvento(@RequestBody Evento eventoRequest) {
+        String nombreEvento = eventoRequest.getNombreEvento();
+        String descripcion = eventoRequest.getDescripcion();
+        Integer capacidad = eventoRequest.getCapacidad(); // Ya es Integer
+        String fechaHoraEntrada = eventoRequest.getFechaHoraEntrada();
+        String fechaHoraSalida = eventoRequest.getFechaHoraSalida();
+
+        String query = "INSERT INTO evento (NombreEvento, Descripcion, Capacidad, FechaHoraEntrada, FechaHoraSalida) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, nombreEvento);
+            statement.setString(2, descripcion);
+            statement.setInt(3, capacidad); // Conversión segura porque es Integer
+            statement.setString(4, fechaHoraEntrada);
+            statement.setString(5, fechaHoraSalida);
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("success", true);
+                    put("message", "Evento creado exitosamente.");
+                }});
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                    put("success", false);
+                    put("message", "Error al crear el evento.");
+                }});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", "Error en el servidor: " + e.getMessage());
+            }});
         }
     }
 }

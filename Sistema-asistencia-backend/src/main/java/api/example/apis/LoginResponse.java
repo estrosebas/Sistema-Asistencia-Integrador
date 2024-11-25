@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 /**
  * Clase que representa la respuesta de una solicitud de inicio de sesión.
  * Incluye información sobre el estado de la autenticación y los detalles del usuario en caso de éxito.
+ *
+ * @author Sebastian
  */
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class LoginResponse {
     private boolean success;
     private String message;

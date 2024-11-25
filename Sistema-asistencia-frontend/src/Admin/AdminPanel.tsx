@@ -13,7 +13,7 @@ const AdminPanel: React.FC = () => {
   const [vistaActiva, setVistaActiva] = useState("registro");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [modoOscuro, setModoOscuro] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL;
+  //const API_URL = import.meta.env.VITE_API_URL;
   const toggleMenu = () => setMenuAbierto((prevState) => !prevState);
   const toggleModoOscuro = () => setModoOscuro((prevState) => !prevState);
 
@@ -154,7 +154,7 @@ const AdminPanel: React.FC = () => {
           }`}
         >
           {vistaActiva === "registro" ? (
-            <Registro onNuevoRegistro={() => console.log("Nuevo registro")} />
+            <Registro />
           ) : vistaActiva === "asistencia" ? (
             <Asistencia />
           ) : vistaActiva === "historial" ? (
