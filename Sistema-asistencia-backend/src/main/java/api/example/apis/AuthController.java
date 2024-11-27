@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
+import org.springframework.web.bind.annotation.CookieValue;
+
 
 import javax.sql.DataSource;
 
@@ -68,29 +70,31 @@ public class AuthController {
                     int dni = resultSet.getInt("dni");
                     String dniString = String.valueOf(dni);
 
-                    Cookie usuarioIdCookie = new Cookie("usuarioId", String.valueOf(usuarioId));
-                    Cookie nomRolCookie = new Cookie("nomRol", nomRol);
-                    Cookie dniCookie = new Cookie("dni", dniString);
-
-                    configureCookie(usuarioIdCookie);
-                    configureCookie(nomRolCookie);
-                    configureCookie(dniCookie);
-
-                    response.addCookie(usuarioIdCookie);
-                    response.addCookie(nomRolCookie);
-                    response.addCookie(dniCookie);
-
-                    return ResponseEntity.ok(new LoginResponse(true, "Login exitoso", usuarioId, nomRol));
+                    // Configuración de cookies omitida para simplificación
+                    return ResponseEntity.ok(new HashMap<String, Object>() {{
+                        put("success", true);
+                        put("message", "Login exitoso");
+                        put("usuarioId", usuarioId); // Agregamos el ID del usuario
+                        put("nomRol", nomRol);
+                        put("dni", dniString);
+                    }});
                 } else {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            .body(new LoginResponse(false, "Email o contraseña incorrectos"));
+                            .body(new HashMap<String, Object>() {{
+                                put("success", false);
+                                put("message", "Email o contraseña incorrectos");
+                            }});
                 }
             }
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoginResponse(false, "Error en el servidor"));
+                    .body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Error en el servidor: " + e.getMessage());
+                    }});
         }
     }
+
 
     /**
      * Método que permite registrar un nuevo usuario.
@@ -418,34 +422,66 @@ public class AuthController {
     }
 
     @PostMapping("/add-evento")
-    public ResponseEntity<?> addEvento(@RequestBody Evento eventoRequest) {
-        String nombreEvento = eventoRequest.getNombreEvento();
-        String descripcion = eventoRequest.getDescripcion();
-        Integer capacidad = eventoRequest.getCapacidad(); // Ya es Integer
-        String fechaHoraEntrada = eventoRequest.getFechaHoraEntrada();
-        String fechaHoraSalida = eventoRequest.getFechaHoraSalida();
+    public ResponseEntity<?> addEvento(@RequestBody Map<String, Object> eventoRequest) {
+        String nombreEvento = (String) eventoRequest.get("nombreEvento");
+        String descripcion = (String) eventoRequest.get("descripcion");
+        Integer capacidad = (Integer) eventoRequest.get("capacidad");
+        String fechaHoraEntrada = (String) eventoRequest.get("fechaHoraEntrada");
+        String fechaHoraSalida = (String) eventoRequest.get("fechaHoraSalida");
+        Long idUsuario = Long.parseLong(eventoRequest.get("idUsuario").toString()); // Se obtiene del frontend
 
-        String query = "INSERT INTO evento (NombreEvento, Descripcion, Capacidad, FechaHoraEntrada, FechaHoraSalida) VALUES (?, ?, ?, ?, ?)";
+        String insertEventoQuery = "INSERT INTO evento (NombreEvento, Descripcion, Capacidad, FechaHoraEntrada, FechaHoraSalida) VALUES (?, ?, ?, ?, ?)";
+        String getLastIdQuery = "SELECT LAST_INSERT_ID()";
+        String insertAsisteQuery = "INSERT INTO asiste (ID_Usuario, ID_Evento) VALUES (?, ?)";
 
-        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, nombreEvento);
-            statement.setString(2, descripcion);
-            statement.setInt(3, capacidad);
-            statement.setString(4, fechaHoraEntrada);
-            statement.setString(5, fechaHoraSalida);
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
 
-            int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 0) {
-                return ResponseEntity.ok(new HashMap<String, Object>() {{
-                    put("success", true);
-                    put("message", "Evento creado exitosamente.");
-                }});
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
-                    put("success", false);
-                    put("message", "Error al crear el evento.");
-                }});
+            // Insertar el evento
+            long eventoId;
+            try (PreparedStatement insertEventoStatement = connection.prepareStatement(insertEventoQuery);
+                 PreparedStatement getLastIdStatement = connection.prepareStatement(getLastIdQuery)) {
+
+                insertEventoStatement.setString(1, nombreEvento);
+                insertEventoStatement.setString(2, descripcion);
+                insertEventoStatement.setInt(3, capacidad);
+                insertEventoStatement.setString(4, fechaHoraEntrada);
+                insertEventoStatement.setString(5, fechaHoraSalida);
+
+                int rowsInserted = insertEventoStatement.executeUpdate();
+                if (rowsInserted == 0) {
+                    connection.rollback();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Error al crear el evento.");
+                    }});
+                }
+
+                // Obtener el ID del evento creado
+                ResultSet resultSet = getLastIdStatement.executeQuery();
+                if (resultSet.next()) {
+                    eventoId = resultSet.getLong(1);
+                } else {
+                    connection.rollback();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "No se pudo obtener el ID del evento recién creado.");
+                    }});
+                }
             }
+
+            // Insertar en la tabla asiste
+            try (PreparedStatement insertAsisteStatement = connection.prepareStatement(insertAsisteQuery)) {
+                insertAsisteStatement.setLong(1, idUsuario);
+                insertAsisteStatement.setLong(2, eventoId);
+                insertAsisteStatement.executeUpdate();
+            }
+
+            connection.commit();
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Evento creado exitosamente y registro en 'asiste' agregado.");
+            }});
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
@@ -454,4 +490,5 @@ public class AuthController {
             }});
         }
     }
+
 }

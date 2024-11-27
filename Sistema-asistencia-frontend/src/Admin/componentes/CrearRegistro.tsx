@@ -33,12 +33,21 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
   };
 
   const handleSubmit = async () => {
+    // Obtén el usuario del localStorage
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+    if (!userData || !userData.usuarioId) {
+      console.error("El usuario no está autenticado o no tiene un ID válido.");
+      return;
+    }
+
     const evento = {
       nombreEvento: formData.nombreEvento,
       descripcion: formData.descripcion,
       capacidad: Number(formData.capacidad), // Convierte a número
       fechaHoraEntrada: formatDateTime(formData.fechaHoraEntrada),
       fechaHoraSalida: formatDateTime(formData.fechaHoraSalida),
+      idUsuario: userData.usuarioId, // Incluye el ID del usuario
     };
 
     try {
