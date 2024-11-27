@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button } from 'react-bootstrap';
-import AttendanceModal from './CrearRegistro'; 
-import './estilos/Registro.css';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Table, Button } from "react-bootstrap";
+import AttendanceModal from "./CrearRegistro";
+import "./estilos/Registro.css";
+import axios from "axios";
 
 interface Evento {
   id: number;
@@ -20,14 +20,14 @@ const Registro: React.FC = () => {
   // Obtener eventos desde el backend
   const fetchEventos = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/auth/eventos');
+      const response = await axios.get("http://localhost:3000/api/auth/eventos");
       if (response.data.success) {
         setEventos(response.data.data);
       } else {
-        console.error('No se encontraron eventos');
+        console.error("No se encontraron eventos");
       }
     } catch (error) {
-      console.error('Error al obtener los eventos:', error);
+      console.error("Error al obtener los eventos:", error);
     }
   };
 
@@ -39,7 +39,7 @@ const Registro: React.FC = () => {
   const agregarEvento = async (nuevoEvento: Partial<Evento>) => {
     try {
       if (!nuevoEvento.id) {
-        const response = await axios.get('http://localhost:3000/api/auth/eventos');
+        const response = await axios.get("http://localhost:3000/api/auth/eventos");
         const eventosActualizados = response.data.data;
         setEventos(eventosActualizados);
       } else {
@@ -47,8 +47,29 @@ const Registro: React.FC = () => {
       }
       setMostrarModal(false);
     } catch (error) {
-      console.error('Error al agregar el evento:', error);
+      console.error("Error al agregar el evento:", error);
     }
+  };
+
+  // Eliminar evento
+  const eliminarEvento = async (id: number) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/api/auth/eventos/${id}`);
+      if (response.data.success) {
+        setEventos((prevEventos) => prevEventos.filter((evento) => evento.id !== id));
+        alert(response.data.message);
+      } else {
+        console.error("Error al eliminar el evento.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de eliminación:", error);
+    }
+  };
+
+  // Editar evento (Por ahora, solo muestra un mensaje)
+  const editarEvento = (id: number) => {
+    alert(`Editar evento con ID: ${id}`);
+    // Aquí puedes abrir un modal pre-rellenado con los datos del evento para editarlo
   };
 
   return (
@@ -72,6 +93,7 @@ const Registro: React.FC = () => {
             <th>Fecha Salida</th>
             <th>Capacidad</th>
             <th>Descripción</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -83,6 +105,23 @@ const Registro: React.FC = () => {
               <td>{evento.fechaHoraSalida}</td>
               <td>{evento.capacidad}</td>
               <td>{evento.descripcion}</td>
+              <td>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => editarEvento(evento.id)}
+                >
+                  Editar
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => eliminarEvento(evento.id)}
+                >
+                  Eliminar
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -92,7 +131,7 @@ const Registro: React.FC = () => {
       <AttendanceModal
         show={mostrarModal}
         handleClose={() => setMostrarModal(false)}
-        onSubmit={agregarEvento} 
+        onSubmit={agregarEvento}
       />
     </div>
   );

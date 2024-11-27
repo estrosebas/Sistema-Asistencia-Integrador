@@ -12,15 +12,11 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.Cookie;
-import org.springframework.web.bind.annotation.CookieValue;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.sql.DataSource;
 
@@ -490,5 +486,47 @@ public class AuthController {
             }});
         }
     }
+
+    @DeleteMapping("/eventos/{id}")
+    public ResponseEntity<?> deleteEvento(@PathVariable("id") Long idEvento) {
+        String deleteAsisteQuery = "DELETE FROM asiste WHERE ID_Evento = ?";
+        String deleteEventoQuery = "DELETE FROM evento WHERE ID_Evento = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            // Eliminar de la tabla 'asiste'
+            try (PreparedStatement deleteAsisteStatement = connection.prepareStatement(deleteAsisteQuery)) {
+                deleteAsisteStatement.setLong(1, idEvento);
+                deleteAsisteStatement.executeUpdate();
+            }
+
+            // Eliminar de la tabla 'evento'
+            try (PreparedStatement deleteEventoStatement = connection.prepareStatement(deleteEventoQuery)) {
+                deleteEventoStatement.setLong(1, idEvento);
+                int rowsDeleted = deleteEventoStatement.executeUpdate();
+                if (rowsDeleted == 0) {
+                    connection.rollback();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Evento no encontrado.");
+                    }});
+                }
+            }
+
+            connection.commit();
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Evento eliminado exitosamente.");
+            }});
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", "Error en el servidor: " + e.getMessage());
+            }});
+        }
+    }
+
 
 }
