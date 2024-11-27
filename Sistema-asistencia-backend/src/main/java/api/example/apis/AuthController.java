@@ -430,7 +430,7 @@ public class AuthController {
         try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, nombreEvento);
             statement.setString(2, descripcion);
-            statement.setInt(3, capacidad); // Conversión segura porque es Integer
+            statement.setInt(3, capacidad);
             statement.setString(4, fechaHoraEntrada);
             statement.setString(5, fechaHoraSalida);
 

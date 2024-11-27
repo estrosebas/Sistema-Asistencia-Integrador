@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
-import AttendanceModal from './CrearRegistro'; // Cambia por el nombre correcto del modal
+import AttendanceModal from './CrearRegistro'; 
 import './estilos/Registro.css';
 import axios from 'axios';
 
@@ -17,26 +17,38 @@ const Registro: React.FC = () => {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  useEffect(() => {
-    const fetchEventos = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/auth/eventos');
-        if (response.data.success) {
-          setEventos(response.data.data);
-        } else {
-          console.error('No se encontraron eventos');
-        }
-      } catch (error) {
-        console.error('Error al obtener los eventos:', error);
+  // Obtener eventos desde el backend
+  const fetchEventos = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/auth/eventos');
+      if (response.data.success) {
+        setEventos(response.data.data);
+      } else {
+        console.error('No se encontraron eventos');
       }
-    };
+    } catch (error) {
+      console.error('Error al obtener los eventos:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchEventos();
   }, []);
 
-  const agregarEvento = (nuevoEvento: Evento) => {
-    setEventos([...eventos, nuevoEvento]);
-    setMostrarModal(false);
+  // Agregar evento al estado
+  const agregarEvento = async (nuevoEvento: Partial<Evento>) => {
+    try {
+      if (!nuevoEvento.id) {
+        const response = await axios.get('http://localhost:3000/api/auth/eventos');
+        const eventosActualizados = response.data.data;
+        setEventos(eventosActualizados);
+      } else {
+        setEventos((prevEventos) => [...prevEventos, nuevoEvento as Evento]);
+      }
+      setMostrarModal(false);
+    } catch (error) {
+      console.error('Error al agregar el evento:', error);
+    }
   };
 
   return (
@@ -44,9 +56,7 @@ const Registro: React.FC = () => {
       <div className="registro-header d-flex justify-content-between align-items-center">
         <h2>Eventos</h2>
         <div className="Btn">
-          <Button variant="warning">
-            Añadir Usuario
-          </Button>
+          <Button variant="warning">Añadir Usuario</Button>
           <Button variant="success" onClick={() => setMostrarModal(true)}>
             Crear Nuevo Evento
           </Button>
@@ -78,10 +88,11 @@ const Registro: React.FC = () => {
         </tbody>
       </Table>
 
+      {/* Modal para crear evento */}
       <AttendanceModal
         show={mostrarModal}
         handleClose={() => setMostrarModal(false)}
-        onSubmit={agregarEvento}
+        onSubmit={agregarEvento} 
       />
     </div>
   );

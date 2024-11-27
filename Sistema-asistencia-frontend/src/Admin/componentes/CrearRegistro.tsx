@@ -7,7 +7,7 @@ interface AttendanceModalProps {
   onSubmit: (evento: any) => void; // Recibe función para crear evento
 }
 
-const AttendanceModal: React.FC<AttendanceModalProps> = ({ show, handleClose, onSubmit }) => {
+const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     nombreEvento: "",
     fechaHoraEntrada: "",
@@ -21,19 +21,47 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ show, handleClose, on
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = () => {
+  const formatDateTime = (dateTime: string): string => {
+    const date = new Date(dateTime);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = "00"; // Suponiendo que no se necesita precisión en segundos
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const handleSubmit = async () => {
     const evento = {
       nombreEvento: formData.nombreEvento,
       descripcion: formData.descripcion,
       capacidad: Number(formData.capacidad), // Convierte a número
-      fechaHoraEntrada: formData.fechaHoraEntrada,
-      fechaHoraSalida: formData.fechaHoraSalida,
+      fechaHoraEntrada: formatDateTime(formData.fechaHoraEntrada),
+      fechaHoraSalida: formatDateTime(formData.fechaHoraSalida),
     };
-    
-    onSubmit(evento); // Envía el objeto correctamente tipado al backend
-    handleClose();
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/add-evento", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(evento),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        onSubmit(result); // Envía el objeto correctamente tipado al backend
+        handleClose();
+      } else {
+        const error = await response.json();
+        console.error("Error al crear el evento:", error);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
   };
-  
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -102,4 +130,4 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ show, handleClose, on
   );
 };
 
-export default AttendanceModal;
+export default CrearRegistro;
