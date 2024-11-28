@@ -487,38 +487,36 @@ public class AuthController {
         }
     }
 
-    @DeleteMapping("/eventos/{id}")
-    public ResponseEntity<?> deleteEvento(@PathVariable("id") Long idEvento) {
-        String deleteAsisteQuery = "DELETE FROM asiste WHERE ID_Evento = ?";
-        String deleteEventoQuery = "DELETE FROM evento WHERE ID_Evento = ?";
+    @PutMapping("/eventos/{id}")
+    public ResponseEntity<?> updateEvento(@PathVariable("id") Long idEvento, @RequestBody Map<String, Object> eventoRequest) {
+        String nombreEvento = (String) eventoRequest.get("nombreEvento");
+        String descripcion = (String) eventoRequest.get("descripcion");
+        Integer capacidad = (Integer) eventoRequest.get("capacidad");
+        String fechaHoraEntrada = (String) eventoRequest.get("fechaHoraEntrada");
+        String fechaHoraSalida = (String) eventoRequest.get("fechaHoraSalida");
 
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
+        String updateEventoQuery = "UPDATE evento SET NombreEvento = ?, Descripcion = ?, Capacidad = ?, FechaHoraEntrada = ?, FechaHoraSalida = ? WHERE ID_Evento = ?";
 
-            // Eliminar de la tabla 'asiste'
-            try (PreparedStatement deleteAsisteStatement = connection.prepareStatement(deleteAsisteQuery)) {
-                deleteAsisteStatement.setLong(1, idEvento);
-                deleteAsisteStatement.executeUpdate();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(updateEventoQuery)) {
+            statement.setString(1, nombreEvento);
+            statement.setString(2, descripcion);
+            statement.setInt(3, capacidad);
+            statement.setString(4, fechaHoraEntrada);
+            statement.setString(5, fechaHoraSalida);
+            statement.setLong(6, idEvento);
+
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated > 0) {
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("success", true);
+                    put("message", "Evento actualizado exitosamente.");
+                }});
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
+                    put("success", false);
+                    put("message", "Evento no encontrado.");
+                }});
             }
-
-            // Eliminar de la tabla 'evento'
-            try (PreparedStatement deleteEventoStatement = connection.prepareStatement(deleteEventoQuery)) {
-                deleteEventoStatement.setLong(1, idEvento);
-                int rowsDeleted = deleteEventoStatement.executeUpdate();
-                if (rowsDeleted == 0) {
-                    connection.rollback();
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
-                        put("success", false);
-                        put("message", "Evento no encontrado.");
-                    }});
-                }
-            }
-
-            connection.commit();
-            return ResponseEntity.ok(new HashMap<String, Object>() {{
-                put("success", true);
-                put("message", "Evento eliminado exitosamente.");
-            }});
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
@@ -527,6 +525,5 @@ public class AuthController {
             }});
         }
     }
-
 
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "react-bootstrap";
 import AttendanceModal from "./CrearRegistro";
+import Configurar from "./Configurar";
 import "./estilos/Registro.css";
 import axios from "axios";
 
@@ -16,6 +17,8 @@ interface Evento {
 const Registro: React.FC = () => {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+  const [eventoEditar, setEventoEditar] = useState<Evento | null>(null);
 
   // Obtener eventos desde el backend
   const fetchEventos = async () => {
@@ -66,10 +69,17 @@ const Registro: React.FC = () => {
     }
   };
 
-  // Editar evento (Por ahora, solo muestra un mensaje)
-  const editarEvento = (id: number) => {
-    alert(`Editar evento con ID: ${id}`);
-    // Aquí puedes abrir un modal pre-rellenado con los datos del evento para editarlo
+  // Editar evento
+  const editarEvento = (evento: Evento) => {
+    setEventoEditar(evento);
+    setMostrarModalEditar(true);
+  };
+
+  // Actualizar evento en el estado
+  const actualizarEvento = (eventoActualizado: Evento) => {
+    setEventos((prevEventos) =>
+      prevEventos.map((evento) => (evento.id === eventoActualizado.id ? eventoActualizado : evento))
+    );
   };
 
   return (
@@ -110,7 +120,7 @@ const Registro: React.FC = () => {
                   variant="primary"
                   size="sm"
                   className="me-2"
-                  onClick={() => editarEvento(evento.id)}
+                  onClick={() => editarEvento(evento)}
                 >
                   Editar
                 </Button>
@@ -133,6 +143,16 @@ const Registro: React.FC = () => {
         handleClose={() => setMostrarModal(false)}
         onSubmit={agregarEvento}
       />
+
+      {/* Modal para editar evento */}
+      {eventoEditar && (
+        <Configurar
+          show={mostrarModalEditar}
+          handleClose={() => setMostrarModalEditar(false)}
+          evento={eventoEditar}
+          onSubmit={actualizarEvento}
+        />
+      )}
     </div>
   );
 };
