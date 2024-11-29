@@ -376,10 +376,34 @@ public class AuthController {
     }
 
     @GetMapping("/eventos")
-    public ResponseEntity<?> getEventos() {
+    public ResponseEntity<?> getEventos(@RequestParam(value = "usuarioId", required = false) String usuarioIdStr) {
+        Long usuarioId = null;
+        try {
+            if (usuarioIdStr != null && !usuarioIdStr.isEmpty()) {
+                usuarioId = Long.parseLong(usuarioIdStr);
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "El parámetro 'usuarioId' debe ser un número válido.");
+                    }});
+        }
+
         try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT * FROM evento";
+            String query = "SELECT e.* FROM evento e "
+                    + "INNER JOIN asiste a ON e.ID_Evento = a.ID_Evento "
+                    + "WHERE a.ID_Usuario = ?";
             PreparedStatement statement = connection.prepareStatement(query);
+            if (usuarioId != null) {
+                statement.setLong(1, usuarioId);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new HashMap<String, Object>() {{
+                            put("success", false);
+                            put("message", "El parámetro 'usuarioId' es requerido.");
+                        }});
+            }
             ResultSet resultSet = statement.executeQuery();
 
             List<Evento> eventos = new ArrayList<>();
@@ -416,6 +440,8 @@ public class AuthController {
                     }});
         }
     }
+
+
 
     @PostMapping("/add-evento")
     public ResponseEntity<?> addEvento(@RequestBody Map<String, Object> eventoRequest) {

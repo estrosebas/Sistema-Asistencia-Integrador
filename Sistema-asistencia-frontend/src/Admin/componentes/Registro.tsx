@@ -22,8 +22,14 @@ const Registro: React.FC = () => {
 
   // Obtener eventos desde el backend
   const fetchEventos = async () => {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}'); // Obtener el objeto userData desde el localStorage
+    const userId = userData.usuarioId; // Extraer el ID del usuario
+    if (userId === null || userId === undefined) {
+      console.error("El ID del usuario no está disponible en el localStorage.");
+      return;
+    }
     try {
-      const response = await axios.get("http://localhost:3000/api/auth/eventos");
+      const response = await axios.get(`http://localhost:3000/api/auth/eventos?usuarioId=${userId}`);
       if (response.data.success) {
         setEventos(response.data.data);
       } else {
@@ -68,7 +74,6 @@ const Registro: React.FC = () => {
       console.error("Error en la solicitud de eliminación:", error);
     }
   };
-  
 
   // Editar evento
   const editarEvento = (evento: Evento) => {
@@ -78,15 +83,10 @@ const Registro: React.FC = () => {
 
   // Actualizar evento en el estado
   const actualizarEvento = (eventoActualizado: Evento) => {
-    if (!eventoActualizado) {
-      console.error("El evento actualizado es undefined");
-      return;
-    }
     setEventos((prevEventos) =>
       prevEventos.map((evento) => (evento.id === eventoActualizado.id ? eventoActualizado : evento))
     );
   };
-  
 
   return (
     <div className="registro-container">
