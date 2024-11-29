@@ -526,4 +526,51 @@ public class AuthController {
         }
     }
 
+    @DeleteMapping("/eventos/{id}")
+    public ResponseEntity<?> deleteEvento(@PathVariable("id") Long idEvento) {
+        String deleteAsisteQuery = "DELETE FROM asiste WHERE ID_Evento = ?";
+        String deleteEventoQuery = "DELETE FROM evento WHERE ID_Evento = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement deleteAsisteStatement = connection.prepareStatement(deleteAsisteQuery);
+                 PreparedStatement deleteEventoStatement = connection.prepareStatement(deleteEventoQuery)) {
+
+                deleteAsisteStatement.setLong(1, idEvento);
+                int rowsDeletedAsiste = deleteAsisteStatement.executeUpdate();
+
+                deleteEventoStatement.setLong(1, idEvento);
+                int rowsDeletedEvento = deleteEventoStatement.executeUpdate();
+
+                if (rowsDeletedEvento > 0) {
+                    connection.commit();
+                    return ResponseEntity.ok(new HashMap<String, Object>() {{
+                        put("success", true);
+                        put("message", "Evento eliminado exitosamente.");
+                    }});
+                } else {
+                    connection.rollback();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Evento no encontrado.");
+                    }});
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                    put("success", false);
+                    put("message", "Error en el servidor: " + e.getMessage());
+                }});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", "Error en el servidor: " + e.getMessage());
+            }});
+        }
+    }
+
 }

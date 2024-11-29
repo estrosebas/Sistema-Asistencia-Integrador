@@ -68,6 +68,7 @@ const Registro: React.FC = () => {
       console.error("Error en la solicitud de eliminación:", error);
     }
   };
+  
 
   // Editar evento
   const editarEvento = (evento: Evento) => {
