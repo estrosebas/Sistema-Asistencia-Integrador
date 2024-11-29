@@ -491,7 +491,7 @@ public class AuthController {
     public ResponseEntity<?> updateEvento(@PathVariable("id") Long idEvento, @RequestBody Map<String, Object> eventoRequest) {
         String nombreEvento = (String) eventoRequest.get("nombreEvento");
         String descripcion = (String) eventoRequest.get("descripcion");
-        Integer capacidad = (Integer) eventoRequest.get("capacidad");
+        Integer capacidad = Integer.valueOf((String) eventoRequest.get("capacidad")); // Convierte a Integer
         String fechaHoraEntrada = (String) eventoRequest.get("fechaHoraEntrada");
         String fechaHoraSalida = (String) eventoRequest.get("fechaHoraSalida");
 
@@ -500,7 +500,7 @@ public class AuthController {
         try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(updateEventoQuery)) {
             statement.setString(1, nombreEvento);
             statement.setString(2, descripcion);
-            statement.setInt(3, capacidad);
+            statement.setInt(3, capacidad); // Usa el Integer convertido
             statement.setString(4, fechaHoraEntrada);
             statement.setString(5, fechaHoraSalida);
             statement.setLong(6, idEvento);

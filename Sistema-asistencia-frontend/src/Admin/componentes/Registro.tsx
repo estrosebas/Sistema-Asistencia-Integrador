@@ -77,10 +77,15 @@ const Registro: React.FC = () => {
 
   // Actualizar evento en el estado
   const actualizarEvento = (eventoActualizado: Evento) => {
+    if (!eventoActualizado) {
+      console.error("El evento actualizado es undefined");
+      return;
+    }
     setEventos((prevEventos) =>
       prevEventos.map((evento) => (evento.id === eventoActualizado.id ? eventoActualizado : evento))
     );
   };
+  
 
   return (
     <div className="registro-container">
