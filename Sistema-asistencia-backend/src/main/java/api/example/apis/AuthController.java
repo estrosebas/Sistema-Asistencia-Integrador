@@ -500,9 +500,20 @@ public class AuthController {
             }
 
             connection.commit();
+
+            // Devolver el evento recién creado
+            Map<String, Object> nuevoEvento = new HashMap<>();
+            nuevoEvento.put("id", eventoId);
+            nuevoEvento.put("nombreEvento", nombreEvento);
+            nuevoEvento.put("descripcion", descripcion);
+            nuevoEvento.put("capacidad", capacidad);
+            nuevoEvento.put("fechaHoraEntrada", fechaHoraEntrada);
+            nuevoEvento.put("fechaHoraSalida", fechaHoraSalida);
+
             return ResponseEntity.ok(new HashMap<String, Object>() {{
                 put("success", true);
                 put("message", "Evento creado exitosamente y registro en 'asiste' agregado.");
+                put("evento", nuevoEvento);
             }});
         } catch (SQLException e) {
             e.printStackTrace();
@@ -512,6 +523,7 @@ public class AuthController {
             }});
         }
     }
+
 
     @PutMapping("/eventos/{id}")
     public ResponseEntity<?> updateEvento(@PathVariable("id") Long idEvento, @RequestBody Map<String, Object> eventoRequest) {

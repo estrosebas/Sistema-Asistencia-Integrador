@@ -36,7 +36,11 @@ const Registro: React.FC = () => {
         console.error("No se encontraron eventos");
       }
     } catch (error) {
-      console.error("Error al obtener los eventos:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        console.error("No se encontraron eventos para el usuario.");
+      } else {
+        console.error("Error al obtener los eventos:", error);
+      }
     }
   };
 
@@ -62,16 +66,19 @@ const Registro: React.FC = () => {
 
   // Eliminar evento
   const eliminarEvento = async (id: number) => {
-    try {
-      const response = await axios.delete(`http://localhost:3000/api/auth/eventos/${id}`);
-      if (response.data.success) {
-        setEventos((prevEventos) => prevEventos.filter((evento) => evento.id !== id));
-        alert(response.data.message);
-      } else {
-        console.error("Error al eliminar el evento.");
+    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este evento?");
+    if (confirmacion) {
+      try {
+        const response = await axios.delete(`http://localhost:3000/api/auth/eventos/${id}`);
+        if (response.data.success) {
+          setEventos((prevEventos) => prevEventos.filter((evento) => evento.id !== id));
+          alert(response.data.message);
+        } else {
+          console.error("Error al eliminar el evento.");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de eliminación:", error);
       }
-    } catch (error) {
-      console.error("Error en la solicitud de eliminación:", error);
     }
   };
 
@@ -100,48 +107,55 @@ const Registro: React.FC = () => {
         </div>
       </div>
 
-      <Table hover responsive>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Fecha Entrada</th>
-            <th>Fecha Salida</th>
-            <th>Capacidad</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {eventos.map((evento) => (
-            <tr key={evento.id}>
-              <td>{evento.id}</td>
-              <td>{evento.nombreEvento}</td>
-              <td>{evento.fechaHoraEntrada}</td>
-              <td>{evento.fechaHoraSalida}</td>
-              <td>{evento.capacidad}</td>
-              <td>{evento.descripcion}</td>
-              <td>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => editarEvento(evento)}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => eliminarEvento(evento.id)}
-                >
-                  Eliminar
-                </Button>
-              </td>
+      {eventos.length > 0 ? (
+        <Table hover responsive>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Fecha Entrada</th>
+              <th>Fecha Salida</th>
+              <th>Capacidad</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {eventos.map((evento) => (
+              <tr key={evento.id}>
+                <td>{evento.id}</td>
+                <td>{evento.nombreEvento}</td>
+                <td>{evento.fechaHoraEntrada}</td>
+                <td>{evento.fechaHoraSalida}</td>
+                <td>{evento.capacidad}</td>
+                <td>{evento.descripcion}</td>
+                <td>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => editarEvento(evento)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => eliminarEvento(evento.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <div className="anuncio">
+          <h3>No hay eventos disponibles</h3>
+          <p>¡Crea un nuevo evento para comenzar!</p>
+        </div>
+      )}
 
       {/* Modal para crear evento */}
       <AttendanceModal

@@ -61,8 +61,12 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
 
       if (response.ok) {
         const result = await response.json();
-        onSubmit(result); // Envía el objeto correctamente tipado al backend
-        handleClose();
+        if (result.success && result.evento) {
+          onSubmit(result.evento); // Envía el objeto correctamente tipado al backend
+          handleClose();
+        } else {
+          console.error("Error al crear el evento:", result.message);
+        }
       } else {
         const error = await response.json();
         console.error("Error al crear el evento:", error);
@@ -140,3 +144,4 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
 };
 
 export default CrearRegistro;
+
