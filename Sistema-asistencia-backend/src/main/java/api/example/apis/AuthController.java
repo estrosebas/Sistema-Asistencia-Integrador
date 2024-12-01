@@ -281,54 +281,6 @@ public class AuthController {
     }
 
     /**
-     * Método que permite agregar un registro de asistencia.
-     *
-     * @param request Objeto que contiene los IDs del usuario y del evento.
-     * @return ResponseEntity con la respuesta de inserción del registro de asistencia.
-     */
-    @PostMapping("/add-asiste")
-    public ResponseEntity<?> addAsiste(@RequestBody Map<String, Long> request) {
-        Long idUsuario = request.get("idUsuario");
-        Long idEvento = request.get("idEvento");
-
-        if (idUsuario == null || idEvento == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new HashMap<String, Object>() {{
-                        put("success", false);
-                        put("message", "Se deben proporcionar los valores 'idUsuario' y 'idEvento'.");
-                    }});
-        }
-
-        String insertQuery = "INSERT INTO asiste (ID_Usuario, ID_Evento) VALUES (?, ?)";
-        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
-            statement.setLong(1, idUsuario);
-            statement.setLong(2, idEvento);
-
-            int rowsInserted = statement.executeUpdate();
-
-            if (rowsInserted > 0) {
-                return ResponseEntity.ok(new HashMap<String, Object>() {{
-                    put("success", true);
-                    put("message", "Registro insertado correctamente en la tabla 'asiste'.");
-                }});
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new HashMap<String, Object>() {{
-                            put("success", false);
-                            put("message", "No se pudo insertar el registro en la tabla 'asiste'.");
-                        }});
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new HashMap<String, Object>() {{
-                        put("success", false);
-                        put("message", "Error al realizar la operación en la base de datos: " + e.getMessage());
-                    }});
-        }
-    }
-
-    /**
      * Método que obtiene los registros de asistencia.
      *
      * @return ResponseEntity con la lista de registros de asistencia.
@@ -600,6 +552,144 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
                     put("success", false);
                     put("message", "Error en el servidor: " + e.getMessage());
+                }});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", "Error en el servidor: " + e.getMessage());
+            }});
+        }
+    }
+    @GetMapping("/usuarios")
+    public ResponseEntity<?> getUsuarios() {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT id, dni, nombre, ape_paterno, ape_materno FROM usuario";
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Map<String, Object>> usuarios = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Map<String, Object> usuario = new HashMap<>();
+                usuario.put("id", resultSet.getLong("id"));
+                usuario.put("dni", resultSet.getLong("dni"));
+                usuario.put("nombre", resultSet.getString("nombre"));
+                usuario.put("ape_paterno", resultSet.getString("ape_paterno"));
+                usuario.put("ape_materno", resultSet.getString("ape_materno"));
+                usuarios.add(usuario);
+            }
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("data", usuarios);
+            }});
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("message", "Error al obtener los usuarios: " + e.getMessage());
+                        put("success", false);
+                    }});
+        }
+    }
+    @GetMapping("/usuarios-evento")
+    public ResponseEntity<?> getUsuariosEvento(@RequestParam("eventoId") Long eventoId) {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT u.id, u.dni, u.nombre, u.ape_paterno, u.ape_materno "
+                    + "FROM usuario u "
+                    + "INNER JOIN asiste a ON u.id = a.ID_Usuario "
+                    + "WHERE a.ID_Evento = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, eventoId);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Map<String, Object>> usuariosEvento = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Map<String, Object> usuario = new HashMap<>();
+                usuario.put("id", resultSet.getLong("id"));
+                usuario.put("dni", resultSet.getLong("dni"));
+                usuario.put("nombre", resultSet.getString("nombre"));
+                usuario.put("ape_paterno", resultSet.getString("ape_paterno"));
+                usuario.put("ape_materno", resultSet.getString("ape_materno"));
+                usuariosEvento.add(usuario);
+            }
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("data", usuariosEvento);
+            }});
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("message", "Error al obtener los usuarios del evento: " + e.getMessage());
+                        put("success", false);
+                    }});
+        }
+    }
+    @PostMapping("/add-asiste")
+    public ResponseEntity<?> addAsiste(@RequestBody Map<String, Long> request) {
+        Long idUsuario = request.get("idUsuario");
+        Long idEvento = request.get("idEvento");
+
+        if (idUsuario == null || idEvento == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Se deben proporcionar los valores 'idUsuario' y 'idEvento'.");
+                    }});
+        }
+
+        String insertQuery = "INSERT INTO asiste (ID_Usuario, ID_Evento) VALUES (?, ?)";
+        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+            statement.setLong(1, idUsuario);
+            statement.setLong(2, idEvento);
+
+            int rowsInserted = statement.executeUpdate();
+
+            if (rowsInserted > 0) {
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("success", true);
+                    put("message", "Registro insertado correctamente en la tabla 'asiste'.");
+                }});
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new HashMap<String, Object>() {{
+                            put("success", false);
+                            put("message", "No se pudo insertar el registro en la tabla 'asiste'.");
+                        }});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Error al realizar la operación en la base de datos: " + e.getMessage());
+                    }});
+        }
+    }
+    @DeleteMapping("/delete-asiste")
+    public ResponseEntity<?> deleteAsiste(@RequestParam("idUsuario") Long idUsuario, @RequestParam("idEvento") Long idEvento) {
+        String deleteQuery = "DELETE FROM asiste WHERE ID_Usuario = ? AND ID_Evento = ?";
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
+            statement.setLong(1, idUsuario);
+            statement.setLong(2, idEvento);
+
+            int rowsDeleted = statement.executeUpdate();
+
+            if (rowsDeleted > 0) {
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("success", true);
+                    put("message", "Usuario eliminado exitosamente del evento.");
+                }});
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
+                    put("success", false);
+                    put("message", "Usuario no encontrado en el evento.");
                 }});
             }
         } catch (SQLException e) {

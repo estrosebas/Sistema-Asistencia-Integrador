@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button } from "react-bootstrap";
 import AttendanceModal from "./CrearRegistro";
 import Configurar from "./Configurar";
+import GestionarUsuarios from "./GestionarUsuarios"; // Importar el nuevo componente
 import "./estilos/Registro.css";
 import axios from "axios";
 
@@ -18,7 +19,9 @@ const Registro: React.FC = () => {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+  const [mostrarModalGestionarUsuarios, setMostrarModalGestionarUsuarios] = useState(false);
   const [eventoEditar, setEventoEditar] = useState<Evento | null>(null);
+  const [eventoSeleccionado, setEventoSeleccionado] = useState<Evento | null>(null);
 
   // Obtener eventos desde el backend
   const fetchEventos = async () => {
@@ -95,12 +98,17 @@ const Registro: React.FC = () => {
     );
   };
 
+  // Abrir modal para gestionar usuarios
+  const gestionarUsuarios = (evento: Evento) => {
+    setEventoSeleccionado(evento);
+    setMostrarModalGestionarUsuarios(true);
+  };
+
   return (
     <div className="registro-container">
       <div className="registro-header d-flex justify-content-between align-items-center">
         <h2>Eventos</h2>
         <div className="Btn">
-          <Button variant="warning">Añadir Usuario</Button>
           <Button variant="success" onClick={() => setMostrarModal(true)}>
             Crear Nuevo Evento
           </Button>
@@ -117,6 +125,7 @@ const Registro: React.FC = () => {
               <th>Fecha Salida</th>
               <th>Capacidad</th>
               <th>Descripción</th>
+              <th>Usuario</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -129,6 +138,15 @@ const Registro: React.FC = () => {
                 <td>{evento.fechaHoraSalida}</td>
                 <td>{evento.capacidad}</td>
                 <td>{evento.descripcion}</td>
+                <td>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => gestionarUsuarios(evento)}
+                  >
+                    Gestionar Usuarios
+                  </Button>
+                </td>
                 <td>
                   <Button
                     variant="primary"
@@ -171,6 +189,15 @@ const Registro: React.FC = () => {
           handleClose={() => setMostrarModalEditar(false)}
           evento={eventoEditar}
           onSubmit={actualizarEvento}
+        />
+      )}
+
+      {/* Modal para gestionar usuarios */}
+      {eventoSeleccionado && (
+        <GestionarUsuarios
+          show={mostrarModalGestionarUsuarios}
+          handleClose={() => setMostrarModalGestionarUsuarios(false)}
+          evento={eventoSeleccionado}
         />
       )}
     </div>
