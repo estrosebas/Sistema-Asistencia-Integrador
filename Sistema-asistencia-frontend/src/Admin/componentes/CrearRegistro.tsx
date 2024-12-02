@@ -4,7 +4,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 interface AttendanceModalProps {
   show: boolean;
   handleClose: () => void;
-  onSubmit: (evento: any) => void; // Recibe función para crear evento
+  onSubmit: (evento: any) => void; 
 }
 
 const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSubmit }) => {
@@ -28,7 +28,7 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
     const day = String(date.getDate()).padStart(2, "0");
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = "00"; // Suponiendo que no se necesita precisión en segundos
+    const seconds = "00"; 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
@@ -44,10 +44,10 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
     const evento = {
       nombreEvento: formData.nombreEvento,
       descripcion: formData.descripcion,
-      capacidad: Number(formData.capacidad), // Convierte a número
+      capacidad: Number(formData.capacidad),
       fechaHoraEntrada: formatDateTime(formData.fechaHoraEntrada),
       fechaHoraSalida: formatDateTime(formData.fechaHoraSalida),
-      idUsuario: userData.usuarioId, // Incluye el ID del usuario
+      idUsuario: userData.usuarioId,
     };
 
     try {
@@ -62,7 +62,7 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.evento) {
-          onSubmit(result.evento); // Envía el objeto correctamente tipado al backend
+          onSubmit(result.evento); 
           handleClose();
         } else {
           console.error("Error al crear el evento:", result.message);

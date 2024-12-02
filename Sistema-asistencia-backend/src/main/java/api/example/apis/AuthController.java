@@ -701,4 +701,69 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/registrar-asistencia")
+    public ResponseEntity<?> registrarAsistencia(@RequestBody Map<String, Object> request) {
+        String dni = (String) request.get("dni");
+        Long idEvento = Long.parseLong((String) request.get("idEvento"));
+        String fechaRegistroStr = (String) request.get("fechaRegistro");
+
+        // Convertir la fecha y hora a Timestamp
+        Timestamp fechaRegistro = Timestamp.valueOf(fechaRegistroStr);
+
+        try (Connection connection = dataSource.getConnection()) {
+            // Obtener el ID del usuario usando el DNI
+            String getUserIdQuery = "SELECT id FROM usuario WHERE dni = ?";
+            try (PreparedStatement getUserIdStatement = connection.prepareStatement(getUserIdQuery)) {
+                getUserIdStatement.setLong(1, Long.parseLong(dni));
+                ResultSet resultSet = getUserIdStatement.executeQuery();
+                if (!resultSet.next()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Usuario no encontrado");
+                    }});
+                }
+                Long userId = resultSet.getLong("id");
+
+                // Obtener la información del evento
+                String getEventoQuery = "SELECT FechaHoraEntrada, FechaHoraSalida FROM evento WHERE ID_Evento = ?";
+                try (PreparedStatement getEventoStatement = connection.prepareStatement(getEventoQuery)) {
+                    getEventoStatement.setLong(1, idEvento);
+                    ResultSet eventoResultSet = getEventoStatement.executeQuery();
+                    if (!eventoResultSet.next()) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, Object>() {{
+                            put("success", false);
+                            put("message", "Evento no encontrado");
+                        }});
+                    }
+                    Timestamp fechaHoraEntrada = eventoResultSet.getTimestamp("FechaHoraEntrada");
+                    Timestamp fechaHoraSalida = eventoResultSet.getTimestamp("FechaHoraSalida");
+
+                    // Verificar si la fecha actual está dentro del rango del evento
+                    String estado = fechaRegistro.before(fechaHoraEntrada) || fechaRegistro.after(fechaHoraSalida) ? "falta" : "asiste";
+
+                    // Insertar el registro de asistencia
+                    String insertRegistroQuery = "INSERT INTO registro_asistencia (Estado, FechaRegistro, ID_Evento, ID_Usuario) VALUES (?, ?, ?, ?)";
+                    try (PreparedStatement insertRegistroStatement = connection.prepareStatement(insertRegistroQuery)) {
+                        insertRegistroStatement.setString(1, estado);
+                        insertRegistroStatement.setTimestamp(2, fechaRegistro);
+                        insertRegistroStatement.setLong(3, idEvento);
+                        insertRegistroStatement.setLong(4, userId);
+                        insertRegistroStatement.executeUpdate();
+                    }
+
+                    return ResponseEntity.ok(new HashMap<String, Object>() {{
+                        put("success", true);
+                        put("message", "Asistencia registrada correctamente");
+                    }});
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", "Error en el servidor: " + e.getMessage());
+            }});
+        }
+    }
+
 }

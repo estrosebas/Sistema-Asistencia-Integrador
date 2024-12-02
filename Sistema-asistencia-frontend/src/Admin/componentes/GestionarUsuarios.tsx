@@ -59,6 +59,7 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
             setMensaje(`Usuario encontrado: ${usuarioEncontrado.nombre}`);
             setUsuariosTemporales([...usuariosTemporales, usuarioEncontrado]);
           }
+          setDni(""); 
         } else {
           setMensaje("Usuario no encontrado");
         }
@@ -86,8 +87,8 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
         }
       }
       alert("Usuarios añadidos exitosamente");
-      fetchUsuariosEvento(); // Actualizar la lista de usuarios del evento
-      limpiarCampos(); // Limpiar los campos
+      fetchUsuariosEvento();
+      limpiarCampos();
     } catch (error) {
       console.error("Error al añadir los usuarios:", error);
     }
@@ -114,7 +115,7 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
   };
 
   return (
-    <Modal show={show} onHide={() => { handleClose(); limpiarCampos(); }} size="xl"> {/* Cambiar el tamaño del modal a 'xl' */}
+    <Modal show={show} onHide={() => { handleClose(); limpiarCampos(); }} size="xl">
       <Modal.Header closeButton>
         <Modal.Title>Gestionar Usuarios del Evento</Modal.Title>
       </Modal.Header>
