@@ -1,6 +1,5 @@
 package api.example.apis;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,43 +17,4 @@ import lombok.NoArgsConstructor;
 public class LoginRequest {
     private String email;
     private String password;
-public class LoginRequest {
-    private String email;
-    private String password;
-
-    /**
-     * Obtiene el email del usuario.
-     *
-     * @return Email del usuario.
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Establece el email del usuario.
-     *
-     * @param email Email del usuario.
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * Obtiene la contraseña del usuario.
-     *
-     * @return Contraseña del usuario.
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Establece la contraseña del usuario.
-     *
-     * @param password Contraseña del usuario.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
