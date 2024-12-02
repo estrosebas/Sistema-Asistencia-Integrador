@@ -1,3 +1,14 @@
+
+import React, { useState, useEffect } from "react";
+import { Card, Form, Row, Col, Button, Alert } from "react-bootstrap";
+import QrReader from "react-qr-scanner";
+import "./estilos/Asistencia.css";
+import axios from "axios";
+
+interface RegistroManual {
+  dni: string;
+  evento: string;
+
 import React, { useState, useRef, useEffect } from "react";
 import { Card, Form, Row, Col, Alert, Button } from "react-bootstrap";
 import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
@@ -6,16 +17,37 @@ import "./estilos/Asistencia.css";
 interface RegistroManual {
   id: string;
   grupo: string;
+
 }
 
 interface QRDataType {
   id: string;
   hora: string;
+
+  evento: string;
+}
+
+interface Evento {
+  id: number;
+  nombreEvento: string;
+
   grupo: string;
+
 }
 
 const Asistencia: React.FC = () => {
   const [qrData, setQrData] = useState<QRDataType | null>(null);
+
+  const [eventoSeleccionado, setEventoSeleccionado] = useState<string>("");
+  const [registroManual, setRegistroManual] = useState<RegistroManual>({
+    dni: "",
+    evento: "",
+  });
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [ultimoEscaneo, setUltimoEscaneo] = useState<{ [key: string]: number }>(
+    {}
+  );
+  const [mensajeError, setMensajeError] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<{
     tipo: string;
     texto: string;
@@ -38,12 +70,26 @@ const Asistencia: React.FC = () => {
     setTimeout(() => setMensaje(null), 2000);
   };
 
+
   const verificarTiempoEscaneo = (qrCode: string): boolean => {
     const tiempoActual = Date.now();
     const ultimoTiempo = ultimoEscaneo[qrCode] || 0;
     const diferencia = (tiempoActual - ultimoTiempo) / 1000 / 60;
 
     if (diferencia < 5) {
+      setMensajeError(`El QR ${qrCode} ya fue escaneado recientemente.`); 
+      setTimeout(() => setMensajeError(null), 2000);
+      return false;
+    }
+
+    setUltimoEscaneo((prev) => ({ ...prev, [qrCode]: tiempoActual }));
+    return true;
+  };
+
+  const validarEvento = (): boolean => !!eventoSeleccionado;
+
+  const procesarQR = async (qrCode: string) => {
+    if (!validarEvento() || !verificarTiempoEscaneo(qrCode)) {
       mostrarMensaje(
         "warning",
         `Espere ${Math.ceil(5 - diferencia)} minutos para volver a registrar`
@@ -71,6 +117,7 @@ const Asistencia: React.FC = () => {
 
   const procesarQR = async (qrCode: string) => {
     if (!validarGrupo() || !verificarTiempoEscaneo(qrCode)) {
+
       return;
     }
 
@@ -78,6 +125,17 @@ const Asistencia: React.FC = () => {
       hour12: false,
     });
 
+    const nuevoQRData = {
+      id: qrCode,
+      hora: horaRegistro,
+      evento: eventoSeleccionado,
+    };
+
+    setQrData(nuevoQRData);
+
+    try {
+      await registrarAsistencia(qrCode, eventoSeleccionado);
+    } catch (error) {
     const userId = obtenerCookie("user_id");
     if (!userId) {
       mostrarMensaje("danger", "No se encontró el ID de usuario");
@@ -102,6 +160,57 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  const registrarAsistencia = async (dni: string, idEvento: string) => {
+    const fechaRegistro = new Date();
+    fechaRegistro.setHours(fechaRegistro.getHours() - 5);
+    const fechaFormateada = fechaRegistro.toISOString().replace("T", " ").substring(0, 19);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/auth/registrar-asistencia`,
+        {
+          dni,
+          idEvento,
+          fechaRegistro: fechaFormateada,
+        }
+      );
+
+      if (!response.data.success) {
+        throw new Error("Error al registrar la asistencia");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleScan = (result: { text: string } | null) => {
+    if (result) {
+      procesarQR(result.text);
+    }
+  };
+
+  const handleError = (error: any) => {
+    console.error("Error escaneando el QR:", error);
+  };
+
+  const fetchEventos = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.usuarioId;
+
+    if (!userId) {
+      console.error("El ID del usuario no está disponible en el localStorage.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:3000/api/auth/eventos?usuarioId=${userId}`);
+      if (response.data.success) {
+        setEventos(response.data.data);
+      } else {
+        console.error("No se encontraron eventos");
+      }
+    } catch (error) {
+      console.error("Error al obtener los eventos:", error);
   const iniciarEscaneo = async () => {
     if (!codeReader.current) {
       codeReader.current = new BrowserMultiFormatReader();
@@ -154,10 +263,17 @@ const Asistencia: React.FC = () => {
 
     if (!response.ok) {
       throw new Error("Error al registrar la asistencia");
+
     }
   };
 
   useEffect(() => {
+
+    fetchEventos();
+  }, []);
+
+  const handleEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setEventoSeleccionado(e.target.value);
     iniciarEscaneo();
     return () => {
       detenerEscaneo();
@@ -173,6 +289,20 @@ const Asistencia: React.FC = () => {
 
   const handleRegistroManual = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (registroManual.dni && registroManual.evento) {
+      try {
+        await registrarAsistencia(registroManual.dni, registroManual.evento);
+        setQrData({
+          id: registroManual.dni,
+          hora: new Date().toLocaleTimeString("es-ES", {
+            hour12: false,
+          }),
+          evento: registroManual.evento,
+        });
+        setRegistroManual({ dni: "", evento: "" });
+      } catch (error) {
+
     if (registroManual.id && registroManual.grupo) {
       const horaRegistro = new Date().toLocaleTimeString("es-ES", {
         hour12: false,
@@ -198,6 +328,11 @@ const Asistencia: React.FC = () => {
     <div className="asistencia-container">
       <h2 className="mb-4">Registro de Asistencia</h2>
 
+
+      {/* Alerta para mensajes de error */}
+      {mensajeError && (
+        <Alert variant="danger" className="text-center">
+          {mensajeError}
       {mensaje && (
         <Alert
           variant={mensaje.tipo}
@@ -222,6 +357,10 @@ const Asistencia: React.FC = () => {
       {qrData && (
         <div className="datos-escaneados-container mb-4">
           <div className="datos-escaneados-content">
+
+            <strong>DNI:</strong> {qrData.id}
+            <span className="separador">|</span>
+            <strong>Evento:</strong> {qrData.evento}
             <strong>ID:</strong> {qrData.id}
             <span className="separador">|</span>
             <strong>Grupo:</strong> {qrData.grupo}
@@ -239,6 +378,27 @@ const Asistencia: React.FC = () => {
             </Card.Header>
             <Card.Body>
               <div className="video-container">
+                <QrReader
+                  delay={100} 
+                  style={{ width: "100%" }}
+                  onError={handleError}
+                  onScan={handleScan}
+                />
+              </div>
+              <div className="evento-selector mt-3">
+                <Form.Group>
+                  <Form.Label className="fw-bold">Seleccionar Evento</Form.Label>
+                  <Form.Select
+                    value={eventoSeleccionado}
+                    onChange={handleEventoChange}
+                    className="form-select-lg"
+                  >
+                    <option value="">Seleccionar evento</option>
+                    {eventos.map((evento) => (
+                      <option key={evento.id} value={evento.id.toString()}>
+                        {evento.nombreEvento}
+                      </option>
+                    ))}
                 <video ref={videoRef} className="qr-video" />
               </div>
 
@@ -269,6 +429,18 @@ const Asistencia: React.FC = () => {
             <Card.Body>
               <Form onSubmit={handleRegistroManual}>
                 <Form.Group className="mb-3">
+                  <Form.Label>DNI de Usuario</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={registroManual.dni}
+                    onChange={(e) =>
+                      setRegistroManual((prev) => ({
+                        ...prev,
+                        dni: e.target.value,
+                      }))
+                    }
+                    placeholder="Ingrese el DNI"
+=======
                   <Form.Label>ID de Usuario</Form.Label>
                   <Form.Control
                     type="text"
@@ -285,6 +457,13 @@ const Asistencia: React.FC = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-4">
+                  <Form.Label>Evento</Form.Label>
+                  <Form.Select
+                    value={registroManual.evento}
+                    onChange={(e) =>
+                      setRegistroManual((prev) => ({
+                        ...prev,
+                        evento: e.target.value,
                   <Form.Label>Grupo</Form.Label>
                   <Form.Select
                     value={registroManual.grupo}
@@ -296,6 +475,12 @@ const Asistencia: React.FC = () => {
                     }
                     required
                   >
+                    <option value="">Seleccionar evento</option>
+                    {eventos.map((evento) => (
+                      <option key={evento.id} value={evento.id.toString()}>
+                        {evento.nombreEvento}
+                      </option>
+                    ))}
                     <option value="">Seleccionar grupo</option>
                     <option value="Grupo A">Grupo A</option>
                     <option value="Grupo B">Grupo B</option>
@@ -306,6 +491,7 @@ const Asistencia: React.FC = () => {
                 <div className="d-flex justify-content-center gap-2">
                   <Button
                     variant="danger"
+                    onClick={() => setRegistroManual({ dni: "", evento: "" })}
                     onClick={() => setRegistroManual({ id: "", grupo: "" })}
                   >
                     Cancelar

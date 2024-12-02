@@ -1,11 +1,20 @@
 package api.example.apis;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Clase que representa una solicitud de registro de un usuario.
  * Contiene los datos necesarios para registrar un nuevo usuario en el sistema.
  *
  * @author Sebastian
  */
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class RegisterRequest {
     private String apeMaterno;
     private String apePaterno;

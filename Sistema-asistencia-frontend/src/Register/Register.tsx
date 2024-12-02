@@ -6,6 +6,9 @@ import { useNavigate, Link } from "react-router-dom";
 import Estrellas from "../../public/efectos/estrellas";
 
 // Definir la constante para la URL base
+
+//const API_URL = import.meta.env.VITE_API_URL;
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Registration = () => {
@@ -43,6 +46,7 @@ const Registration = () => {
     };
 
     try {
+      const response = await fetch(`http://localhost:3000/api/auth/register`, {
       const response = await fetch(`${API_URL}/auth/register`, {
         // Usamos la constante API_URL
         method: "POST",
