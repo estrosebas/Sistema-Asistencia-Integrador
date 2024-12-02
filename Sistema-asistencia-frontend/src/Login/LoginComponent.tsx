@@ -21,8 +21,12 @@ const Login = () => {
 
     try {
       const response = await fetch(
+
         // `${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
         `http://localhost:3000/api/auth/login`, // Usando localhost
+
+        `${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
+
         {
           method: "POST",
           headers: {
@@ -38,8 +42,10 @@ const Login = () => {
         console.log(data.message); // Aquí puedes manejar el mensaje de la respuesta
         console.log(data.nomRol);
 
+
         // Guardar los datos del usuario en localStorage
         localStorage.setItem("userData", JSON.stringify(data));
+
 
         // Redirigir a diferentes páginas según el rol
         if (data.nomRol === "Administrador") {
@@ -48,6 +54,7 @@ const Login = () => {
           navigate("/user"); // Ruta para usuarios regulares
         } else if (data.nomRol === "Gerente") {
           navigate("/manager"); // Ruta para gerente
+          navigate("/manager"); // ruta gerente
         } else {
           navigate("/"); // Ruta por defecto si no coincide con los roles anteriores
         }
