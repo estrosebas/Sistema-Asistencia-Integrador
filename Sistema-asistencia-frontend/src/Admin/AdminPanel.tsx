@@ -6,20 +6,13 @@ import Registro from "./componentes/Registro";
 import Asistencia from "./componentes/Asistencia";
 import Historial from "./componentes/Historial";
 import Reporte from "./componentes/Reporte";
-
-import Configurar from "./componentes/Configurar";
-
 import { useNavigate } from "react-router-dom";
 
 const AdminPanel: React.FC = () => {
   const [vistaActiva, setVistaActiva] = useState("registro");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [modoOscuro, setModoOscuro] = useState(false);
-
   //const API_URL = import.meta.env.VITE_API_URL;
-
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const toggleMenu = () => setMenuAbierto((prevState) => !prevState);
   const toggleModoOscuro = () => setModoOscuro((prevState) => !prevState);
 
@@ -53,25 +46,13 @@ const AdminPanel: React.FC = () => {
       label: "Reporte de asistencia",
       action: () => seleccionarVista("reporte"),
     },
-
-    {
-      id: "configurar",
-      icon: "fa-cog",
-      label: "Configurar",
-      action: () => seleccionarVista("configurar"),
-    },
-
   ];
   // Función para manejar el cierre de sesión
   const navigate = useNavigate();
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-
       const response = await fetch(`http://localhost:3000/api/auth/logout`, {
-
-      const response = await fetch(`${API_URL}/auth/logout`, {
-
         method: "POST",
         credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
       });
@@ -90,11 +71,7 @@ const AdminPanel: React.FC = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-
         const response = await fetch(`http://localhost:3000/api/auth/check-session`, {
-
-        const response = await fetch(`${API_URL}/auth/check-session`, {
-
           method: "GET",
           credentials: "include", // Esto asegura que la cookie sea enviada
         });
@@ -170,25 +147,15 @@ const AdminPanel: React.FC = () => {
           }`}
         >
           {vistaActiva === "registro" ? (
-
             <Registro />
-
-            <Registro onNuevoRegistro={() => console.log("Nuevo registro")} />
-
           ) : vistaActiva === "asistencia" ? (
             <Asistencia />
           ) : vistaActiva === "historial" ? (
             <Historial />
           ) : vistaActiva === "reporte" ? (
             <Reporte />
-
           )
         : null}
-
-          ) : (
-            <Configurar />
-          )}
-
         </div>
       </div>
     </div>

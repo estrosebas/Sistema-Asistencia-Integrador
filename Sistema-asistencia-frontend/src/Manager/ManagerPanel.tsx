@@ -47,9 +47,7 @@ const ManagerPanel: React.FC = () => {
     try {
       // Llamada al backend para cerrar sesión
       const response = await fetch(
-
         `http://localhost:3000/api/auth/logout`,
-        `${import.meta.env.VITE_API_URL}/auth/logout`,
         {
           method: "POST",
           credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
@@ -73,10 +71,7 @@ const ManagerPanel: React.FC = () => {
     const checkAuthentication = async () => {
       try {
         const response = await fetch(
-
           `http://localhost:3000/api/auth/check-session`,
-
-          `${import.meta.env.VITE_API_URL}/auth/check-session`,
           {
             method: "GET",
             credentials: "include", // Esto asegura que la cookie sea enviada

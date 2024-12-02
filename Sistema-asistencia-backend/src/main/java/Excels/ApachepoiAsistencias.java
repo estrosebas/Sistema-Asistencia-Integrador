@@ -2,7 +2,6 @@ package Excels;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,15 +67,6 @@ public class ApachepoiAsistencias {
         this.fechaFin = fechaFin;
     }
 
-    /**
-     * Genera un archivo Excel con los datos de asistencia dentro del rango de fechas.
-     *
-     * @param nombreArchivo Nombre del archivo Excel a crear.
-     */
-    public void generarExcel(String nombreArchivo) {
-        List<Asistencia> datosAsistencia = obtenerDatosAsistencia();
-        exportarAsistenciaAExcel(datosAsistencia, nombreArchivo);
-    }
 
     /**
      * Obtiene los datos de asistencia desde la base de datos entre las fechas especificadas.
@@ -115,51 +105,6 @@ public class ApachepoiAsistencias {
         return listaAsistencia;
     }
 
-    /**
-     * Exporta la lista de asistencia a un archivo Excel con un formato específico.
-     *
-     * @param datosAsistencia Lista de objetos Asistencia a exportar.
-     * @param nombreArchivo Nombre del archivo Excel.
-     */
-    private void exportarAsistenciaAExcel(List<Asistencia> datosAsistencia, String nombreArchivo) {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Asistencia");
-
-        String[] encabezados = {"ID_Usuario", "ID_Evento", "Fecha"};
-        Row headerRow = sheet.createRow(0);
-
-        for (int i = 0; i < encabezados.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(encabezados[i]);
-            cell.setCellStyle(crearEstiloEncabezado(workbook));
-        }
-
-        int rowNum = 1;
-        for (Asistencia asistencia : datosAsistencia) {
-            Row row = sheet.createRow(rowNum++);
-
-            row.createCell(0).setCellValue(asistencia.getIdUsuario());
-            row.createCell(1).setCellValue(asistencia.getIdEvento());
-            row.createCell(2).setCellValue(asistencia.getFecha().toString());
-        }
-
-        for (int i = 0; i < encabezados.length; i++) {
-            sheet.autoSizeColumn(i);
-        }
-
-        try (FileOutputStream fileOut = new FileOutputStream(nombreArchivo)) {
-            workbook.write(fileOut);
-            System.out.println("Archivo Excel creado exitosamente: " + nombreArchivo);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * Crea y devuelve un estilo de encabezado para el archivo Excel.
