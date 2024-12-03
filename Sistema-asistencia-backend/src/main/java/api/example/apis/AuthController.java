@@ -9,14 +9,12 @@ import java.util.Map;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.Cookie;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.sql.DataSource;
 
@@ -29,6 +27,8 @@ import javax.sql.DataSource;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:80", "http://localhost", "http://localhost:5173"}, allowedHeaders = "*", allowCredentials = "true")
 public class AuthController {
+
+    private static final Logger logger = LogManager.getLogger(AuthController.class); // Inicializar Logger
 
     @Resource
     private DataSource dataSource;
@@ -45,6 +45,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session, HttpServletResponse response) {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
+        logger.info("Intento de inicio de sesión para el usuario: " + email); // Log de inicio de sesión
 
         try (Connection connection = dataSource.getConnection()) {
             String query = "SELECT u.id AS usuario_id, r.nom_rol, u.dni FROM usuario u "
@@ -66,27 +67,30 @@ public class AuthController {
                     int dni = resultSet.getInt("dni");
                     String dniString = String.valueOf(dni);
 
-                    // Configuración de cookies omitida para simplificación
+                    logger.info("Inicio de sesión exitoso para el usuario ID: " + usuarioId); // Log de éxito
+
                     return ResponseEntity.ok(new HashMap<String, Object>() {{
                         put("success", true);
                         put("message", "Login exitoso");
-                        put("usuarioId", usuarioId); // Agregamos el ID del usuario
+                        put("usuarioId", usuarioId);
                         put("nomRol", nomRol);
                         put("dni", dniString);
                     }});
                 } else {
+                    logger.warn("Email o contraseña incorrectos para el usuario: " + email); // Log de advertencia
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            .body(new HashMap<String, Object>() {{
+                            . body(new HashMap<String, Object>() {{
                                 put("success", false);
                                 put("message", "Email o contraseña incorrectos");
                             }});
                 }
             }
         } catch (SQLException e) {
+            logger.error("Error al intentar iniciar sesión: ", e); // Log de error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new HashMap<String, Object>() {{
                         put("success", false);
-                        put("message", "Error en el servidor: " + e.getMessage());
+                        put("message", "Error interno del servidor");
                     }});
         }
     }
@@ -100,49 +104,41 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        String email = registerRequest.getEmail();
+        String password = registerRequest.getPassword();
+        logger.info("Registro de nuevo usuario: " + email); // Log de registro
+
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
+            String insertQuery = "INSERT INTO usuario (email, password) VALUES (?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+                statement.setString(1, email);
+                statement.setString(2, password);
+                int rowsInserted = statement.executeUpdate();
 
-            // Verificar si el usuario ya existe
-            if (isUserExists(connection, registerRequest.getEmail())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new RegisterResponse(false, "El email ya está registrado"));
-            }
-
-            // Insertar nuevo usuario
-            String insertQuery = "INSERT INTO usuario (ape_materno, ape_paterno, dni, domicilio, email, fech_nacimiento, genero, nombre, password, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                setUserParameters(insertStatement, registerRequest);
-                insertStatement.executeUpdate();
-
-                // Obtener el rol ID
-                long rolId = getRoleIdByName(connection, registerRequest.getRol());
-
-                // Insertar en la tabla de usuarios_roles
-                String insertRoleQuery = "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)";
-                try (PreparedStatement insertRoleStatement = connection.prepareStatement(insertRoleQuery)) {
-                    long usuarioId = getLastInsertId(connection);
-                    insertRoleStatement.setLong(1, usuarioId);
-                    insertRoleStatement.setLong(2, rolId);
-                    insertRoleStatement.executeUpdate();
+                if (rowsInserted > 0) {
+                    logger.info("Registro exitoso para el usuario: " + email); // Log de éxito
+                    return ResponseEntity.ok(new HashMap<String, Object>() {{
+                        put("success", true);
+                        put("message", "Registro exitoso");
+                    }});
+                } else {
+                    logger.warn("Error al registrar el usuario: " + email); // Log de advertencia
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new HashMap<String, Object>() {{
+                                put("success", false);
+                                put("message", "Error al registrar el usuario");
+                            }});
                 }
-
-                connection.commit();
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new RegisterResponse(true, "Registro exitoso"));
-            } catch (Exception e) {
-                connection.rollback();
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new RegisterResponse(false, "Error en el servidor: " + e.getMessage()));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error al intentar registrar el usuario: ", e); // Log de error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RegisterResponse(false, "Error en el servidor: " + e.getMessage()));
+                    .body(new HashMap<String, Object>() {{
+                        put("success", false);
+                        put("message", "Error interno del servidor");
+                    }});
         }
     }
-
 
     /**
      * Obtiene el ID de un rol dado su nombre.
@@ -243,8 +239,8 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response, HttpSession session) {
-        // Invalida la sesión
         session.invalidate();
+        logger.info("Sesión cerrada exitosamente."); // Log de cierre de sesión
 
         Cookie usuarioIdCookie = new Cookie("usuarioId", null);
         Cookie nomRolCookie = new Cookie("nomRol", null);
@@ -273,13 +269,14 @@ public class AuthController {
     @GetMapping("/check-session")
     public ResponseEntity<?> checkSession(HttpSession session) {
         if (session.getAttribute("usuarioId") != null) {
+            logger.info("Sesión activa para el usuario ID: " + session.getAttribute("usuarioId")); // Log de sesión activa
             return ResponseEntity.ok(new SessionResponse(true, "Sesión activa"));
         } else {
+            logger.warn("Sesión no activa."); // Log de advertencia
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new SessionResponse(false, "Sesión no activa"));
         }
     }
-
     /**
      * Método que obtiene los registros de asistencia.
      *
