@@ -1,0 +1,56 @@
+/* Estilo general para el contenedor principal de burbujas */
+.bubble-container {
+    position: fixed; /* Cambiado de absolute a fixed */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Ancho completo de la ventana */
+    height: 100vh; /* Altura completa de la ventana */
+    overflow: hidden; /* Oculta el contenido que sale del área del contenedor */
+    pointer-events: none; /* Evita que interfiera con el resto del contenido */
+}
+
+  /* Estilo para el contenedor de las burbujas dentro de .bubble-container */
+  .bubble-container .bubbles {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Estilos para cada burbuja (elemento span dentro de .bubbles) */
+  .bubble-container .bubbles span {
+    position: absolute;
+    bottom: -100px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    animation: animate 15s linear infinite;
+    animation-duration: calc(140s / var(--i));  /* Variación de duración según el valor de la variable personalizada */
+  }
+  
+  /* Colores para burbujas en posición impar (1n) */
+  .bubble-container .bubbles span:nth-child(1n) {    
+    background: #4fc3dc;
+    box-shadow: 0 0 0 10px #4fc3dc44, 0 0 50px #4fc3dc, 0 0 100px #4fc3dc;
+  }
+  
+  /* Colores para burbujas en posición par (2n) */
+  .bubble-container .bubbles span:nth-child(2n) {
+    background: #ff2d75;
+    box-shadow: 0 0 0 10px #ff2d7544, 0 0 50px #ff2d75, 0 0 100px #ff2d75;
+  }
+  
+  /* Colores para burbujas en cada tercera posición (3n) */
+  .bubble-container .bubbles span:nth-child(3n) {
+    background: #ffdd44;
+    box-shadow: 0 0 0 10px #ffdd4444, 0 0 50px #ffdd44, 0 0 100px #ffdd44;
+  }
+  
+  /* Animación que mueve las burbujas hacia arriba y aumenta su tamaño */
+  @keyframes animate {
+    0% {
+      transform: translateY(0vh) scale(0.5);
+    }
+    100% {
+      transform: translateY(-130vh) scale(2);
+    }
+  }
