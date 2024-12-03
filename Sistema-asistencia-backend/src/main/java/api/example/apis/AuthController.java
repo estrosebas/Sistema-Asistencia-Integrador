@@ -79,7 +79,7 @@ public class AuthController {
                 } else {
                     logger.warn("Email o contraseña incorrectos para el usuario: " + email); // Log de advertencia
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            . body(new HashMap<String, Object>() {{
+                            .body(new HashMap<String, Object>() {{
                                 put("success", false);
                                 put("message", "Email o contraseña incorrectos");
                             }});
@@ -95,7 +95,6 @@ public class AuthController {
         }
     }
 
-
     /**
      * Método que permite registrar un nuevo usuario.
      *
@@ -109,34 +108,46 @@ public class AuthController {
         logger.info("Registro de nuevo usuario: " + email); // Log de registro
 
         try (Connection connection = dataSource.getConnection()) {
-            String insertQuery = "INSERT INTO usuario (email, password) VALUES (?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
-                statement.setString(1, email);
-                statement.setString(2, password);
-                int rowsInserted = statement.executeUpdate();
+            connection.setAutoCommit(false);
 
-                if (rowsInserted > 0) {
-                    logger.info("Registro exitoso para el usuario: " + email); // Log de éxito
-                    return ResponseEntity.ok(new HashMap<String, Object>() {{
-                        put("success", true);
-                        put("message", "Registro exitoso");
-                    }});
-                } else {
-                    logger.warn("Error al registrar el usuario: " + email); // Log de advertencia
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new HashMap<String, Object>() {{
-                                put("success", false);
-                                put("message", "Error al registrar el usuario");
-                            }});
+            // Verificar si el usuario ya existe
+            if (isUserExists(connection, email)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new RegisterResponse(false, "El email ya está registrado"));
+            }
+
+            // Insertar nuevo usuario
+            String insertQuery = "INSERT INTO usuario (ape_materno, ape_paterno, dni, domicilio, email, fech_nacimiento, genero, nombre, password, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                setUserParameters(insertStatement, registerRequest);
+                insertStatement.executeUpdate();
+
+                // Obtener el rol ID
+                long rolId = getRoleIdByName(connection, registerRequest.getRol());
+
+                // Insertar en la tabla de usuarios_roles
+                String insertRoleQuery = "INSERT INTO usuarios_roles (usuario_id, rol_id) VALUES (?, ?)";
+                try (PreparedStatement insertRoleStatement = connection.prepareStatement(insertRoleQuery)) {
+                    long usuarioId = getLastInsertId(connection);
+                    insertRoleStatement.setLong(1, usuarioId);
+                    insertRoleStatement.setLong(2, rolId);
+                    insertRoleStatement.executeUpdate();
                 }
+
+                connection.commit();
+                logger.info("Registro exitoso para el usuario: " + email); // Log de éxito
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new RegisterResponse(true, "Registro exitoso"));
+            } catch (Exception e) {
+                connection.rollback();
+                logger.error("Error al intentar registrar el usuario: ", e); // Log de error
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new RegisterResponse(false, "Error en el servidor: " + e.getMessage()));
             }
         } catch (SQLException e) {
             logger.error("Error al intentar registrar el usuario: ", e); // Log de error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new HashMap<String, Object>() {{
-                        put("success", false);
-                        put("message", "Error interno del servidor");
-                    }});
+                    .body(new RegisterResponse(false, "Error en el servidor: " + e.getMessage()));
         }
     }
 
@@ -277,6 +288,7 @@ public class AuthController {
                     .body(new SessionResponse(false, "Sesión no activa"));
         }
     }
+
     /**
      * Método que obtiene los registros de asistencia.
      *
@@ -390,8 +402,6 @@ public class AuthController {
         }
     }
 
-
-
     @PostMapping("/add-evento")
     public ResponseEntity<?> addEvento(@RequestBody Map<String, Object> eventoRequest) {
         String nombreEvento = (String) eventoRequest.get("nombreEvento");
@@ -472,7 +482,6 @@ public class AuthController {
             }});
         }
     }
-
 
     @PutMapping("/eventos/{id}")
     public ResponseEntity<?> updateEvento(@PathVariable("id") Long idEvento, @RequestBody Map<String, Object> eventoRequest) {
@@ -559,6 +568,7 @@ public class AuthController {
             }});
         }
     }
+
     @GetMapping("/usuarios")
     public ResponseEntity<?> getUsuarios() {
         try (Connection connection = dataSource.getConnection()) {
@@ -591,6 +601,7 @@ public class AuthController {
                     }});
         }
     }
+
     @GetMapping("/usuarios-evento")
     public ResponseEntity<?> getUsuariosEvento(@RequestParam("eventoId") Long eventoId) {
         try (Connection connection = dataSource.getConnection()) {
@@ -627,6 +638,7 @@ public class AuthController {
                     }});
         }
     }
+
     @PostMapping("/add-asiste")
     public ResponseEntity<?> addAsiste(@RequestBody Map<String, Long> request) {
         Long idUsuario = request.get("idUsuario");
@@ -668,6 +680,7 @@ public class AuthController {
                     }});
         }
     }
+
     @DeleteMapping("/delete-asiste")
     public ResponseEntity<?> deleteAsiste(@RequestParam("idUsuario") Long idUsuario, @RequestParam("idEvento") Long idEvento) {
         String deleteQuery = "DELETE FROM asiste WHERE ID_Usuario = ? AND ID_Evento = ?";
@@ -762,5 +775,4 @@ public class AuthController {
             }});
         }
     }
-
 }
