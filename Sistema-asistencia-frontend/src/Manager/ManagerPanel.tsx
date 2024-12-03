@@ -14,7 +14,7 @@ const ManagerPanel: React.FC = () => {
 
   const toggleMenu = () => setMenuAbierto((prevState) => !prevState);
   const toggleModoOscuro = () => setModoOscuro((prevState) => !prevState);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const seleccionarVista = (id: string) => {
     setVistaActiva(id);
     if (window.innerWidth <= 768) setMenuAbierto(false); // Cierra el menú en pantallas pequeñas
@@ -46,13 +46,10 @@ const ManagerPanel: React.FC = () => {
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/logout`,
-        {
-          method: "POST",
-          credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
-        }
-      );
+      const response = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
+      });
 
       if (response.ok) {
         // Redirigir al usuario a la página de inicio o hacer otras acciones
@@ -70,13 +67,10 @@ const ManagerPanel: React.FC = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/auth/check-session`,
-          {
-            method: "GET",
-            credentials: "include", // Esto asegura que la cookie sea enviada
-          }
-        );
+        const response = await fetch(`${API_URL}/auth/check-session`, {
+          method: "GET",
+          credentials: "include", // Esto asegura que la cookie sea enviada
+        });
         const data = await response.json();
 
         if (data.authenticated) {

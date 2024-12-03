@@ -6,7 +6,6 @@ import Registro from "./componentes/Registro";
 import Asistencia from "./componentes/Asistencia";
 import Historial from "./componentes/Historial";
 import Reporte from "./componentes/Reporte";
-import Configurar from "./componentes/Configurar";
 import { useNavigate } from "react-router-dom";
 
 const AdminPanel: React.FC = () => {
@@ -46,12 +45,6 @@ const AdminPanel: React.FC = () => {
       icon: "fa-chart-bar",
       label: "Reporte de asistencia",
       action: () => seleccionarVista("reporte"),
-    },
-    {
-      id: "configurar",
-      icon: "fa-cog",
-      label: "Configurar",
-      action: () => seleccionarVista("configurar"),
     },
   ];
   // Función para manejar el cierre de sesión
@@ -154,16 +147,14 @@ const AdminPanel: React.FC = () => {
           }`}
         >
           {vistaActiva === "registro" ? (
-            <Registro onNuevoRegistro={() => console.log("Nuevo registro")} />
+            <Registro />
           ) : vistaActiva === "asistencia" ? (
             <Asistencia />
           ) : vistaActiva === "historial" ? (
             <Historial />
           ) : vistaActiva === "reporte" ? (
             <Reporte />
-          ) : (
-            <Configurar />
-          )}
+          ) : null}
         </div>
       </div>
     </div>

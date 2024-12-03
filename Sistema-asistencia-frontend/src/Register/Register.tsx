@@ -6,7 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Estrellas from "../../public/efectos/estrellas";
 
 // Definir la constante para la URL base
-const API_URL = import.meta.env.VITE_API_URL;
+//const API_URL = import.meta.env.VITE_API_URL;
 
 const Registration = () => {
   const [nombres, setNombres] = useState("");
@@ -22,7 +22,7 @@ const Registration = () => {
   const [rol, setRol] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Resetear mensaje de error

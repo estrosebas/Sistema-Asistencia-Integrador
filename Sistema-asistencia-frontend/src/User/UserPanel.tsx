@@ -7,8 +7,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./UserPanel.css";
 
-// Definir la URL base de la API desde la variable de entorno
-const API_URL = import.meta.env.VITE_API_URL;
 
 const UserPanel: React.FC = () => {
   const [vistaActiva, setVistaActiva] = useState<string>("historial");
@@ -42,7 +40,7 @@ const UserPanel: React.FC = () => {
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-      const response = await fetch(`${API_URL}/auth/logout`, {
+      const response = await fetch(`http://localhost:3000/api/auth/logout`, {
         method: "POST",
         credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
       });
@@ -63,7 +61,7 @@ const UserPanel: React.FC = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await fetch(`${API_URL}/auth/check-session`, {
+        const response = await fetch(`http://localhost:3000/api/auth/check-session`, {
           method: "GET",
           credentials: "include", // Esto asegura que la cookie sea enviada
         });
