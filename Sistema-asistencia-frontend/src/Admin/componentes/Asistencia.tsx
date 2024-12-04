@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, Form, Row, Col, Button, Alert } from "react-bootstrap";
 import QrReader from "react-qr-scanner";
 import "./estilos/Asistencia.css";
@@ -32,6 +32,7 @@ const Asistencia: React.FC = () => {
     {}
   );
   const [mensajeError, setMensajeError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const verificarTiempoEscaneo = (qrCode: string): boolean => {
     const tiempoActual = Date.now();
@@ -135,7 +136,21 @@ const Asistencia: React.FC = () => {
 
   useEffect(() => {
     fetchEventos();
+    startCamera();
   }, []);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error("Error al acceder a la cámara:", error);
+    }
+  };
 
   const handleEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setEventoSeleccionado(e.target.value);
@@ -191,9 +206,15 @@ const Asistencia: React.FC = () => {
             </Card.Header>
             <Card.Body>
               <div className="video-container">
+                <video
+                  ref={videoRef}
+                  style={{ width: "100%" }}
+                  autoPlay
+                  playsInline
+                />
                 <QrReader
                   delay={100}
-                  style={{ width: "100%" }}
+                  style={{ display: "none" }}
                   onError={handleError}
                   onScan={handleScan}
                 />
