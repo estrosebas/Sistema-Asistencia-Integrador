@@ -9,7 +9,7 @@ const Historial: React.FC = () => {
   const [busquedaId, setBusquedaId] = useState('');
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<string>('todos');
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<any>(null);
-  const [grupoSeleccionadoHistorial, setGrupoSeleccionadoHistorial] = useState<string>(''); // Nuevo estado para el grupo seleccionado en el historial
+  const [grupoSeleccionadoHistorial, setGrupoSeleccionadoHistorial] = useState<string>('');
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {

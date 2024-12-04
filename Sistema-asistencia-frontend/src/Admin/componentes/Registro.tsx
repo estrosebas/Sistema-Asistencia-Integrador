@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Table, Button } from "react-bootstrap";
 import AttendanceModal from "./CrearRegistro";
 import Configurar from "./Configurar";
-import GestionarUsuarios from "./GestionarUsuarios"; // Importar el nuevo componente
+import GestionarUsuarios from "./GestionarUsuarios";
+import InformacionEvento from "./InformacionEvento"; // Importar el nuevo componente modal
 import "./estilos/Registro.css";
 import axios from "axios";
 
@@ -20,19 +21,22 @@ const Registro: React.FC = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
   const [mostrarModalGestionarUsuarios, setMostrarModalGestionarUsuarios] = useState(false);
+  const [mostrarModalInformacion, setMostrarModalInformacion] = useState(false); // Nuevo estado para el modal de información
   const [eventoEditar, setEventoEditar] = useState<Evento | null>(null);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<Evento | null>(null);
+  const [eventoInformacion, setEventoInformacion] = useState<Evento | null>(null); // Nuevo estado para el evento a mostrar en el modal
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Obtener eventos desde el backend
   const fetchEventos = async () => {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}'); // Obtener el objeto userData desde el localStorage
-    const userId = userData.usuarioId; // Extraer el ID del usuario
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.usuarioId;
     if (userId === null || userId === undefined) {
       console.error("El ID del usuario no está disponible en el localStorage.");
       return;
     }
     try {
-      const response = await axios.get(`http://localhost:3000/api/auth/eventos?usuarioId=${userId}`);
+      const response = await axios.get(`${API_URL}/auth/eventos?usuarioId=${userId}`);
       if (response.data.success) {
         setEventos(response.data.data);
       } else {
@@ -55,7 +59,7 @@ const Registro: React.FC = () => {
   const agregarEvento = async (nuevoEvento: Partial<Evento>) => {
     try {
       if (!nuevoEvento.id) {
-        const response = await axios.get("http://localhost:3000/api/auth/eventos");
+        const response = await axios.get(`${API_URL}/auth/eventos`);
         const eventosActualizados = response.data.data;
         setEventos(eventosActualizados);
       } else {
@@ -72,7 +76,7 @@ const Registro: React.FC = () => {
     const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este evento?");
     if (confirmacion) {
       try {
-        const response = await axios.delete(`http://localhost:3000/api/auth/eventos/${id}`);
+        const response = await axios.delete(`${API_URL}/auth/eventos/${id}`);
         if (response.data.success) {
           setEventos((prevEventos) => prevEventos.filter((evento) => evento.id !== id));
           alert(response.data.message);
@@ -104,6 +108,34 @@ const Registro: React.FC = () => {
     setMostrarModalGestionarUsuarios(true);
   };
 
+  // Mostrar información del evento en el modal
+  const mostrarInformacionEvento = (evento: Evento) => {
+    setEventoInformacion(evento);
+    setMostrarModalInformacion(true);
+  };
+
+  // Función para formatear la fecha
+  const formatearFecha = (fecha: string) => {
+    const date = new Date(fecha);
+    return date.toLocaleDateString();
+  };
+
+  // Función para formatear la hora
+  const formatearHora = (fecha: string) => {
+    const date = new Date(fecha);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Función para calcular la diferencia de horas
+  const calcularDiferenciaHoras = (fechaEntrada: string, fechaSalida: string) => {
+    const entrada = new Date(fechaEntrada);
+    const salida = new Date(fechaSalida);
+    const diff = salida.getTime() - entrada.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <div className="registro-container">
       <div className="registro-header d-flex justify-content-between align-items-center">
@@ -121,10 +153,10 @@ const Registro: React.FC = () => {
             <tr>
               <th>ID</th>
               <th>Nombre</th>
-              <th>Fecha Entrada</th>
-              <th>Fecha Salida</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Duración</th>
               <th>Capacidad</th>
-              <th>Descripción</th>
               <th>Usuario</th>
               <th>Acciones</th>
             </tr>
@@ -133,34 +165,23 @@ const Registro: React.FC = () => {
             {eventos.map((evento) => (
               <tr key={evento.id}>
                 <td>{evento.id}</td>
-                <td>{evento.nombreEvento}</td>
-                <td>{evento.fechaHoraEntrada}</td>
-                <td>{evento.fechaHoraSalida}</td>
+                <td onClick={() => mostrarInformacionEvento(evento)} style={{ cursor: 'pointer', color: 'blue' }}>
+                  {evento.nombreEvento}
+                </td>
+                <td>{formatearFecha(evento.fechaHoraEntrada)}</td>
+                <td>{formatearHora(evento.fechaHoraEntrada)} - {formatearHora(evento.fechaHoraSalida)}</td>
+                <td>{calcularDiferenciaHoras(evento.fechaHoraEntrada, evento.fechaHoraSalida)}</td>
                 <td>{evento.capacidad}</td>
-                <td>{evento.descripcion}</td>
                 <td>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => gestionarUsuarios(evento)}
-                  >
+                  <Button variant="warning" size="sm" onClick={() => gestionarUsuarios(evento)}>
                     Gestionar Usuarios
                   </Button>
                 </td>
                 <td>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => editarEvento(evento)}
-                  >
+                  <Button variant="primary" size="sm" className="me-2" onClick={() => editarEvento(evento)}>
                     Editar
                   </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => eliminarEvento(evento.id)}
-                  >
+                  <Button variant="danger" size="sm" onClick={() => eliminarEvento(evento.id)}>
                     Eliminar
                   </Button>
                 </td>
@@ -176,11 +197,7 @@ const Registro: React.FC = () => {
       )}
 
       {/* Modal para crear evento */}
-      <AttendanceModal
-        show={mostrarModal}
-        handleClose={() => setMostrarModal(false)}
-        onSubmit={agregarEvento}
-      />
+      <AttendanceModal show={mostrarModal} handleClose={() => setMostrarModal(false)} onSubmit={agregarEvento} />
 
       {/* Modal para editar evento */}
       {eventoEditar && (
@@ -200,6 +217,13 @@ const Registro: React.FC = () => {
           evento={eventoSeleccionado}
         />
       )}
+
+      {/* Modal para mostrar información del evento */}
+      <InformacionEvento
+        show={mostrarModalInformacion}
+        handleClose={() => setMostrarModalInformacion(false)}
+        evento={eventoInformacion}
+      />
     </div>
   );
 };

@@ -9,7 +9,14 @@ interface ConfigurarProps {
   onSubmit: (evento: any) => void;
 }
 
-const Configurar: React.FC<ConfigurarProps> = ({ show, handleClose, evento, onSubmit }) => {
+const apiUrl = import.meta.env.VITE_API_URL;
+
+const Configurar: React.FC<ConfigurarProps> = ({
+  show,
+  handleClose,
+  evento,
+  onSubmit,
+}) => {
   const [formData, setFormData] = useState({
     id: evento.id,
     nombreEvento: evento.nombreEvento,
@@ -30,20 +37,26 @@ const Configurar: React.FC<ConfigurarProps> = ({ show, handleClose, evento, onSu
     });
   }, [evento]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.put(`http://localhost:3000/api/auth/eventos/${formData.id}`, {
-        nombreEvento: formData.nombreEvento,
-        descripcion: formData.descripcion,
-        capacidad: formData.capacidad.toString(), // Convierte a String si es necesario
-        fechaHoraEntrada: formData.fechaHoraEntrada,
-        fechaHoraSalida: formData.fechaHoraSalida,
-      });
+      const response = await axios.put(
+        `${apiUrl}/auth/eventos/${formData.id}`,
+        {
+          nombreEvento: formData.nombreEvento,
+          descripcion: formData.descripcion,
+          capacidad: formData.capacidad.toString(), // Convierte a String si es necesario
+          fechaHoraEntrada: formData.fechaHoraEntrada,
+          fechaHoraSalida: formData.fechaHoraSalida,
+        }
+      );
+
       if (response.data.success) {
         onSubmit(formData);
         handleClose();
@@ -54,8 +67,6 @@ const Configurar: React.FC<ConfigurarProps> = ({ show, handleClose, evento, onSu
       console.error("Error en la solicitud:", error);
     }
   };
-  
-  
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -66,7 +77,13 @@ const Configurar: React.FC<ConfigurarProps> = ({ show, handleClose, evento, onSu
         <Form>
           <Form.Group>
             <Form.Label>ID</Form.Label>
-            <Form.Control type="text" name="id" value={formData.id} readOnly disabled />
+            <Form.Control
+              type="text"
+              name="id"
+              value={formData.id}
+              readOnly
+              disabled
+            />
           </Form.Group>
           <Form.Group>
             <Form.Label>Nombre del Evento</Form.Label>

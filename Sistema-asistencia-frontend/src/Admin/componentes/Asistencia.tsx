@@ -19,7 +19,7 @@ interface Evento {
   id: number;
   nombreEvento: string;
 }
-
+const API_URL = import.meta.env.VITE_API_URL;
 const Asistencia: React.FC = () => {
   const [qrData, setQrData] = useState<QRDataType | null>(null);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<string>("");
@@ -39,7 +39,7 @@ const Asistencia: React.FC = () => {
     const diferencia = (tiempoActual - ultimoTiempo) / 1000 / 60;
 
     if (diferencia < 5) {
-      setMensajeError(`El QR ${qrCode} ya fue escaneado recientemente.`); 
+      setMensajeError(`El QR ${qrCode} ya fue escaneado recientemente.`);
       setTimeout(() => setMensajeError(null), 2000);
       return false;
     }
@@ -77,11 +77,14 @@ const Asistencia: React.FC = () => {
   const registrarAsistencia = async (dni: string, idEvento: string) => {
     const fechaRegistro = new Date();
     fechaRegistro.setHours(fechaRegistro.getHours() - 5);
-    const fechaFormateada = fechaRegistro.toISOString().replace("T", " ").substring(0, 19);
+    const fechaFormateada = fechaRegistro
+      .toISOString()
+      .replace("T", " ")
+      .substring(0, 19);
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/auth/registrar-asistencia`,
+        `${API_URL}/auth/registrar-asistencia`,
         {
           dni,
           idEvento,
@@ -117,7 +120,9 @@ const Asistencia: React.FC = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:3000/api/auth/eventos?usuarioId=${userId}`);
+      const response = await axios.get(
+        `${API_URL}/auth/eventos?usuarioId=${userId}`
+      );
       if (response.data.success) {
         setEventos(response.data.data);
       } else {
@@ -187,7 +192,7 @@ const Asistencia: React.FC = () => {
             <Card.Body>
               <div className="video-container">
                 <QrReader
-                  delay={100} 
+                  delay={100}
                   style={{ width: "100%" }}
                   onError={handleError}
                   onScan={handleScan}
@@ -195,7 +200,9 @@ const Asistencia: React.FC = () => {
               </div>
               <div className="evento-selector mt-3">
                 <Form.Group>
-                  <Form.Label className="fw-bold">Seleccionar Evento</Form.Label>
+                  <Form.Label className="fw-bold">
+                    Seleccionar Evento
+                  </Form.Label>
                   <Form.Select
                     value={eventoSeleccionado}
                     onChange={handleEventoChange}

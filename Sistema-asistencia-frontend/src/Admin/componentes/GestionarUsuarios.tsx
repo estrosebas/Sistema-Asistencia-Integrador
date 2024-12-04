@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Table, Alert, Row, Col, InputGroup } from "react-bootstrap";
+
+import {
+  Modal,
+  Button,
+  Form,
+  Table,
+  Alert,
+  Row,
+  Col,
+  InputGroup,
+} from "react-bootstrap";
 import axios from "axios";
 
 interface GestionarUsuariosProps {
@@ -15,15 +25,21 @@ interface GestionarUsuariosProps {
   };
 }
 
-const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose, evento }) => {
+const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({
+  show,
+  handleClose,
+  evento,
+}) => {
   const [dni, setDni] = useState("");
   const [usuariosEvento, setUsuariosEvento] = useState<any[]>([]);
   const [usuariosTemporales, setUsuariosTemporales] = useState<any[]>([]);
   const [mensaje, setMensaje] = useState("");
   const [usuarioId, setUsuarioId] = useState<number | null>(null);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     setUsuarioId(userData.usuarioId);
     if (show) {
       fetchUsuariosEvento();
@@ -32,9 +48,13 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
 
   const fetchUsuariosEvento = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/auth/usuarios-evento?eventoId=${evento.id}`);
+      const response = await axios.get(
+        `${API_URL}/auth/usuarios-evento?eventoId=${evento.id}`
+      );
       if (response.data.success) {
-        const usuariosFiltrados = response.data.data.filter((u: any) => u.id !== usuarioId);
+        const usuariosFiltrados = response.data.data.filter(
+          (u: any) => u.id !== usuarioId
+        );
         setUsuariosEvento(usuariosFiltrados);
       } else {
         console.error("No se encontraron usuarios para el evento");
@@ -46,11 +66,15 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
 
   const buscarUsuario = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/auth/usuarios`);
+      const response = await axios.get(`${API_URL}/auth/usuarios`);
       if (response.data.success) {
-        const usuarioEncontrado = response.data.data.find((u: any) => u.dni === parseInt(dni));
+        const usuarioEncontrado = response.data.data.find(
+          (u: any) => u.dni === parseInt(dni)
+        );
         if (usuarioEncontrado) {
-          const usuarioYaEnEvento = usuariosEvento.some((u: any) => u.dni === usuarioEncontrado.dni);
+          const usuarioYaEnEvento = usuariosEvento.some(
+            (u: any) => u.dni === usuarioEncontrado.dni
+          );
           if (usuarioYaEnEvento) {
             setMensaje("El usuario ya está en el evento");
           } else if (usuarioEncontrado.id === usuarioId) {
@@ -59,7 +83,7 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
             setMensaje(`Usuario encontrado: ${usuarioEncontrado.nombre}`);
             setUsuariosTemporales([...usuariosTemporales, usuarioEncontrado]);
           }
-          setDni(""); 
+          setDni("");
         } else {
           setMensaje("Usuario no encontrado");
         }
@@ -78,7 +102,7 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
   const añadirUsuarios = async () => {
     try {
       for (const usuario of usuariosTemporales) {
-        const response = await axios.post("http://localhost:3000/api/auth/add-asiste", {
+        const response = await axios.post(`${API_URL}/auth/add-asiste`, {
           idUsuario: usuario.id,
           idEvento: evento.id,
         });
@@ -96,9 +120,13 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
 
   const eliminarUsuario = async (idUsuario: number) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/api/auth/delete-asiste?idUsuario=${idUsuario}&idEvento=${evento.id}`);
+      const response = await axios.delete(
+        `${API_URL}/auth/delete-asiste?idUsuario=${idUsuario}&idEvento=${evento.id}`
+      );
       if (response.data.success) {
-        setUsuariosEvento(usuariosEvento.filter((u: any) => u.id !== idUsuario));
+        setUsuariosEvento(
+          usuariosEvento.filter((u: any) => u.id !== idUsuario)
+        );
         alert("Usuario eliminado exitosamente");
       } else {
         alert("Error al eliminar el usuario");
@@ -115,7 +143,14 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
   };
 
   return (
-    <Modal show={show} onHide={() => { handleClose(); limpiarCampos(); }} size="xl">
+    <Modal
+      show={show}
+      onHide={() => {
+        handleClose();
+        limpiarCampos();
+      }}
+      size="xl"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Gestionar Usuarios del Evento</Modal.Title>
       </Modal.Header>
@@ -156,7 +191,9 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="text-center">No hay usuarios en el evento</td>
+                    <td colSpan={6} className="text-center">
+                      No hay usuarios en el evento
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -219,7 +256,13 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({ show, handleClose
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => { handleClose(); limpiarCampos(); }}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            handleClose();
+            limpiarCampos();
+          }}
+        >
           Cerrar
         </Button>
         <Button variant="primary" onClick={añadirUsuarios}>

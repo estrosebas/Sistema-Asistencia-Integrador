@@ -775,4 +775,173 @@ public class AuthController {
             }});
         }
     }
+
+    @GetMapping("/usuarios-historial")
+    public ResponseEntity<?> getUsuariosHistorial(@RequestParam("usuarioId") Long usuarioId) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Obtener los eventos del usuario logueado
+            String eventosQuery = "SELECT e.ID_Evento, e.NombreEvento "
+                    + "FROM evento e "
+                    + "INNER JOIN asiste a ON e.ID_Evento = a.ID_Evento "
+                    + "WHERE a.ID_Usuario = ?";
+            PreparedStatement eventosStatement = connection.prepareStatement(eventosQuery);
+            eventosStatement.setLong(1, usuarioId);
+            ResultSet eventosResultSet = eventosStatement.executeQuery();
+
+            List<Long> eventosIds = new ArrayList<>();
+            while (eventosResultSet.next()) {
+                eventosIds.add(eventosResultSet.getLong("ID_Evento"));
+            }
+
+            // Obtener los usuarios que comparten eventos en común
+            String usuariosQuery = "SELECT DISTINCT u.id, u.dni, u.nombre, u.ape_paterno, u.ape_materno "
+                    + "FROM usuario u "
+                    + "INNER JOIN asiste a ON u.id = a.ID_Usuario "
+                    + "WHERE a.ID_Evento IN (";
+
+            for (int i = 0; i < eventosIds.size(); i++) {
+                usuariosQuery += "?";
+                if (i < eventosIds.size() - 1) {
+                    usuariosQuery += ", ";
+                }
+            }
+
+            usuariosQuery += ")";
+
+            PreparedStatement usuariosStatement = connection.prepareStatement(usuariosQuery);
+            for (int i = 0; i < eventosIds.size(); i++) {
+                usuariosStatement.setLong(i + 1, eventosIds.get(i));
+            }
+
+            ResultSet usuariosResultSet = usuariosStatement.executeQuery();
+
+            List<Map<String, Object>> usuarios = new ArrayList<>();
+            while (usuariosResultSet.next()) {
+                Map<String, Object> usuario = new HashMap<>();
+                usuario.put("id", usuariosResultSet.getLong("id"));
+                usuario.put("dni", usuariosResultSet.getLong("dni"));
+                usuario.put("nombre", usuariosResultSet.getString("nombre"));
+                usuario.put("ape_paterno", usuariosResultSet.getString("ape_paterno"));
+                usuario.put("ape_materno", usuariosResultSet.getString("ape_materno"));
+                usuario.put("eventos", new ArrayList<String>());
+                usuarios.add(usuario);
+            }
+
+            // Agregar los eventos a los usuarios
+            for (Map<String, Object> usuario : usuarios) {
+                String eventosUsuarioQuery = "SELECT e.NombreEvento "
+                        + "FROM evento e "
+                        + "INNER JOIN asiste a ON e.ID_Evento = a.ID_Evento "
+                        + "WHERE a.ID_Usuario = ?";
+                PreparedStatement eventosUsuarioStatement = connection.prepareStatement(eventosUsuarioQuery);
+                eventosUsuarioStatement.setLong(1, (Long) usuario.get("id"));
+                ResultSet eventosUsuarioResultSet = eventosUsuarioStatement.executeQuery();
+                while (eventosUsuarioResultSet.next()) {
+                    ((List<String>) usuario.get("eventos")).add(eventosUsuarioResultSet.getString("NombreEvento"));
+                }
+            }
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("data", usuarios);
+            }});
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("message", "Error al obtener los usuarios: " + e.getMessage());
+                        put("success", false);
+                    }});
+        }
+    }
+    @GetMapping("/registros-asistencia-usuario-evento")
+    public ResponseEntity<?> getRegistrosAsistenciaUsuarioEvento(@RequestParam("usuarioId") Long usuarioId, @RequestParam("eventoNombre") String eventoNombre) {
+        try (Connection connection = dataSource.getConnection()) {
+            // Obtener el ID del evento utilizando el nombre del evento
+            String eventoIdQuery = "SELECT ID_Evento FROM evento WHERE NombreEvento = ?";
+            PreparedStatement eventoIdStatement = connection.prepareStatement(eventoIdQuery);
+            eventoIdStatement.setString(1, eventoNombre);
+            ResultSet eventoIdResultSet = eventoIdStatement.executeQuery();
+
+            if (!eventoIdResultSet.next()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new HashMap<String, Object>() {{
+                            put("success", false);
+                            put("message", "Evento no encontrado");
+                        }});
+            }
+
+            Long eventoId = eventoIdResultSet.getLong("ID_Evento");
+
+            // Obtener los registros de asistencia
+            String query = "SELECT ra.FechaRegistro, ra.Estado "
+                    + "FROM registro_asistencia ra "
+                    + "WHERE ra.ID_Usuario = ? AND ra.ID_Evento = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, usuarioId);
+            statement.setLong(2, eventoId);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Map<String, Object>> registros = new ArrayList<>();
+            while (resultSet.next()) {
+                Map<String, Object> registro = new HashMap<>();
+                registro.put("fechaRegistro", resultSet.getTimestamp("FechaRegistro").toLocalDateTime());
+                registro.put("estado", resultSet.getString("Estado"));
+                registros.add(registro);
+            }
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("data", registros);
+            }});
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("message", "Error al obtener los registros de asistencia: " + e.getMessage());
+                        put("success", false);
+                    }});
+        }
+    }
+
+
+    @GetMapping("/evento-por-nombre")
+    public ResponseEntity<?> getEventoPorNombre(@RequestParam("nombreEvento") String nombreEvento) {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT * FROM evento WHERE NombreEvento = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, nombreEvento);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Evento evento = new Evento();
+                evento.setId(resultSet.getLong("ID_Evento"));
+                evento.setNombreEvento(resultSet.getString("NombreEvento"));
+                evento.setCapacidad(resultSet.getInt("Capacidad"));
+                evento.setDescripcion(resultSet.getString("Descripcion"));
+                evento.setFechaHoraEntrada(resultSet.getTimestamp("FechaHoraEntrada").toLocalDateTime().toString());
+                evento.setFechaHoraSalida(resultSet.getTimestamp("FechaHoraSalida").toLocalDateTime().toString());
+
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("success", true);
+                    put("data", evento);
+                }});
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new HashMap<String, Object>() {{
+                            put("message", "No se encontró el evento");
+                            put("success", false);
+                        }});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, Object>() {{
+                        put("message", "Error al obtener el evento: " + e.getMessage());
+                        put("success", false);
+                    }});
+        }
+    }
+
+
 }
