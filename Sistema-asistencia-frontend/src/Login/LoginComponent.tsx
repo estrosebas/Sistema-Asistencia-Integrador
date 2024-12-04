@@ -21,8 +21,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        // `${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
-        `http://localhost:3000/api/auth/login`, // Usando localhost
+        `${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
         {
           method: "POST",
           headers: {

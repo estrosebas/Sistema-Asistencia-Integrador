@@ -7,7 +7,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./UserPanel.css";
 
-
 const UserPanel: React.FC = () => {
   const [vistaActiva, setVistaActiva] = useState<string>("historial");
   const [menuAbierto, setMenuAbierto] = useState<boolean>(false);
@@ -40,10 +39,13 @@ const UserPanel: React.FC = () => {
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-      const response = await fetch(`http://localhost:3000/api/auth/logout`, {
-        method: "POST",
-        credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
+        }
+      );
 
       if (response.ok) {
         // Redirigir al usuario a la página de inicio o hacer otras acciones
@@ -61,10 +63,13 @@ const UserPanel: React.FC = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/auth/check-session`, {
-          method: "GET",
-          credentials: "include", // Esto asegura que la cookie sea enviada
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/check-session`,
+          {
+            method: "GET",
+            credentials: "include", // Esto asegura que la cookie sea enviada
+          }
+        );
         const data = await response.json();
 
         if (data.authenticated) {
