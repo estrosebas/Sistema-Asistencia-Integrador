@@ -1,28 +1,50 @@
-.asistio {
-    background-color: #c8e6c9 !important; /* Verde claro para días asistidos */
+#custom-calendar {
+  width: auto;
+  height: auto;
+  font-size: 12px;
 }
 
-.no-asistio {
-    background-color: #ffcdd2 !important; /* Rojo claro para días no asistidos */
-}
-.calendar-container {
-    display: flex;
-    justify-content: center; /* Centra el calendario */
-    margin-top: 20px; /* Espacio superior */
-    width: 100%; /* Asegura que el contenedor ocupe el 100% del ancho del modal */
+#custom-calendar .react-calendar {
+  width: auto;
+  height: 100%;
+  font-size: 1.2em;
 }
 
-.react-calendar {
-    width: 100%; /* Ancho del calendario al 100% del contenedor */
-    max-width: 1500px; /* Ancho máximo del calendario */
-    height: auto; /* Altura automática para ajustar al contenido */
-    font-size: 1.2em; /* Aumenta el tamaño de la fuente */
+#custom-calendar .react-calendar__tile {
+  max-height: 52px;
+  border-radius: 15px;
 }
 
-.react-calendar__month-view__days__day {
-    width: calc(100% / 7); /* Ancho de cada día en función del ancho total */
-    height: calc(500px / 7); /* Altura de cada día en función del alto total */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#custom-calendar .react-calendar__month-view__days__day {
+  padding: 5px;
+}
+
+#custom-calendar .react-calendar__tile--active {
+  background-color: inherit;
+  color: inherit;
+}
+
+#custom-calendar .asiste {
+  background-color: lightgreen !important;
+  color: black;
+}
+
+#custom-calendar .falta {
+  background-color: lightcoral !important;
+  color: black;
+}
+
+#custom-calendar .tarde {
+  background-color: lightsalmon !important;
+  color: black;
+}
+
+#custom-calendar .justificado {
+  background-color: lightblue !important;
+  color: black;
+}
+
+#custom-calendar .gris {
+  background-color: lightgray !important;
+  color: black;
 }

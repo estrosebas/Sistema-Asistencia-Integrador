@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Card, Form, Row, Col, Button, Alert } from "react-bootstrap";
-import QrReader from "react-qr-scanner";
+import React, { useState, useEffect, useRef } from "react";
+import { Card, Form, Row, Col, Button, Alert, Dropdown } from "react-bootstrap";
+import { BrowserMultiFormatReader, Exception, Result } from "@zxing/library";
 import "./estilos/Asistencia.css";
 import axios from "axios";
-
 interface RegistroManual {
   dni: string;
   evento: string;
@@ -19,10 +18,13 @@ interface Evento {
   id: number;
   nombreEvento: string;
 }
+
 const API_URL = import.meta.env.VITE_API_URL;
+
 const Asistencia: React.FC = () => {
   const [qrData, setQrData] = useState<QRDataType | null>(null);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<string>("");
+  const [eventoRepuesto, setEventoRepuesto] = useState<string>("");
   const [registroManual, setRegistroManual] = useState<RegistroManual>({
     dni: "",
     evento: "",
@@ -32,6 +34,11 @@ const Asistencia: React.FC = () => {
     {}
   );
   const [mensajeError, setMensajeError] = useState<string | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string>("");
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 
   const verificarTiempoEscaneo = (qrCode: string): boolean => {
     const tiempoActual = Date.now();
@@ -47,69 +54,6 @@ const Asistencia: React.FC = () => {
     setUltimoEscaneo((prev) => ({ ...prev, [qrCode]: tiempoActual }));
     return true;
   };
-
-  const validarEvento = (): boolean => !!eventoSeleccionado;
-
-  const procesarQR = async (qrCode: string) => {
-    if (!validarEvento() || !verificarTiempoEscaneo(qrCode)) {
-      return;
-    }
-
-    const horaRegistro = new Date().toLocaleTimeString("es-ES", {
-      hour12: false,
-    });
-
-    const nuevoQRData = {
-      id: qrCode,
-      hora: horaRegistro,
-      evento: eventoSeleccionado,
-    };
-
-    setQrData(nuevoQRData);
-
-    try {
-      await registrarAsistencia(qrCode, eventoSeleccionado);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const registrarAsistencia = async (dni: string, idEvento: string) => {
-    const fechaRegistro = new Date();
-    fechaRegistro.setHours(fechaRegistro.getHours() - 5);
-    const fechaFormateada = fechaRegistro
-      .toISOString()
-      .replace("T", " ")
-      .substring(0, 19);
-
-    try {
-      const response = await axios.post(
-        `${API_URL}/auth/registrar-asistencia`,
-        {
-          dni,
-          idEvento,
-          fechaRegistro: fechaFormateada,
-        }
-      );
-
-      if (!response.data.success) {
-        throw new Error("Error al registrar la asistencia");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleScan = (result: { text: string } | null) => {
-    if (result) {
-      procesarQR(result.text);
-    }
-  };
-
-  const handleError = (error: any) => {
-    console.error("Error escaneando el QR:", error);
-  };
-
   const fetchEventos = async () => {
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     const userId = userData.usuarioId;
@@ -133,13 +77,157 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  const handleEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const eventoSeleccionado = e.target.value;
+    const eventoRepuesto = e.target.value;
+    setEventoSeleccionado(eventoSeleccionado);
+    setEventoRepuesto(eventoRepuesto);
+    console.log("Evento seleccionado:", eventoSeleccionado);
+    console.log("Evento repuesto:", eventoRepuesto);
+  };
+
+  const procesarQR = async (qrCode: string) => {
+    console.log("=== PROCESANDO QR ===");
+    console.log("QR Escaneado:", qrCode);
+    console.log("Estado de eventos:", eventos);
+    console.log(
+      "Eventos mapeados:",
+      eventos.map((e) => e.toString())
+    );
+
+    const eventoAUsar = eventoSeleccionado || eventoRepuesto;
+
+    if (!eventoAUsar) {
+      console.warn("No se puede procesar QR: Evento no seleccionado");
+      return;
+    }
+
+    if (!verificarTiempoEscaneo(qrCode)) {
+      console.warn("No se puede procesar QR: Escaneo reciente");
+      return;
+    }
+
+    const horaRegistro = new Date().toLocaleTimeString("es-ES", {
+      hour12: false,
+    });
+
+    const nuevoQRData = {
+      id: qrCode,
+      hora: horaRegistro,
+      evento: eventoAUsar,
+    };
+
+    setQrData(nuevoQRData);
+
+    try {
+      console.log("Intentando registrar asistencia:", nuevoQRData);
+      await registrarAsistencia(qrCode, eventoAUsar);
+      console.log("Asistencia registrada exitosamente");
+    } catch (error) {
+      console.error("Error al registrar asistencia:", error);
+    }
+  };
+
+  const registrarAsistencia = async (dni: string, idEvento: string) => {
+    const fechaRegistro = new Date();
+    fechaRegistro.setHours(fechaRegistro.getHours() - 5);
+    const fechaFormateada = fechaRegistro
+      .toISOString()
+      .replace("T", " ")
+      .substring(0, 19);
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/registrar-asistencia`,
+        {
+          dni,
+          idEvento,
+          fechaRegistro: fechaFormateada,
+        }
+      );
+
+      console.log("Respuesta del servidor:", response.data);
+
+      if (!response.data.success) {
+        throw new Error("Error al registrar la asistencia");
+      }
+    } catch (error) {
+      console.error("Error en registrarAsistencia:", error);
+      throw error;
+    }
+  };
+
+  const handleError = (error: Exception) => {
+    console.error("Error escaneando el QR:", error);
+  };
+
+  const startCamera = async (deviceId?: string) => {
+    console.log("Iniciando cámara...");
+    // Initialize ZXing code reader
+    codeReaderRef.current = new BrowserMultiFormatReader();
+
+    try {
+      // Get available devices
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      console.log("Dispositivos de video encontrados:", videoDevices);
+      setDevices(videoDevices);
+
+      // If no device ID provided, use first device or environment facing
+      const selectedDeviceId =
+        deviceId ||
+        videoDevices.find((d) => d.label.toLowerCase().includes("back"))
+          ?.deviceId ||
+        videoDevices[0]?.deviceId;
+
+      console.log("Dispositivo de cámara seleccionado:", selectedDeviceId);
+
+      if (videoRef.current && selectedDeviceId) {
+        await codeReaderRef.current.decodeFromVideoDevice(
+          selectedDeviceId,
+          videoRef.current,
+          (result: Result | null, error: Exception | undefined) => {
+            if (result) {
+              console.log("QR leído:", result.getText());
+              procesarQR(result.getText());
+            }
+            if (error && !(error instanceof Exception)) {
+              handleError(error);
+            }
+          }
+        );
+
+        // Set current device ID
+        setCurrentDeviceId(selectedDeviceId);
+      }
+    } catch (error) {
+      console.error("Error al iniciar la cámara:", error);
+    }
+  };
+
+  const switchCamera = (deviceId: string) => {
+    // Stop current scanning
+    if (codeReaderRef.current) {
+      codeReaderRef.current.reset();
+    }
+
+    // Start with selected camera
+    startCamera(deviceId);
+  };
+
   useEffect(() => {
     fetchEventos();
-  }, []);
+    startCamera();
 
-  const handleEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setEventoSeleccionado(e.target.value);
-  };
+    // Cleanup function
+    return () => {
+      if (codeReaderRef.current) {
+        codeReaderRef.current.reset();
+      }
+    };
+  }, []);
 
   const handleRegistroManual = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,7 +252,6 @@ const Asistencia: React.FC = () => {
     <div className="asistencia-container">
       <h2 className="mb-4">Registro de Asistencia</h2>
 
-      {/* Alerta para mensajes de error */}
       {mensajeError && (
         <Alert variant="danger" className="text-center">
           {mensajeError}
@@ -191,12 +278,31 @@ const Asistencia: React.FC = () => {
             </Card.Header>
             <Card.Body>
               <div className="video-container">
-                <QrReader
-                  delay={100}
+                <video
+                  ref={videoRef}
                   style={{ width: "100%" }}
-                  onError={handleError}
-                  onScan={handleScan}
+                  autoPlay
+                  playsInline
                 />
+                {devices.length > 1 && (
+                  <Dropdown className="mt-2">
+                    <Dropdown.Toggle variant="secondary" id="camera-dropdown">
+                      Cambiar Cámara
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {devices.map((device) => (
+                        <Dropdown.Item
+                          key={device.deviceId}
+                          onClick={() => switchCamera(device.deviceId)}
+                          active={device.deviceId === currentDeviceId}
+                        >
+                          {device.label ||
+                            `Cámara ${devices.indexOf(device) + 1}`}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
               </div>
               <div className="evento-selector mt-3">
                 <Form.Group>

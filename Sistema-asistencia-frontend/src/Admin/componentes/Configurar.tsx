@@ -8,7 +8,9 @@ interface ConfigurarProps {
   evento: any;
   onSubmit: (evento: any) => void;
 }
+
 const apiUrl = import.meta.env.VITE_API_URL;
+
 const Configurar: React.FC<ConfigurarProps> = ({
   show,
   handleClose,
