@@ -23,8 +23,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const Asistencia: React.FC = () => {
   const [qrData, setQrData] = useState<QRDataType | null>(null);
-  const [eventoSeleccionado, setEventoSeleccionado] = useState<string>("");
-  const [eventoRepuesto, setEventoRepuesto] = useState<string>("");
   const [registroManual, setRegistroManual] = useState<RegistroManual>({
     dni: "",
     evento: "",
@@ -36,7 +34,7 @@ const Asistencia: React.FC = () => {
   const [mensajeError, setMensajeError] = useState<string | null>(null);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [currentDeviceId, setCurrentDeviceId] = useState<string>("");
-
+  const [eventoSeleccionado, setEventoSeleccionado] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 
@@ -68,6 +66,7 @@ const Asistencia: React.FC = () => {
         `${API_URL}/auth/eventos?usuarioId=${userId}`
       );
       if (response.data.success) {
+        console.log("Eventos cargados:", response.data.data);
         setEventos(response.data.data);
       } else {
         console.error("No se encontraron eventos");
@@ -79,26 +78,18 @@ const Asistencia: React.FC = () => {
 
   const handleEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const eventoSeleccionado = e.target.value;
-    const eventoRepuesto = e.target.value;
     setEventoSeleccionado(eventoSeleccionado);
-    setEventoRepuesto(eventoRepuesto);
     console.log("Evento seleccionado:", eventoSeleccionado);
-    console.log("Evento repuesto:", eventoRepuesto);
   };
 
   const procesarQR = async (qrCode: string) => {
     console.log("=== PROCESANDO QR ===");
     console.log("QR Escaneado:", qrCode);
-    console.log("Estado de eventos:", eventos);
-    console.log(
-      "Eventos mapeados:",
-      eventos.map((e) => e.toString())
-    );
+    console.log("evento = ", eventoSeleccionado);
 
-    const eventoAUsar = eventoSeleccionado || eventoRepuesto;
-
-    if (!eventoAUsar) {
+    if (!eventoSeleccionado) {
       console.warn("No se puede procesar QR: Evento no seleccionado");
+      setMensajeError("Por favor, seleccione un evento");
       return;
     }
 
@@ -114,14 +105,16 @@ const Asistencia: React.FC = () => {
     const nuevoQRData = {
       id: qrCode,
       hora: horaRegistro,
-      evento: eventoAUsar,
+      evento:
+        eventos.find((e) => e.id.toString() === eventoSeleccionado)
+          ?.nombreEvento || eventoSeleccionado,
     };
 
     setQrData(nuevoQRData);
 
     try {
       console.log("Intentando registrar asistencia:", nuevoQRData);
-      await registrarAsistencia(qrCode, eventoAUsar);
+      await registrarAsistencia(qrCode, eventoSeleccionado);
       console.log("Asistencia registrada exitosamente");
     } catch (error) {
       console.error("Error al registrar asistencia:", error);
@@ -220,6 +213,11 @@ const Asistencia: React.FC = () => {
   useEffect(() => {
     fetchEventos();
     startCamera();
+
+    console.log("DEBUGGING: eventoSeleccionado changed:", eventoSeleccionado);
+
+    // Verify eventos are loaded
+    console.log("DEBUGGING: Available eventos:", eventos);
 
     // Cleanup function
     return () => {

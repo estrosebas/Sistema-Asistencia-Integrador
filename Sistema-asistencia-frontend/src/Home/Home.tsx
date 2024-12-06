@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./Homes.css";
+import "./Home.css";
 import FeatureCard from "./FeatureCard";
 import Bubbles from "../../public/efectos/Bubbles";
 
