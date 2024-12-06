@@ -27,10 +27,10 @@ Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y 
 
 | Integrante                     | %   | Contribucion                                            |
 | ------------------------------ | --- | ------------------------------------------------------- |
-| Cristofer Torres Castillo      | 25% | Vista principal y backend                               |
-| Cristian Huaracha Venturas     | 25% | Vista del login y administrador                         |
-| Winston Apaza Mamani           | 25% | Vista del formulario de registro de usuario             |
-| Diego Sebastian Gonzales Gomez | 25% | Backend login y registro de usuario                     |
+| Cristofer Torres Castillo      | 25% | Vista manager                                           |
+| Cristian Huaracha Venturas     | 25% | Backend y frontend                                      |
+| Winston Apaza Mamani           | 25% | Vista usuario                                           |
+| Diego Sebastian Gonzales Gomez | 25% | Backend verificacion y desplazamiento                   |
 
 ---
 
