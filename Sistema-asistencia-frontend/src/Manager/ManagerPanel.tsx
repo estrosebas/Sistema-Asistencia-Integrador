@@ -5,22 +5,29 @@ import "./ManagerPanel.css";
 import Asistencia from "./componentes/Asistencia";
 import Historial from "./componentes/Historial";
 import Reporte from "./componentes/Reporte";
+import Registro from "./componentes/Registro"; // Importar el componente Registro
 import { useNavigate } from "react-router-dom";
 
 const ManagerPanel: React.FC = () => {
-  const [vistaActiva, setVistaActiva] = useState("asistencia");
+  const [vistaActiva, setVistaActiva] = useState("registro"); // Cambiar el estado inicial a "registro"
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [modoOscuro, setModoOscuro] = useState(false);
 
   const toggleMenu = () => setMenuAbierto((prevState) => !prevState);
   const toggleModoOscuro = () => setModoOscuro((prevState) => !prevState);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const seleccionarVista = (id: string) => {
     setVistaActiva(id);
     if (window.innerWidth <= 768) setMenuAbierto(false); // Cierra el menú en pantallas pequeñas
   };
 
   const opcionesMenu = [
+    {
+      id: "registro",
+      icon: "fa-list-alt",
+      label: "Registro",
+      action: () => seleccionarVista("registro"),
+    },
     {
       id: "asistencia",
       icon: "fa-check-circle",
@@ -46,13 +53,10 @@ const ManagerPanel: React.FC = () => {
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
-      const response = await fetch(
-        `http://localhost:3000/api/auth/logout`,
-        {
-          method: "POST",
-          credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
-        }
-      );
+      const response = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
+      });
 
       if (response.ok) {
         // Redirigir al usuario a la página de inicio o hacer otras acciones
@@ -70,13 +74,10 @@ const ManagerPanel: React.FC = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/auth/check-session`,
-          {
-            method: "GET",
-            credentials: "include", // Esto asegura que la cookie sea enviada
-          }
-        );
+        const response = await fetch(`${API_URL}/auth/check-session`, {
+          method: "GET",
+          credentials: "include", // Esto asegura que la cookie sea enviada
+        });
         const data = await response.json();
 
         if (data.authenticated) {
@@ -149,7 +150,9 @@ const ManagerPanel: React.FC = () => {
             menuAbierto ? "expanded" : "collapsed"
           }`}
         >
-          {vistaActiva === "asistencia" ? (
+          {vistaActiva === "registro" ? (
+            <Registro />
+          ) : vistaActiva === "asistencia" ? (
             <Asistencia />
           ) : vistaActiva === "historial" ? (
             <Historial />

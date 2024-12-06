@@ -1,41 +1,57 @@
 .historial-container {
-    padding: 20px;
-  }
-  
+  padding: 20px;
+}
+
+.filtros-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filtros-container .form-control {
+  margin-bottom: 10px;
+}
+
+.tabla-container {
+  margin-top: 20px;
+}
+
+.estado-badge {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.estado-badge.activo {
+  background-color: #c6efce;
+  color: #2c3e50;
+}
+
+.estado-badge.inactivo {
+  background-color: #e4d6f5;
+  color: #2c3e50;
+}
+
+.paginacion-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 768px) {
   .filtros-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
+
   .filtros-container .form-control {
-    margin-bottom: 10px;
+    width: 100%;
   }
-  
+
   .tabla-container {
-    margin-top: 20px;
+    overflow-x: auto;
   }
-  
-  .estado-badge {
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-  }
-  
-  .estado-badge.activo {
-    background-color: #c6efce;
-    color: #2c3e50;
-  }
-  
-  .estado-badge.inactivo {
-    background-color: #e4d6f5;
-    color: #2c3e50;
-  }
-  
-  .paginacion-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-  }
+}

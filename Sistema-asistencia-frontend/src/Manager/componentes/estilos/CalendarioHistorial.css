@@ -1,10 +1,4 @@
-.asistio {
-    background-color: #c8e6c9 !important; /* Verde claro para días asistidos */
-}
 
-.no-asistio {
-    background-color: #ffcdd2 !important; /* Rojo claro para días no asistidos */
-}
 .calendar-container {
     display: flex;
     justify-content: center; /* Centra el calendario */

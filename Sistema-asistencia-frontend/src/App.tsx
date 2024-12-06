@@ -15,7 +15,7 @@ function App() {
         <Route path="/Login" element={<LoginComponent />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/Admin" element={<AdminPanel />} />
-        <Route path="/User" element={<UserPanel />} />        
+        <Route path="/User" element={<UserPanel />} />
         <Route path="/Manager" element={<ManagerPanel />} />
       </Routes>
     </Router>

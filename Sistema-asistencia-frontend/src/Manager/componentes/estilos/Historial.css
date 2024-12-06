@@ -1,8 +1,8 @@
-.historial-container {
+#manager-panel .historial-container {
     padding: 20px;
   }
   
-  .filtros-container {
+  #manager-panel .filtros-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -10,31 +10,22 @@
     margin-bottom: 20px;
   }
   
-  .filtros-container .form-control {
+  #manager-panel .filtros-container .form-control {
     margin-bottom: 10px;
   }
   
-  .tabla-container {
+  #manager-panel .tabla-container {
     margin-top: 20px;
   }
   
-  .estado-badge {
+  #manager-panel .estado-badge {
     padding: 5px 10px;
     border-radius: 5px;
     font-size: 12px;
   }
   
-  .estado-badge.activo {
-    background-color: #c6efce;
-    color: #2c3e50;
-  }
-  
-  .estado-badge.inactivo {
-    background-color: #e4d6f5;
-    color: #2c3e50;
-  }
-  
-  .paginacion-container {
+
+  #manager-panel .paginacion-container {
     margin-top: 20px;
     display: flex;
     justify-content: center;

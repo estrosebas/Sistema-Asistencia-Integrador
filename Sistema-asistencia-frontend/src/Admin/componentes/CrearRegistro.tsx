@@ -4,10 +4,15 @@ import { Modal, Button, Form } from "react-bootstrap";
 interface AttendanceModalProps {
   show: boolean;
   handleClose: () => void;
-  onSubmit: (evento: any) => void; 
+  onSubmit: (evento: any) => void;
 }
+const apiUrl = import.meta.env.VITE_API_URL; // Usa la variable de entorno
 
-const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSubmit }) => {
+const CrearRegistro: React.FC<AttendanceModalProps> = ({
+  show,
+  handleClose,
+  onSubmit,
+}) => {
   const [formData, setFormData] = useState({
     nombreEvento: "",
     fechaHoraEntrada: "",
@@ -16,7 +21,9 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
     descripcion: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -28,12 +35,11 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
     const day = String(date.getDate()).padStart(2, "0");
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = "00"; 
+    const seconds = "00";
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
   const handleSubmit = async () => {
-    // Obtén el usuario del localStorage
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
 
     if (!userData || !userData.usuarioId) {
@@ -51,7 +57,7 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/add-evento", {
+      const response = await fetch(`${apiUrl}/auth/add-evento`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +68,7 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.evento) {
-          onSubmit(result.evento); 
+          onSubmit(result.evento);
           handleClose();
         } else {
           console.error("Error al crear el evento:", result.message);
@@ -144,4 +150,3 @@ const CrearRegistro: React.FC<AttendanceModalProps> = ({ show, handleClose, onSu
 };
 
 export default CrearRegistro;
-

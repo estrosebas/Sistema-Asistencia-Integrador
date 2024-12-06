@@ -1,67 +1,95 @@
 .video-container {
-    position: relative; /* Cambiado de 'center' a 'relative' */
-    max-width: 100%;
-    max-height: 100%; /* Permitir que la altura se ajuste automáticamente */
-    aspect-ratio: 10 / 7; /* Ajusta la relación de aspecto según sea necesario */
-    background-color: #000;
-    overflow: hidden;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+  position: relative;
+  max-width: 100%;
+  aspect-ratio: 10 / 7;
+  background-color: #000;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
+
 .qr-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .datos-escaneados-container {
-    background-color: #DAF7A6;
-    color: #000;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    margin-bottom: 1rem;
+  background-color: #daf7a6;
+  color: #000;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  margin-bottom: 1rem;
 }
 
 .datos-escaneados-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .separador {
-    color: #6c757d;
-    font-weight: bold;
+  color: #6c757d;
+  font-weight: bold;
 }
 
 .alert {
-    max-width: 90%;
-    width: 400px;
-    position: fixed;
-    top: 1rem;
-    left: 50%;
-    text-align: center;
-    transform: translateX(-50%);
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-in-out;
+  max-width: 90%;
+  width: 400px;
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  text-align: center;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -20px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .asistencia-container {
-    padding: 20px;
+  padding: 20px;
+}
+
+.card {
+  margin-bottom: 1rem;
+}
+
+.form-select {
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  margin-bottom: 1rem;
+}
+
+.dropdown {
+  margin-top: 1rem;
+}
+
+.dropdown-toggle {
+  width: 100%;
+}
+
+.dropdown-menu {
+  width: 100%;
+}
+
+.dropdown-item {
+  cursor: pointer;
 }

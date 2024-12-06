@@ -1,0 +1,22 @@
+
+#user-panel .calendar-container {
+    display: flex;
+    justify-content: center; /* Centra el calendario */
+    margin-top: 20px; /* Espacio superior */
+    width: 100%; /* Asegura que el contenedor ocupe el 100% del ancho del modal */
+}
+
+#user-panel .react-calendar {
+    width: 100%; /* Ancho del calendario al 100% del contenedor */
+    max-width: 1500px; /* Ancho máximo del calendario */
+    height: auto; /* Altura automática para ajustar al contenido */
+    font-size: 1.2em; /* Aumenta el tamaño de la fuente */
+}
+
+#user-panel .react-calendar__month-view__days__day {
+    width: calc(100% / 7); /* Ancho de cada día en función del ancho total */
+    height: calc(500px / 7); /* Altura de cada día en función del alto total */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

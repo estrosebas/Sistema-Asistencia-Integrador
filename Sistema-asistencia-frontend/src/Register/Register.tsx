@@ -22,7 +22,7 @@ const Registration = () => {
   const [rol, setRol] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Resetear mensaje de error
@@ -43,7 +43,7 @@ const Registration = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:3000/api/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         // Usamos la constante API_URL
         method: "POST",
         headers: {
