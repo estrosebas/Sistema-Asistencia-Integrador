@@ -100,25 +100,6 @@
       margin-left: 100px; /* Cambiado a 85px para coincidir con el ancho colapsado */
     }
     
-    
-    #manager-panel .modo-oscuro {
-      background-color: #333; /* Color de fondo oscuro */
-      color: #fff; /* Color de texto claro */
-    }
-    
-    #manager-panel .modo-oscuro .panel-lateral {
-      background-color: #444; /* Color de fondo del panel lateral oscuro */
-    }
-    
-    #manager-panel .modo-oscuro .panel-lateral button {
-      color: #fff; /* Color de texto claro en los botones */
-    }
-    
-    #manager-panel .modo-oscuro .panel-lateral button.activo {
-      color: #000000; /* Color de texto claro en los botones */
-      background-color: #ffffff; /* Color de fondo oscuro en los botones */
-    }
-    
     }
     
     /* Media query para pantallas pequeñas */
@@ -146,6 +127,8 @@
     }
     
     #manager-panel .panel-lateral.collapsed {
+      
+      top: -10px;
       width: 70px; /* Ancho del panel lateral colapsado */
       height: 70px; /* Mantiene la altura completa */
       overflow-y: hidden; /* Evitar el desplazamiento vertical */        
@@ -158,7 +141,7 @@
     #manager-panel .panel-lateral.show {
       width: 270px; /* Ancho del panel lateral expandido */
       height: 100vh; /* Mantiene la altura completa */    
-      background-color: rgba(26, 58, 110, 0.9); /* Color de fondo con opacidad */    
+      background-color: rgba(0,100,101, 0.9); /* Color de fondo con opacidad */    
       overflow-y: auto; /* Permite el desplazamiento vertical */    
       scrollbar-width: none; /* Oculta el scrollbar en navegadores compatibles */    
       overflow-x: hidden; /* Evita el desplazamiento horizontal */
@@ -171,13 +154,13 @@
     #manager-panel .contenido-principal {
       
         position: relative; /* Posición relativa para el contenido */
-        top: 20px; /* Alinea al top */
         left: 0; /* Alinea a la izquierda */
         right: 0; /* Asegura que ocupe todo el ancho */
         bottom: 0; /* Asegura que ocupe toda la altura */
-        padding: 0px; /* Espaciado interno */
+        padding-top: 50px; /* Espaciado interno */
         background-color: #faf8f9; /* Color de fondo del contenido principal */
         box-sizing: border-box; /* Incluir padding en el cálculo de ancho y alto */
+        height: 100vh; /* O usa height: 100%; */
     }
     
     /* Estilos para los botones */
@@ -206,7 +189,7 @@
     
     /* Estilos específicos para los botones cuando el panel lateral está colapsado */
     #manager-panel .panel-lateral.collapsed button {  
-        background-color: rgba(26, 58, 110, 0.1);
+        background-color: rgba(0,100,101, 0.1);
         border-radius: 8px;
         color: #000000;
         padding: 15px 5px; /* Mantiene el espaciado interno del botón en estado colapsado */
@@ -231,7 +214,7 @@
     
     /* Opcional: Estilo para el hover en los botones */
     #manager-panel .panel-lateral button:not(.activo):hover {
-        background-color: #3888ff; /* Cambia el color al pasar el mouse */
+        background-color: #0f928c; /* Cambia el color al pasar el mouse */
         border-radius: 8px; /* Asegúrate de que los bordes se mantengan redondeados al hacer hover */
         transform: translateY(-5px); /* Mueve ligeramente hacia arriba al pasar el ratón */
         opacity: 1; /* Cambiar a 1 para que la opacidad sea normal al pasar el ratón */
@@ -255,5 +238,78 @@
       background-color: #ffffff; /* Color de fondo oscuro en los botones */
     }
     
+  
+    #manager-panel .modo-oscuro .panel-lateral.collapsed {
+      background-color: rgb(48, 47, 47, 0) !important; /* Color de fondo del panel lateral oscuro */
+    }
+    #manager-panel .modo-oscuro .panel-lateral.show {
+      background-color: rgb(48, 47, 47, 0.9) !important; /* Color de fondo del panel lateral oscuro */
+    }
     }/* =================================================================*/
-    
+  
+  
+  /* Estilos generales */
+  #manager-panel .container-fluid-1 {
+    transition: background-color 0.5s ease;
+  }
+  
+  /* Estilos para el modo oscuro */
+  #manager-panel .modo-oscuro {
+    background-color: #333; /* Color de fondo oscuro */
+    color: #fff; /* Color de texto claro */
+  }
+  
+  #manager-panel .modo-oscuro .panel-lateral {
+    background-color: #444; /* Color de fondo del panel lateral oscuro */
+  }
+  
+  #manager-panel .modo-oscuro .panel-lateral button {
+    color: #fff; /* Color de texto claro en los botones */
+  }
+  
+  #manager-panel .modo-oscuro .panel-lateral button.activo {
+    color: #000000; /* Color de texto claro en los botones */
+    background-color: #ffffff; /* Color de fondo oscuro en los botones */
+  }
+  
+  #manager-panel .modo-oscuro .contenido-principal {
+    background-color: #222; /* Color de fondo del contenido principal oscuro */
+  }
+  
+  /* Estilos para modales y otros componentes de Bootstrap en modo oscuro */
+  #manager-panel .modo-oscuro .modal-content {
+    background-color: #333; /* Color de fondo oscuro para el contenido del modal */
+    color: #fff; /* Color de texto claro */
+  }
+  
+  #manager-panel .modo-oscuro .modal-header {
+    background-color: #444; /* Color de fondo oscuro para el encabezado del modal */
+    border-bottom: 1px solid #555; /* Borde inferior del encabezado del modal */
+  }
+  
+  #manager-panel .modo-oscuro .modal-footer {
+    background-color: #444; /* Color de fondo oscuro para el pie del modal */
+    border-top: 1px solid #555; /* Borde superior del pie del modal */
+  }
+  
+  
+  #manager-panel .modo-oscuro .btn:hover {
+    background-color: #666; /* Color de fondo al pasar el ratón */
+  }
+  
+  
+  
+  #manager-panel .modo-oscuro .table {
+    background-color: #333; /* Color de fondo oscuro para las tablas */
+    color: #fff; /* Color de texto claro */
+  }
+  
+  #manager-panel .modo-oscuro .table th,
+  #manager-panel .modo-oscuro .table td {
+    border-color: #555; /* Color del borde de las celdas de la tabla */
+  }
+  
+  #manager-panel .modo-oscuro .table-hover tbody tr:hover {
+    background-color: #444; /* Color de fondo al pasar el ratón sobre las filas de la tabla */
+  }
+  

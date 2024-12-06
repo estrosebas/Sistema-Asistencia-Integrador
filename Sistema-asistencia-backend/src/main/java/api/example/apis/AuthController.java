@@ -524,14 +524,19 @@ public class AuthController {
 
     @DeleteMapping("/eventos/{id}")
     public ResponseEntity<?> deleteEvento(@PathVariable("id") Long idEvento) {
+        String deleteRegistroAsistenciaQuery = "DELETE FROM registro_asistencia WHERE ID_Evento = ?";
         String deleteAsisteQuery = "DELETE FROM asiste WHERE ID_Evento = ?";
         String deleteEventoQuery = "DELETE FROM evento WHERE ID_Evento = ?";
 
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
-            try (PreparedStatement deleteAsisteStatement = connection.prepareStatement(deleteAsisteQuery);
+            try (PreparedStatement deleteRegistroAsistenciaStatement = connection.prepareStatement(deleteRegistroAsistenciaQuery);
+                 PreparedStatement deleteAsisteStatement = connection.prepareStatement(deleteAsisteQuery);
                  PreparedStatement deleteEventoStatement = connection.prepareStatement(deleteEventoQuery)) {
+
+                deleteRegistroAsistenciaStatement.setLong(1, idEvento);
+                int rowsDeletedRegistroAsistencia = deleteRegistroAsistenciaStatement.executeUpdate();
 
                 deleteAsisteStatement.setLong(1, idEvento);
                 int rowsDeletedAsiste = deleteAsisteStatement.executeUpdate();

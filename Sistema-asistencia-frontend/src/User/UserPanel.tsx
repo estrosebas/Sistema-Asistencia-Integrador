@@ -1,14 +1,13 @@
-// UserPanel.tsx
 import React, { useState, useEffect } from "react";
-import Historial from "./components/Historial"; // Asegúrate de que la ruta sea correcta
 import GenerarQR from "./components/GenerarQR"; // Asegúrate de que la ruta sea correcta
+import Registro from "./components/Registro"; // Importar el componente Registro
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./UserPanel.css";
 
 const UserPanel: React.FC = () => {
-  const [vistaActiva, setVistaActiva] = useState<string>("historial");
+  const [vistaActiva, setVistaActiva] = useState<string>("registro");
   const [menuAbierto, setMenuAbierto] = useState<boolean>(false);
   const [modoOscuro, setModoOscuro] = useState<boolean>(false);
   const toggleMenu = () => setMenuAbierto(!menuAbierto);
@@ -21,10 +20,10 @@ const UserPanel: React.FC = () => {
 
   const opcionesMenu = [
     {
-      id: "historial",
-      icon: "fa-clock",
-      label: "Historial",
-      action: () => seleccionarVista("historial"),
+      id: "registro",
+      icon: "fa-list",
+      label: "Registro",
+      action: () => seleccionarVista("registro"),
     },
     {
       id: "codigoQR",
@@ -94,7 +93,7 @@ const UserPanel: React.FC = () => {
 
   return (
     <div id="user-panel">
-      <div className="container-fluid">
+      <div className={`container-fluid-1 ${modoOscuro ? "modo-oscuro" : ""}`}>
         <div
           className={`panel-lateral ${menuAbierto ? "show" : "collapsed"} ${
             modoOscuro ? "modo-oscuro" : ""
@@ -146,8 +145,8 @@ const UserPanel: React.FC = () => {
             menuAbierto ? "expanded" : "collapsed"
           }`}
         >
-          {vistaActiva === "historial" ? (
-            <Historial />
+          {vistaActiva === "registro" ? (
+            <Registro />
           ) : vistaActiva === "codigoQR" ? (
             <GenerarQR />
           ) : (

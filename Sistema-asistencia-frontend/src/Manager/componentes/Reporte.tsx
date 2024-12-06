@@ -1,106 +1,196 @@
+import React, { useState, useEffect } from "react";
+import { Table, Form, Button, Modal } from "react-bootstrap";
+import axios from "axios";
+import "./estilos/Registro.css";
 
-import React, { useState } from "react";
-import usuariosData from "./prueba/HistorialUsuario.json";
-import { Table, Form, Button, ButtonGroup } from "react-bootstrap";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+interface Evento {
+  id: number;
+  nombreEvento: string;
+  fechaHoraEntrada: string;
+  fechaHoraSalida: string;
+  capacidad: number;
+  descripcion: string;
+}
 
 const Reporte: React.FC = () => {
-  const [searchId, setSearchId] = useState<number | "">("");
-  const [filteredUsers, setFilteredUsers] = useState(usuariosData);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [filtro, setFiltro] = useState<string>("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEvento, setSelectedEvento] = useState<Evento | null>(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  const handleSearch = () => {
-    if (searchId) {
-      const filtered = usuariosData.filter((user) => user.id === searchId);
-
-      setFilteredUsers(filtered);
-    } else {
-      setFilteredUsers(usuariosData);
+  // Obtener eventos desde el backend
+  const fetchEventos = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.usuarioId;
+    if (userId === null || userId === undefined) {
+      console.error("El ID del usuario no está disponible en el localStorage.");
+      return;
+    }
+    try {
+      const response = await axios.get(`${API_URL}/auth/eventos?usuarioId=${userId}`);
+      if (response.data.success) {
+        setEventos(response.data.data);
+      } else {
+        console.error("No se encontraron eventos");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        console.error("No se encontraron eventos para el usuario.");
+      } else {
+        console.error("Error al obtener los eventos:", error);
+      }
     }
   };
 
-  const handleGenerateReport = () => {
-    // Lógica para generar el reporte
-    alert("Reporte generado");
+  useEffect(() => {
+    fetchEventos();
+  }, []);
+
+  // Función para formatear la fecha
+  const formatearFecha = (fecha: string) => {
+    const date = new Date(fecha);
+    return date.toLocaleDateString();
   };
 
-  const handleExportReport = () => {
-    // Lógica para exportar el reporte
-    alert("Reporte exportado");
+  // Función para formatear la hora
+  const formatearHora = (fecha: string) => {
+    const date = new Date(fecha);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Función para calcular la diferencia de horas
+  const calcularDiferenciaHoras = (fechaEntrada: string, fechaSalida: string) => {
+    const entrada = new Date(fechaEntrada);
+    const salida = new Date(fechaSalida);
+    const diff = salida.getTime() - entrada.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
+
+  // Función para filtrar eventos
+  const filtrarEventos = () => {
+    return eventos.filter(evento =>
+      evento.nombreEvento.toLowerCase().startsWith(filtro.toLowerCase()) ||
+      evento.id.toString().startsWith(filtro)
+    );
+  };
+
+  // Función para generar reporte
+  const generarReporte = (evento: Evento) => {
+    setSelectedEvento(evento);
+    setShowModal(true);
+  };
+
+  // Función para descargar el reporte en PDF
+  const descargarReportePDF = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.usuarioId;
+    if (selectedEvento && userId) {
+      const response = await axios.get(`${API_URL}/reporte/pdf/${selectedEvento.id}`, {
+        responseType: 'blob',
+        params: { usuarioId: userId }
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' })); // Ajustar el tipo de contenido
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'reporte.pdf');
+      document.body.appendChild(link);
+      link.click();
+      setShowModal(false);
+    }
+  };
+
+  // Función para descargar el reporte en Excel
+  const descargarReporteExcel = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.usuarioId;
+    if (selectedEvento && userId) {
+      const response = await axios.get(`${API_URL}/reporte/excel/${selectedEvento.id}`, {
+        responseType: 'blob',
+        params: { usuarioId: userId }
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'reporte.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      setShowModal(false);
+    }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Reporte de Usuario</h2>
-      <div className="d-flex mb-3">
+    <div className="registro-container">
+      <div className="registro-header d-flex justify-content-between align-items-center">
+        <h2>Reporte</h2>
+      </div>
+      <Form.Group controlId="formBasicEmail">
+        <Form.Label>Buscar evento por nombre o ID</Form.Label>
         <Form.Control
-          type="number"
-          placeholder="Buscar por ID"
-          value={searchId}
-          onChange={(e) => setSearchId(Number(e.target.value))}
-          className="me-2"
+          type="text"
+          placeholder="Ingrese el nombre o ID del evento"
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
         />
-        <Button onClick={handleSearch}>Buscar</Button>
-      </div>
-      <Table hover responsive>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Grupo</th>
-            <th>Cantidad de Asistencia</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.nombre}</td>
-              <td>{user.grupo.join(", ")}</td>
-              <td>{user.cantidadAsistencia}</td>
+      </Form.Group>
+
+      {filtrarEventos().length > 0 ? (
+        <Table hover responsive>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Duración</th>
+              <th>Capacidad</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      {/* Calendarios para seleccionar fechas */}
-      <div className="d-flex mb-3">
-        <div className="me-2">
-          <label>Fecha Inicio:</label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date: Date | null) => setStartDate(date)}
-            dateFormat="yyyy/MM/dd"
-            className="form-control"
-          />
+          </thead>
+          <tbody>
+            {filtrarEventos().map((evento) => (
+              <tr key={evento.id}>
+                <td>{evento.id}</td>
+                <td>{evento.nombreEvento}</td>
+                <td>{formatearFecha(evento.fechaHoraEntrada)}</td>
+                <td>{formatearHora(evento.fechaHoraEntrada)} - {formatearHora(evento.fechaHoraSalida)}</td>
+                <td>{calcularDiferenciaHoras(evento.fechaHoraEntrada, evento.fechaHoraSalida)}</td>
+                <td>{evento.capacidad}</td>
+                <td>
+                  <Button variant="warning" size="sm" onClick={() => generarReporte(evento)}>
+                    Generar Reporte
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <div className="anuncio">
+          <h3>No hay eventos disponibles</h3>
         </div>
-        <div>
-          <label>Fecha Fin:</label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date: Date | null) => setEndDate(date)}
-            dateFormat="yyyy/MM/dd"
-            className="form-control"
-          />
-        </div>
-      </div>
+      )}
 
-      <ButtonGroup className="mt-3">
-        <Button
-          variant="success"
-          onClick={handleGenerateReport}
-          className="me-2"
-        >
-          Generar Reporte
-        </Button>
-        <Button variant="success" onClick={handleExportReport} className="me-2">
-          Exportar Reporte
-        </Button>
-      </ButtonGroup>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Generar Reporte</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Seleccione el formato del reporte:</p>
+          <div className="d-flex justify-content-center">
+            <Button variant="danger" onClick={descargarReportePDF} className="me-2">
+              Descargar PDF
+            </Button>
+            <Button variant="success" onClick={descargarReporteExcel}>
+              Descargar Excel
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
-export default Reporte;
 
+export default Reporte;

@@ -24,7 +24,7 @@ const AdminPanel: React.FC = () => {
   const opcionesMenu = [
     {
       id: "registro",
-      icon: "fa-file-alt",
+      icon: "fa-list-alt",
       label: "Registros",
       action: () => seleccionarVista("registro"),
     },
@@ -47,14 +47,13 @@ const AdminPanel: React.FC = () => {
       action: () => seleccionarVista("reporte"),
     },
   ];
-  // Función para manejar el cierre de sesión
+
   const navigate = useNavigate();
   const cerrarSesion = async () => {
     try {
-      // Llamada al backend para cerrar sesión
       const response = await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
-        credentials: "include", // Asegúrate de que la cookie se incluya en la solicitud
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -67,13 +66,14 @@ const AdminPanel: React.FC = () => {
       console.error("Error en la solicitud de cierre de sesión", error);
     }
   };
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Estado de autenticación
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
         const response = await fetch(`${API_URL}/auth/check-session`, {
           method: "GET",
-          credentials: "include", // Esto asegura que la cookie sea enviada
+          credentials: "include",
         });
         const data = await response.json();
 
@@ -94,8 +94,9 @@ const AdminPanel: React.FC = () => {
   }, [navigate]);
 
   if (!isAuthenticated) {
-    return <div>Redirigiendo...</div>; // Muestra algo mientras se verifica el estado
+    return <div>Redirigiendo...</div>;
   }
+
   return (
     <div id="admin-panel">
       <div className={`container-fluid-1 ${modoOscuro ? "modo-oscuro" : ""}`}>

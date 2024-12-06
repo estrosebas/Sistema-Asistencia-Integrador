@@ -1,32 +1,32 @@
 #custom-calendar {
-  width: auto; /* Ancho del contenedor del calendario */
-  height: auto; /* Altura del contenedor del calendario */
-  font-size: 12px; /* Ajusta el tamaño de la fuente */
+  width: auto;
+  height: auto;
+  font-size: 12px;
 }
 
 #custom-calendar .react-calendar {
-  width: auto; /* Ancho del calendario al 100% del contenedor */
-  height: 100%; /* Altura del calendario al 100% del contenedor */
-  font-size: 1.2em; /* Aumenta el tamaño de la fuente */
+  width: auto;
+  height: 100%;
+  font-size: 1.2em;
 }
 
 #custom-calendar .react-calendar__tile {
-  max-height: 52px; /* Ajusta la altura máxima de las celdas */
+  max-height: 52px;
   border-radius: 15px;
 }
 
 #custom-calendar .react-calendar__month-view__days__day {
-  padding: 5px; /* Ajusta el padding de las celdas */
+  padding: 5px;
 }
 
 #custom-calendar .react-calendar__tile--active {
   background-color: inherit;
-  color: inherit;  
+  color: inherit;
 }
 
 #custom-calendar .asiste {
   background-color: lightgreen !important;
-  color: black ;
+  color: black;
 }
 
 #custom-calendar .falta {

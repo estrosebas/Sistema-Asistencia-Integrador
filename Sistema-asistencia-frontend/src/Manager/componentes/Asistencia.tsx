@@ -1,244 +1,274 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, Form, Row, Col, Alert, Button } from 'react-bootstrap';
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
-import './estilos/Asistencia.css';
+import React, { useState, useEffect, useRef } from "react";
+import { Card, Form, Row, Col, Button, Alert, Dropdown } from "react-bootstrap";
+import { BrowserMultiFormatReader, Exception, Result } from "@zxing/library";
+import "./estilos/Asistencia.css";
+import axios from "axios";
 
 interface RegistroManual {
-  id: string;
-  grupo: string;
+  dni: string;
+  evento: string;
 }
 
 interface QRDataType {
   id: string;
   hora: string;
-  grupo: string;
+  evento: string;
 }
+
+interface Evento {
+  id: number;
+  nombreEvento: string;
+}
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Asistencia: React.FC = () => {
   const [qrData, setQrData] = useState<QRDataType | null>(null);
-  const [mensaje, setMensaje] = useState<{ tipo: string; texto: string } | null>(null);
-  const [grupoSeleccionado, setGrupoSeleccionado] = useState<string>('');
+  const [eventoQRSeleccionado, setEventoQRSeleccionado] = useState<string>("");
+  const [eventoManualSeleccionado, setEventoManualSeleccionado] = useState<string>("");
+  const [registroManual, setRegistroManual] = useState<RegistroManual>({
+    dni: "",
+    evento: "",
+  });
+  const [eventos, setEventos] = useState<Evento[]>([]);
   const [ultimoEscaneo, setUltimoEscaneo] = useState<{ [key: string]: number }>({});
-  const [registroManual, setRegistroManual] = useState<RegistroManual>({ id: '', grupo: '' });
-  
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const codeReader = useRef<BrowserMultiFormatReader | null>(null);
-  const camaraInicializadaRef = useRef<boolean>(false);
+  const [mensajeError, setMensajeError] = useState<string | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string>("");
 
-  useEffect(() => {
-    const inicializarCamara = async () => {
-      if (!camaraInicializadaRef.current) {
-        try {
-          await navigator.mediaDevices.getUserMedia({ video: true });
-          await iniciarEscaneo();
-          camaraInicializadaRef.current = true;
-        } catch (error) {
-          mostrarMensaje('danger', 'Error al acceder a la cámara');
-        }
-      }
-    };
-    inicializarCamara();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
+  const eventoQRSeleccionadoRef = useRef<string>("");
 
-    return () => {
-      codeReader.current?.reset();
-      codeReader.current = null;
-    };
-  }, []);
-
-  const mostrarMensaje = (tipo: string, texto: string) => {
-    setMensaje({ tipo, texto });
-    setTimeout(() => setMensaje(null), 2000);
-  };
-
-  const verificarTiempoEscaneo = (qrCode: string): boolean => {
+  const verificarTiempoEscaneo = (dni: string): boolean => {
     const tiempoActual = Date.now();
-    const ultimoTiempo = ultimoEscaneo[qrCode] || 0;
+    const ultimoTiempo = ultimoEscaneo[dni] || 0;
     const diferencia = (tiempoActual - ultimoTiempo) / 1000 / 60;
 
     if (diferencia < 5) {
-      mostrarMensaje('warning', `Espere ${Math.ceil(5 - diferencia)} minutos para volver a registrar`);
+      setMensajeError(`El DNI ${dni} ya fue escaneado recientemente.`);
+      setTimeout(() => setMensajeError(null), 2000);
       return false;
     }
+
+    setUltimoEscaneo((prev) => ({ ...prev, [dni]: tiempoActual }));
     return true;
   };
 
-  const validarGrupo = (): boolean => {
-    if (!grupoSeleccionado) {
-      mostrarMensaje('warning', 'Seleccione un grupo antes de escanear');
-      return false;
-    }
-    return true;
-  };
+  const fetchEventos = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = userData.usuarioId;
 
-  const procesarQR = (qrCode: string) => {
-    if (validarGrupo() && verificarTiempoEscaneo(qrCode)) {
-      const horaRegistro = new Date().toLocaleTimeString('es-ES', { hour12: false });
-      const nuevoQRData = { id: qrCode, hora: horaRegistro, grupo: grupoSeleccionado };
-      
-      setQrData(nuevoQRData);
-      setUltimoEscaneo(prev => ({ ...prev, [qrCode]: Date.now() }));
-      registrarAsistencia(qrCode, grupoSeleccionado);
+    if (!userId) {
+      console.error("El ID del usuario no está disponible en el localStorage.");
+      return;
     }
-  };
 
-  const handleGrupoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGrupoSeleccionado(e.target.value);
-    if (mensaje?.texto === 'Seleccione un grupo antes de escanear') {
-      setMensaje(null);
+    try {
+      const response = await axios.get(
+        `${API_URL}/auth/eventos?usuarioId=${userId}`
+      );
+      if (response.data.success) {
+        setEventos(response.data.data);
+      } else {
+        console.error("No se encontraron eventos");
+      }
+    } catch (error) {
+      console.error("Error al obtener los eventos:", error);
     }
   };
 
-  useEffect(() => {
-    if (grupoSeleccionado && codeReader.current) {
-      codeReader.current.reset();
-      iniciarEscaneo();
-    }
-  }, [grupoSeleccionado]);
+  const procesarQR = async (qrCode: string) => {
+    const eventoActual = eventoQRSeleccionadoRef.current;
+    console.log("Contenido escaneado:", qrCode);
+    console.log("Evento procesado:", eventoActual);
 
-  const iniciarEscaneo = async () => {
-    if (!codeReader.current) {
-      codeReader.current = new BrowserMultiFormatReader();
+    if (!verificarTiempoEscaneo(qrCode)) return;
+
+    const horaRegistro = new Date().toLocaleTimeString("es-ES", { hour12: false });
+
+    const nuevoQRData = { id: qrCode, hora: horaRegistro, evento: eventoActual };
+    setQrData(nuevoQRData);
+
+    try {
+      await registrarAsistencia(qrCode, eventoActual);
+    } catch (error) {
+      console.error("Error al registrar asistencia:", error);
     }
-  
-    if (videoRef.current) {
+  };
+
+  const registrarAsistencia = async (dni: string, idEvento: string) => {
+    const fechaRegistro = new Date();
+    fechaRegistro.setHours(fechaRegistro.getHours() - 5); // Ajuste por zona horaria
+    const fechaFormateada = fechaRegistro
+      .toISOString()
+      .replace("T", " ")
+      .substring(0, 19);
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/registrar-asistencia`,
+        {
+          dni,
+          idEvento,
+          fechaRegistro: fechaFormateada,
+        }
+      );
+
+      if (!response.data.success) {
+        throw new Error("Error al registrar la asistencia");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const startCamera = async () => {
+    codeReaderRef.current = new BrowserMultiFormatReader();
+
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      setDevices(videoDevices);
+
+      if (videoRef.current) {
+        await codeReaderRef.current.decodeFromVideoDevice(
+          null,
+          videoRef.current,
+          (result: Result | null, error: Exception | undefined) => {
+            if (result) {
+              procesarQR(result.getText());
+            }
+            if (error && !(error instanceof Exception)) {
+              console.error("Error escaneando el QR:", error);
+            }
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error al iniciar la cámara:", error);
+    }
+  };
+
+  const handleEventoQRChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nuevoEvento = e.target.value;
+    setEventoQRSeleccionado(nuevoEvento);
+    eventoQRSeleccionadoRef.current = nuevoEvento; // Actualiza el valor del ref
+  };
+
+  const handleRegistroManual = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (registroManual.dni && eventoManualSeleccionado) {
       try {
-        await codeReader.current.decodeFromVideoDevice(null, videoRef.current, (result, err) => {
-          if (result) {
-            procesarQR(result.getText());
-          }
-          if (err && !(err instanceof NotFoundException)) {
-            console.error(err);
-          }
+        await registrarAsistencia(registroManual.dni, eventoManualSeleccionado);
+        setQrData({
+          id: registroManual.dni,
+          hora: new Date().toLocaleTimeString("es-ES", { hour12: false }),
+          evento: eventoManualSeleccionado,
         });
+        setRegistroManual({ dni: "", evento: "" });
       } catch (error) {
-        mostrarMensaje('danger', 'Error al iniciar el escáner');
+        console.error("Error en el registro manual:", error);
       }
     }
   };
 
-  const registrarAsistencia = (id: string, grupo: string) => {
-    console.log('Registrando asistencia:', { id, grupo });
-    mostrarMensaje('success', 'Asistencia registrada correctamente');
-  };
+  useEffect(() => {
+    fetchEventos();
+    startCamera();
 
-  const handleRegistroManual = (e: React.FormEvent) => {
-    e .preventDefault();
-    if (registroManual.id && registroManual.grupo) {
-      const horaRegistro = new Date().toLocaleTimeString('es-ES', { hour12: false });
-      setQrData({ id: registroManual.id, hora: horaRegistro, grupo: registroManual.grupo });
-      registrarAsistencia(registroManual.id, registroManual.grupo);
-      setRegistroManual({ id: '', grupo: '' });
-    }
-  };
+    return () => {
+      if (codeReaderRef.current) {
+        codeReaderRef.current.reset();
+      }
+    };
+  }, []);
 
   return (
     <div className="asistencia-container">
       <h2 className="mb-4">Registro de Asistencia</h2>
 
-      {mensaje && (
-        <Alert 
-          variant={mensaje.tipo} 
-          className="position-fixed top-0 start-50 translate-middle-x mt-3" 
-          style={{ 
-            zIndex: 1000,
-            backgroundColor: mensaje.tipo === 'warning' ? 'rgba(255, 243, 205, 0.9)' : undefined,
-            borderColor: mensaje.tipo === 'warning' ? 'rgba(255, 238, 186, 0.9)' : undefined,
-            color: mensaje.tipo === 'warning' ? '#856404' : undefined,
-          }}
-        >
-          {mensaje.texto}
+      {mensajeError && (
+        <Alert variant="danger" className="text-center">
+          {mensajeError}
         </Alert>
       )}
 
       {qrData && (
         <div className="datos-escaneados-container mb-4">
-          <div className="datos-escaneados-content">
-            <strong>ID:</strong> {qrData.id}
-            <span className="separador">|</span>
-            <strong> Grupo:</strong> {qrData.grupo}
-            <span className="separador">|</span>
-            <strong>Hora:</strong> {qrData.hora}
-          </div>
+          <strong>DNI:</strong> {qrData.id} | <strong>Evento:</strong>{" "}
+          {qrData.evento} | <strong>Hora:</strong> {qrData.hora}
         </div>
       )}
 
       <Row>
         <Col md={6}>
-          <Card className="mb-4">
-            <Card.Header>
-              <h5 className="mb-0">Escáner QR</h5>
-            </Card.Header>
+          <Card>
+            <Card.Header>Escáner QR</Card.Header>
             <Card.Body>
-              <div className="video-container">
-                <video
-                  ref={videoRef}
-                  className="qr-video"
-                />
-              </div>
-
-              <div className="grupo-selector mt-3">
-                <Form.Group>
-                  <Form.Label className="fw-bold">Seleccionar Grupo </Form.Label>
-                  <Form.Select
-                    value={grupoSeleccionado}
-                    onChange={handleGrupoChange}
-                    className="form-select-lg"
-                  >
-                    <option value="">Seleccionar grupo</option>
-                    <option value="Grupo A">Grupo A</option>
-                    <option value="Grupo B">Grupo B</option>
-                    <option value="Grupo C">Grupo C</option>
-                  </Form.Select>
-                </Form.Group>
-              </div>
+              <Form.Select
+                value={eventoQRSeleccionado}
+                onChange={handleEventoQRChange}
+                required
+              >
+                <option value="">Seleccionar evento para QR</option>
+                {eventos.map((evento) => (
+                  <option key={evento.id} value={evento.id.toString()}>
+                    {evento.nombreEvento}
+                  </option>
+                ))}
+              </Form.Select>
+              <video ref={videoRef} style={{ width: "100%" }} autoPlay />
+              {devices.length > 1 && (
+                <Dropdown>
+                  <Dropdown.Toggle>Cambiar Cámara</Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {devices.map((device) => (
+                      <Dropdown.Item
+                        key={device.deviceId}
+                        onClick={() => setCurrentDeviceId(device.deviceId)}
+                        active={device.deviceId === currentDeviceId}
+                      >
+                        {device.label || `Cámara ${devices.indexOf(device) + 1}`}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
             </Card.Body>
           </Card>
         </Col>
 
         <Col md={6}>
           <Card>
-            <Card.Header>
-              <h5 className="mb-0">Registro Manual</h5>
-            </Card.Header>
+            <Card.Header>Registro Manual</Card.Header>
             <Card.Body>
+              <Form.Select
+                value={eventoManualSeleccionado}
+                onChange={(e) => setEventoManualSeleccionado(e.target.value)}
+                required
+              >
+                <option value="">Seleccionar evento para registro manual</option>
+                {eventos.map((evento) => (
+                  <option key={evento.id} value={evento.id.toString()}>
+                    {evento.nombreEvento}
+                  </option>
+                ))}
+              </Form.Select>
               <Form onSubmit={handleRegistroManual}>
-                <Form.Group className="mb-3">
-                  <Form.Label>ID de Usuario</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={registroManual.id}
-                    onChange={(e) => setRegistroManual(prev => ({ ...prev, id: e.target.value }))}
-                    placeholder="Ingrese el ID"
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-4">
-                  <Form.Label>Grupo</Form.Label>
-                  <Form.Select
-                    value={registroManual.grupo}
-                    onChange={(e) => setRegistroManual(prev => ({ ...prev, grupo: e.target.value }))}
-                    required
-                  >
-                    <option value="">Seleccionar grupo</option>
-                    <option value="Grupo A">Grupo A</option>
-                    <option value="Grupo B">Grupo B</option>
-                    <option value="Grupo C">Grupo C</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <div className="d-flex justify-content-center gap-2">
-                  <Button 
-                    variant="danger" 
-                    onClick={() => setRegistroManual({ id: '', grupo: '' })}
-                  >Cancelar</Button>
-                  <Button 
-                    variant="success" 
-                    type="submit"
-                  >
-                    Registrar Asistencia
-                  </Button>
-                </div>
+                <Form.Control
+                  value={registroManual.dni}
+                  onChange={(e) =>
+                    setRegistroManual((prev) => ({
+                      ...prev,
+                      dni: e.target.value,
+                    }))
+                  }
+                  placeholder="Ingrese DNI"
+                />
+                <Button className= "btn-success" type="submit">Registrar Asistencia</Button>
               </Form>
             </Card.Body>
           </Card>

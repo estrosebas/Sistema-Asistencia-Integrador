@@ -1,0 +1,75 @@
+.registro-container {
+    padding: 20px;
+  }
+  
+  .registro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px ;
+  }
+  
+  .registro-header h2 {
+    margin: 0;
+  }
+  
+  .btn-nuevo-registro {
+    margin-left: 20px;
+  }
+  
+  .filtros-container {
+    margin-bottom: 20px;
+  }
+  
+  .tabla-container {
+    margin-top: 20px;
+  }
+  
+  .ordenable {
+    cursor: pointer;
+  }
+  
+  .orden-indicador {
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  
+  .estado-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+  }
+  
+  .estado-badge.activo {
+    background-color: #c6efce;
+    color: #2c3e50;
+  }
+  
+  .estado-badge.inactivo {
+    background-color: #f7cac9;
+    color: #2c3e50;
+  }
+  
+  .sin-resultados {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+  }
+
+  .anuncio {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .anuncio h3 {
+    margin-bottom: 10px;
+  }
+  
+  .anuncio p {
+    margin: 0;
+  }
+  

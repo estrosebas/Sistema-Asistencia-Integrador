@@ -1,4 +1,3 @@
-// Historial.tsx
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Table } from 'react-bootstrap';
 import './estilos/Historial.css';
@@ -15,15 +14,18 @@ const Historial: React.FC = () => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<any>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<string>(''); // Nuevo estado para el grupo seleccionado
+  const [usuarioDniLogueado, setUsuarioDniLogueado] = useState<string>(''); // Estado para el DNI del usuario logueado
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     const usuarioId = userData.usuarioId;
-
+    const dni = userData.dni; 
     if (!usuarioId) {
       console.error("El ID del usuario no está disponible en el localStorage.");
       return;
     }
+
+    setUsuarioDniLogueado(dni); 
 
     // Obtener los eventos del usuario logueado
     const fetchEventos = async () => {
@@ -63,7 +65,8 @@ const Historial: React.FC = () => {
     return usuarios.filter(usuario => {
       const coincideDni = busquedaDni ? usuario.dni.toString().startsWith(busquedaDni) : true;
       const coincideEvento = eventoSeleccionado ? usuario.eventos && usuario.eventos.includes(eventoSeleccionado) : true;
-      return coincideDni && coincideEvento;
+      const noEsUsuarioLogueado = usuario.dni !== usuarioDniLogueado; 
+      return coincideDni && coincideEvento && noEsUsuarioLogueado;
     });
   };
 
@@ -81,7 +84,7 @@ const Historial: React.FC = () => {
     <Container>
       <h2 className="mb-4">Historial de Usuarios</h2>
       <Row className="mb-3">
-        <Col md={6}>
+        <Col xs={12} md={6} className="mb-3 mb-md-0">
           <Form.Control
             type="text"
             placeholder="Buscar por DNI de usuario"
@@ -89,7 +92,7 @@ const Historial: React.FC = () => {
             onChange={(e) => setBusquedaDni(e.target.value)}
           />
         </Col>
-        <Col md={6}>
+        <Col xs={12} md={6}>
           <Form.Group>
             <Form.Select
               value={eventoSeleccionado}
@@ -107,7 +110,7 @@ const Historial: React.FC = () => {
         </Col>
       </Row>
 
-      <Table hover>
+      <Table responsive hover>
         <thead className="text-center">
           <tr>
             <th>DNI de Usuario</th>
@@ -125,7 +128,7 @@ const Historial: React.FC = () => {
               <td>{`${usuario.ape_paterno} ${usuario.ape_materno}`}</td>
               <td>{usuario.eventos.join(', ')}</td>
               <td>
-                <Button variant="primary" onClick={() => handleVerActividad(usuario)}>
+                <Button variant="warning" onClick={() => handleVerActividad(usuario)}>
                   Ver Actividad
                 </Button>
               </td>

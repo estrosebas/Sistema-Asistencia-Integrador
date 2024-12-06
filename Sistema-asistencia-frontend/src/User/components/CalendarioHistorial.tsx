@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Row, Col, Form } from 'react-bootstrap';
+import { Modal, Button, Row, Col } from 'react-bootstrap';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
@@ -10,27 +10,28 @@ const API_URL = import.meta.env.VITE_API_URL;
 interface CalendarioHistorialProps {
   show: boolean;
   handleClose: () => void;
-  usuario: any;
-  grupo: string;
+  eventoSeleccionado: string; // Nueva propiedad para el evento seleccionado
   eventos: any[];
 }
 
-const CalendarioHistorial: React.FC<CalendarioHistorialProps> = ({ show, handleClose, usuario, eventos }) => {
-  const [eventoSeleccionado, setEventoSeleccionado] = useState<string>('');
+const CalendarioHistorial: React.FC<CalendarioHistorialProps> = ({ show, handleClose, eventoSeleccionado }) => {
   const [registrosAsistencia, setRegistrosAsistencia] = useState<any[]>([]);
   const [fechaHoraEntrada, setFechaHoraEntrada] = useState<string>('');
 
-  const handleEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setEventoSeleccionado(e.target.value);
-  };
+  // Obtener el usuarioId del localStorage
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const usuarioId = userData.usuarioId;
 
   useEffect(() => {
     if (show && eventoSeleccionado) {
       const fetchRegistrosAsistencia = async () => {
         try {
+          console.log("usuarioId:", usuarioId);
+          console.log("eventoNombre:", eventoSeleccionado);
+
           const response = await axios.get(`${API_URL}/auth/registros-asistencia-usuario-evento`, {
             params: {
-              usuarioId: usuario.id,
+              usuarioId: usuarioId,
               eventoNombre: eventoSeleccionado
             }
           });
@@ -66,7 +67,7 @@ const CalendarioHistorial: React.FC<CalendarioHistorialProps> = ({ show, handleC
       fetchRegistrosAsistencia();
       fetchEvento();
     }
-  }, [show, eventoSeleccionado]);
+  }, [show, eventoSeleccionado, usuarioId]);
 
   const tileClassName = ({ date, view }: any) => {
     if (view === 'month') {
@@ -100,31 +101,11 @@ const CalendarioHistorial: React.FC<CalendarioHistorialProps> = ({ show, handleC
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Historial de {usuario.nombre}</Modal.Title>
+        <Modal.Title>Historial de {userData.nombre}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Row>
-          <Col md={5}>
-            <p><strong>DNI:</strong> {usuario.dni}</p>
-            <p><strong>Nombre:</strong> {usuario.nombre}</p>
-            <p><strong>Apellido:</strong> {usuario.ape_paterno} {usuario.ape_materno}</p>
-            <Form.Group>
-              <Form.Label className="fw-bold">Seleccionar Evento</Form.Label>
-              <Form.Select
-                value={eventoSeleccionado}
-                onChange={handleEventoChange}
-                className="form-select"
-              >
-                <option value="">Seleccionar evento</option>
-                {eventos.map((evento: any) => (
-                  <option key={evento.nombreEvento} value={evento.nombreEvento}>
-                    {evento.nombreEvento}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-          <Col md={7}>
+          <Col>
             {eventoSeleccionado && fechaHoraEntrada && (
               <div id="custom-calendar">
                 <Calendar

@@ -159,7 +159,7 @@ const Reporte: React.FC = () => {
                 <td>{calcularDiferenciaHoras(evento.fechaHoraEntrada, evento.fechaHoraSalida)}</td>
                 <td>{evento.capacidad}</td>
                 <td>
-                  <Button variant="primary" size="sm" onClick={() => generarReporte(evento)}>
+                  <Button variant="warning" size="sm" onClick={() => generarReporte(evento)}>
                     Generar Reporte
                   </Button>
                 </td>
@@ -179,12 +179,14 @@ const Reporte: React.FC = () => {
         </Modal.Header>
         <Modal.Body>
           <p>Seleccione el formato del reporte:</p>
-          <Button variant="primary" onClick={descargarReportePDF}>
-            Descargar PDF
-          </Button>
-          <Button variant="success" onClick={descargarReporteExcel}>
-            Descargar Excel
-          </Button>
+          <div className="d-flex justify-content-center">
+            <Button variant="danger" onClick={descargarReportePDF} className="me-2">
+              Descargar PDF
+            </Button>
+            <Button variant="success" onClick={descargarReporteExcel}>
+              Descargar Excel
+            </Button>
+          </div>
         </Modal.Body>
       </Modal>
     </div>

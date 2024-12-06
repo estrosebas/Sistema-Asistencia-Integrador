@@ -5,10 +5,11 @@ import "./ManagerPanel.css";
 import Asistencia from "./componentes/Asistencia";
 import Historial from "./componentes/Historial";
 import Reporte from "./componentes/Reporte";
+import Registro from "./componentes/Registro"; // Importar el componente Registro
 import { useNavigate } from "react-router-dom";
 
 const ManagerPanel: React.FC = () => {
-  const [vistaActiva, setVistaActiva] = useState("asistencia");
+  const [vistaActiva, setVistaActiva] = useState("registro"); // Cambiar el estado inicial a "registro"
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [modoOscuro, setModoOscuro] = useState(false);
 
@@ -21,6 +22,12 @@ const ManagerPanel: React.FC = () => {
   };
 
   const opcionesMenu = [
+    {
+      id: "registro",
+      icon: "fa-list-alt",
+      label: "Registro",
+      action: () => seleccionarVista("registro"),
+    },
     {
       id: "asistencia",
       icon: "fa-check-circle",
@@ -143,7 +150,9 @@ const ManagerPanel: React.FC = () => {
             menuAbierto ? "expanded" : "collapsed"
           }`}
         >
-          {vistaActiva === "asistencia" ? (
+          {vistaActiva === "registro" ? (
+            <Registro />
+          ) : vistaActiva === "asistencia" ? (
             <Asistencia />
           ) : vistaActiva === "historial" ? (
             <Historial />

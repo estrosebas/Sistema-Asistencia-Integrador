@@ -202,20 +202,21 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({
           <Col md={6}>
             <h4>Añadir Usuario</h4>
             <Form>
-              <Form.Group controlId="formDni">
-                <Form.Label>DNI del Usuario</Form.Label>
-                <InputGroup>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingrese el DNI del usuario"
-                    value={dni}
-                    onChange={(e) => setDni(e.target.value)}
-                  />
-                  <Button variant="primary" onClick={buscarUsuario}>
-                    Buscar Usuario
-                  </Button>
-                </InputGroup>
-              </Form.Group>
+            <Form.Group controlId="formDni">
+              <Form.Label>DNI del Usuario</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  placeholder="Ingrese el DNI del usuario"
+                  value={dni}
+                  onChange={(e) => setDni(e.target.value)}
+                  className="h-100"
+                />
+                <Button variant="warning" onClick={buscarUsuario} className="h-100">
+                  Buscar Usuario
+                </Button>
+              </InputGroup>
+            </Form.Group>
             </Form>
             {mensaje && <Alert variant="info">{mensaje}</Alert>}
             {usuariosTemporales.length > 0 && (
@@ -265,7 +266,7 @@ const GestionarUsuarios: React.FC<GestionarUsuariosProps> = ({
         >
           Cerrar
         </Button>
-        <Button variant="primary" onClick={añadirUsuarios}>
+        <Button variant="success" onClick={añadirUsuarios}>
           Añadir Usuarios
         </Button>
       </Modal.Footer>
