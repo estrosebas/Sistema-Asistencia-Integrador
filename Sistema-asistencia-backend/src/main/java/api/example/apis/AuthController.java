@@ -336,6 +336,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que obtiene los eventos de un usuario.
+     *
+     * @param usuarioIdStr ID del usuario.
+     * @return ResponseEntity con la lista de eventos.
+     */
     @GetMapping("/eventos")
     public ResponseEntity<?> getEventos(@RequestParam(value = "usuarioId", required = false) String usuarioIdStr) {
         Long usuarioId = null;
@@ -402,6 +408,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que agrega un nuevo evento.
+     *
+     * @param eventoRequest Objeto que contiene los datos del evento.
+     * @return ResponseEntity con la respuesta de la creación del evento.
+     */
     @PostMapping("/add-evento")
     public ResponseEntity<?> addEvento(@RequestBody Map<String, Object> eventoRequest) {
         String nombreEvento = (String) eventoRequest.get("nombreEvento");
@@ -483,6 +495,13 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que actualiza un evento existente.
+     *
+     * @param idEvento ID del evento a actualizar.
+     * @param eventoRequest Objeto que contiene los datos del evento.
+     * @return ResponseEntity con la respuesta de la actualización del evento.
+     */
     @PutMapping("/eventos/{id}")
     public ResponseEntity<?> updateEvento(@PathVariable("id") Long idEvento, @RequestBody Map<String, Object> eventoRequest) {
         String nombreEvento = (String) eventoRequest.get("nombreEvento");
@@ -522,6 +541,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que elimina un evento existente.
+     *
+     * @param idEvento ID del evento a eliminar.
+     * @return ResponseEntity con la respuesta de la eliminación del evento.
+     */
     @DeleteMapping("/eventos/{id}")
     public ResponseEntity<?> deleteEvento(@PathVariable("id") Long idEvento) {
         String deleteRegistroAsistenciaQuery = "DELETE FROM registro_asistencia WHERE ID_Evento = ?";
@@ -574,6 +599,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que obtiene la lista de usuarios.
+     *
+     * @return ResponseEntity con la lista de usuarios.
+     */
     @GetMapping("/usuarios")
     public ResponseEntity<?> getUsuarios() {
         try (Connection connection = dataSource.getConnection()) {
@@ -607,6 +637,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que obtiene los usuarios de un evento.
+     *
+     * @param eventoId ID del evento.
+     * @return ResponseEntity con la lista de usuarios del evento.
+     */
     @GetMapping("/usuarios-evento")
     public ResponseEntity<?> getUsuariosEvento(@RequestParam("eventoId") Long eventoId) {
         try (Connection connection = dataSource.getConnection()) {
@@ -644,6 +680,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que agrega un registro en la tabla 'asiste'.
+     *
+     * @param request Objeto que contiene los IDs del usuario y del evento.
+     * @return ResponseEntity con la respuesta de la inserción del registro.
+     */
     @PostMapping("/add-asiste")
     public ResponseEntity<?> addAsiste(@RequestBody Map<String, Long> request) {
         Long idUsuario = request.get("idUsuario");
@@ -686,6 +728,13 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que elimina un registro de la tabla 'asiste'.
+     *
+     * @param idUsuario ID del usuario.
+     * @param idEvento ID del evento.
+     * @return ResponseEntity con la respuesta de la eliminación del registro.
+     */
     @DeleteMapping("/delete-asiste")
     public ResponseEntity<?> deleteAsiste(@RequestParam("idUsuario") Long idUsuario, @RequestParam("idEvento") Long idEvento) {
         String deleteQuery = "DELETE FROM asiste WHERE ID_Usuario = ? AND ID_Evento = ?";
@@ -716,6 +765,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que registra la asistencia de un usuario a un evento.
+     *
+     * @param request Objeto que contiene el DNI del usuario, el ID del evento y la fecha de registro.
+     * @return ResponseEntity con la respuesta del registro de asistencia.
+     */
     @PostMapping("/registrar-asistencia")
     public ResponseEntity<?> registrarAsistencia(@RequestBody Map<String, Object> request) {
         String dni = (String) request.get("dni");
@@ -781,6 +836,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Método que obtiene los usuarios que comparten eventos en común con el usuario logueado.
+     *
+     * @param usuarioId ID del usuario logueado.
+     * @return ResponseEntity con la lista de usuarios y sus eventos en común.
+     */
     @GetMapping("/usuarios-historial")
     public ResponseEntity<?> getUsuariosHistorial(@RequestParam("usuarioId") Long usuarioId) {
         try (Connection connection = dataSource.getConnection()) {
@@ -859,6 +920,14 @@ public class AuthController {
                     }});
         }
     }
+
+    /**
+     * Método que obtiene los registros de asistencia de un usuario para un evento específico.
+     *
+     * @param usuarioId ID del usuario.
+     * @param eventoNombre Nombre del evento.
+     * @return ResponseEntity con la lista de registros de asistencia.
+     */
     @GetMapping("/registros-asistencia-usuario-evento")
     public ResponseEntity<?> getRegistrosAsistenciaUsuarioEvento(@RequestParam("usuarioId") Long usuarioId, @RequestParam("eventoNombre") String eventoNombre) {
         try (Connection connection = dataSource.getConnection()) {
@@ -909,7 +978,12 @@ public class AuthController {
         }
     }
 
-
+    /**
+     * Método que obtiene un evento por su nombre.
+     *
+     * @param nombreEvento Nombre del evento.
+     * @return ResponseEntity con los datos del evento.
+     */
     @GetMapping("/evento-por-nombre")
     public ResponseEntity<?> getEventoPorNombre(@RequestParam("nombreEvento") String nombreEvento) {
         try (Connection connection = dataSource.getConnection()) {
@@ -947,6 +1021,4 @@ public class AuthController {
                     }});
         }
     }
-
-
 }

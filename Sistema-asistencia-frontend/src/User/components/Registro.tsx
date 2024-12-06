@@ -109,7 +109,7 @@ const Registro: React.FC = () => {
                 <td>{calcularDiferenciaHoras(evento.fechaHoraEntrada, evento.fechaHoraSalida)}</td>
                 <td>{evento.capacidad}</td>
                 <td>
-                  <Button variant="primary" onClick={() => mostrarCalendarioEvento(evento)}>
+                  <Button variant="warning" onClick={() => mostrarCalendarioEvento(evento)}>
                     Ver actividad
                   </Button>
                 </td>

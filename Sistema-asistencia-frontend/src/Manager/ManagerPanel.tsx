@@ -9,18 +9,27 @@ import Registro from "./componentes/Registro"; // Importar el componente Registr
 import { useNavigate } from "react-router-dom";
 
 const ManagerPanel: React.FC = () => {
+  // Estados para manejar la vista activa, el menú abierto y el modo oscuro
   const [vistaActiva, setVistaActiva] = useState("registro"); // Cambiar el estado inicial a "registro"
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [modoOscuro, setModoOscuro] = useState(false);
 
+  // Función para alternar el estado del menú
   const toggleMenu = () => setMenuAbierto((prevState) => !prevState);
+
+  // Función para alternar el modo oscuro
   const toggleModoOscuro = () => setModoOscuro((prevState) => !prevState);
+
+  // URL de la API
   const API_URL = import.meta.env.VITE_API_URL;
+
+  // Función para seleccionar la vista activa
   const seleccionarVista = (id: string) => {
     setVistaActiva(id);
     if (window.innerWidth <= 768) setMenuAbierto(false); // Cierra el menú en pantallas pequeñas
   };
 
+  // Opciones del menú
   const opcionesMenu = [
     {
       id: "registro",
@@ -70,7 +79,10 @@ const ManagerPanel: React.FC = () => {
     }
   };
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Estado de autenticación
+  // Estado de autenticación
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  // Efecto para verificar la autenticación al montar el componente
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
@@ -96,6 +108,7 @@ const ManagerPanel: React.FC = () => {
     checkAuthentication();
   }, [navigate]);
 
+  // Si no está autenticado, muestra un mensaje de redirección
   if (!isAuthenticated) {
     return <div>Redirigiendo...</div>; // Muestra algo mientras se verifica el estado
   }

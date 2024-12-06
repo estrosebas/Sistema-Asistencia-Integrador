@@ -8,19 +8,53 @@ import Historial from "./componentes/Historial";
 import Reporte from "./componentes/Reporte";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Componente principal del panel de administración.
+ * @returns {JSX.Element} El componente AdminPanel.
+ */
 const AdminPanel: React.FC = () => {
+  /**
+   * Estado que controla la vista activa en el panel.
+   */
   const [vistaActiva, setVistaActiva] = useState("registro");
+
+  /**
+   * Estado que controla si el menú lateral está abierto o cerrado.
+   */
   const [menuAbierto, setMenuAbierto] = useState(false);
+
+  /**
+   * Estado que controla el modo oscuro.
+   */
   const [modoOscuro, setModoOscuro] = useState(false);
+
+  /**
+   * URL de la API obtenida desde las variables de entorno.
+   */
   const API_URL = import.meta.env.VITE_API_URL;
+
+  /**
+   * Función para alternar el estado del menú lateral.
+   */
   const toggleMenu = () => setMenuAbierto((prevState) => !prevState);
+
+  /**
+   * Función para alternar el modo oscuro.
+   */
   const toggleModoOscuro = () => setModoOscuro((prevState) => !prevState);
 
+  /**
+   * Función para seleccionar la vista activa.
+   * @param {string} id - El identificador de la vista a seleccionar.
+   */
   const seleccionarVista = (id: string) => {
     setVistaActiva(id);
     if (window.innerWidth <= 768) setMenuAbierto(false); // Cierra el menú en pantallas pequeñas
   };
 
+  /**
+   * Opciones del menú de navegación.
+   */
   const opcionesMenu = [
     {
       id: "registro",
@@ -48,7 +82,14 @@ const AdminPanel: React.FC = () => {
     },
   ];
 
+  /**
+   * Hook para la navegación.
+   */
   const navigate = useNavigate();
+
+  /**
+   * Función para cerrar la sesión del usuario.
+   */
   const cerrarSesion = async () => {
     try {
       const response = await fetch(`${API_URL}/auth/logout`, {
@@ -67,7 +108,14 @@ const AdminPanel: React.FC = () => {
     }
   };
 
+  /**
+   * Estado que controla si el usuario está autenticado.
+   */
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  /**
+   * Efecto para verificar la autenticación del usuario al montar el componente.
+   */
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
@@ -93,10 +141,16 @@ const AdminPanel: React.FC = () => {
     checkAuthentication();
   }, [navigate]);
 
+  /**
+   * Si el usuario no está autenticado, redirige a la página de inicio de sesión.
+   */
   if (!isAuthenticated) {
     return <div>Redirigiendo...</div>;
   }
 
+  /**
+   * Renderiza el componente AdminPanel.
+   */
   return (
     <div id="admin-panel">
       <div className={`container-fluid-1 ${modoOscuro ? "modo-oscuro" : ""}`}>
