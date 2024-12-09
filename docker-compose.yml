@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysqlasistencia
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bd_sistema_asistencia
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./Sistema-asistencia-frontend
+      dockerfile: Dockerfile
+    container_name: frontedasistencia
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    environment:
+      - VITE_API_URL=http://localhost:3000
+
+  api:
+    build:
+      context: ./Sistema-asistencia-backend
+      dockerfile: Dockerfile
+    container_name: spring_boot_api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
