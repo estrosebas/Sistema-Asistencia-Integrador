@@ -1,0 +1,170 @@
+/*login.css*/
+
+@media (min-width: 768px){
+
+  .login-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  }
+  .login-container .login-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    overflow: hidden;
+    color: white;
+    position: relative;
+    background-color: #001f3f;
+    box-shadow: 0px 0px 0px 20px #1c4386, 
+                0px 0px 0px 40px #2b7dca, 
+                0px 0px 0px 60px #2b9fc8,
+                0px 0px 0px 80px #2bc7c8, 
+                0px 0px 0px 100px #8bece4;
+    border-radius: 0 50% 50% 0;
+    
+    pointer-events: none;
+  }
+
+  .login-container .login-image {
+    position: fixed;
+    top: 50%;
+    left: -50px;
+    transform: translateY(-50%) scale(0.9);
+    width: 50%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .login-container .login-rigth {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    width: 60%;    
+    margin-inline: 125px 25px;
+  }
+  .login-container .login-rigth .form-control{
+    background: transparent;
+  }
+  .login-container .login-top {
+    margin-bottom: 5%;
+    margin-top: -100px;
+    text-align: center;
+    scale: 1.3;
+  }
+
+  .login-container .login-form {
+    width: 100%; 
+    max-width: 500px; 
+    padding: 40px;
+    background: rgb(255, 255, 255, 0.9);
+    border-radius: 40px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); 
+  }
+
+  .login-container .btn{
+    min-width: 95%;
+    padding: 10px; 
+    border-radius: 10px;
+  }
+
+  .login-container .btn-primary {
+    background-color: transparent ;
+    color: #5dade2;
+    border: 2px solid #5dade2; 
+    transition: all 0.5s ease;
+
+  }
+
+  .login-container .btn-primary:hover {
+    background-color: #3498db;
+    color: #fff;
+    border: 2px solid #3498db;
+  }
+
+  .login-container .btn-success {
+    background-color: transparent;
+    color: #2cda3a ;
+    border: 2px solid #2cda3a;
+    transition: all 0.5s ease;
+  }
+
+  .login-container .btn-success:hover {
+    background-color: #2ecc71;
+    color:#fff;  
+    border: 2px solid #2ecc71; 
+  }
+}
+
+@media (max-width: 768px) {
+
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+    justify-content: center; 
+    align-items: center; /* Centrar contenido horizontalmente */        
+    background: linear-gradient(45deg, #033e79, #000000);
+  }
+  
+  .login-container .login-left {
+    display: none; /* Ocultar login-left */
+  }
+
+  .login-container .login-rigth {    
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    padding: 10%;
+  }
+
+  .login-container .login-image {
+    display: none; /* Esconder la imagen */
+  }
+
+  .login-container .login-top {
+    margin-bottom: 10%; /* Distancia ajustada */
+    text-align: center;
+    position: relative;
+    scale: 1.2;
+    color: white;
+  }
+
+  .login-container .login-form {
+    width: 100%; /* Ancho completo */
+    max-width: 400px; /* Limitar el ancho máximo para no ser demasiado grande */
+    padding: 40px;
+    background: rgb(255, 255, 255);
+    border-radius: 20px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 1); /* Sombra más marcada */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .login-container .btn{
+    min-width: 90%; /* Asegurarse de que los botones ocupen todo el ancho en pantallas pequeñas */
+    padding: 12px; /* Aumentar el tamaño de los botones */
+    border-radius: 10px;
+  }
+
+  .login-container .btn-primary {
+    background-color: #5dade2;
+    color: #fff;
+    border: 2px solid #5dade2;  
+  }
+
+  .login-container .btn-success {
+    background-color: #2ecc71;
+    color: #fff ;
+    border: 2px solid #2cda3a;
+  }
+}
+

@@ -1,0 +1,211 @@
+.home-container {
+  width: 100%;
+  overflow-x: hidden;
+  animation: backgroundSlide 5s infinite alternate;
+  position: relative;
+}
+
+@keyframes backgroundSlide {
+  0% {
+    background: #242424;
+  }
+  100% {
+    background: #001f3f;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-container .hero-section {
+    position: relative;
+    overflow: hidden;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+  }
+
+  .home-container .hero-content {
+    text-align: center;
+    z-index: 1;
+    width: 100%;
+    max-width: 600px;
+    scale: 1.2;
+  }
+
+  .home-container .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .home-container .cta-buttons .btn {
+    padding: 10px 25px;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+  }
+
+  .home-container .btn-primary {
+    background-color: transparent;
+    color: lightskyblue;
+    border: 2px solid lightskyblue;
+    border-radius: 20px !important;
+  }
+
+  .home-container .btn-primary:hover {
+    background-color: #3498db;
+    color: #fff;
+    border: 2px solid #3498db;
+    transform: translateY(-10px);
+    box-shadow: 0 0 10px #4fc3dc, 0 0 80px #4fc3dc;
+  }
+
+  .home-container .btn-secondary {
+    background-color: transparent;
+    color: greenyellow;
+    border: 2px solid greenyellow;
+    border-radius: 20px !important;
+  }
+
+  .home-container .btn-secondary:hover {
+    background-color: #2ecc71;
+    color: #fff;
+    border: 2px solid #2ecc71;
+    transform: translateY(-10px);
+    box-shadow: 0 0 10px #4edc89, 0 0 80px #4edc89;
+  }
+
+  .home-container .features-section {
+    padding: 50px;
+    color: white;
+    font-size: x-large;
+  }
+
+  .home-container .features-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+  }
+
+  .home-container .card {
+    color: #fff;
+    transition: transform 0.5s ease-in-out;
+    background: rgba(133, 133, 133, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+  }
+
+  .home-container .card:hover {
+    transform: translateY(-10px);
+    transition: 0.4s ease-out;
+    box-shadow: 0 10px 60px rgba(211, 206, 206, 0.3);
+  }
+
+  .home-container .card-body {
+    padding: 100px;
+  }
+
+  .home-container .card-title {
+    font-size: x-large;
+    margin-bottom: 15px;
+  }
+
+  .home-container .footer {
+    color: white;
+    text-align: center;
+    font-size: x-large;
+    padding: 20px 0;
+    width: 100%;
+  }
+}
+
+/* Pantalla pequeña */
+@media (max-width: 768px) {
+  .home-container .hero-section {
+    position: relative;
+    overflow: hidden;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+  }
+
+  .home-container .hero-content {
+    text-align: center;
+    z-index: 1;
+    width: 100%;
+    max-width: 600px;
+    scale: 1.1;
+    padding: 50px;
+  }
+
+  .home-container .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .home-container .cta-buttons .btn {
+    padding: 10px 25px;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+    translate: 0 80px;
+    width: 250px;
+  }
+
+  .home-container .btn-primary {
+    background-color: transparent;
+    color: lightskyblue;
+    border: 2px solid lightskyblue;
+    border-radius: 20px !important;
+  }
+
+  .home-container .btn-secondary {
+    background-color: transparent;
+    color: greenyellow;
+    border: 2px solid greenyellow;
+    border-radius: 20px !important;
+  }
+
+  .home-container .features-section {
+    padding: 50px;
+    color: white;
+    font-size: large;
+  }
+
+  .home-container .features-section h2 {
+    font-size: xx-large;
+    margin-bottom: 40px;
+  }
+
+  .home-container .card {
+    color: #fff;
+    transition: transform 0.5s ease-in-out;
+    background: rgba(133, 133, 133, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+  }
+
+  .home-container .card-body {
+    padding: 30px;
+  }
+
+  .home-container .card-title {
+    font-size: x-large;
+    margin-bottom: 15px;
+  }
+
+  .home-container .footer {
+    color: white;
+    text-align: center;
+    font-size: large;
+    width: 100%;
+    transform: translateZ(0); /* Forzar renderizado en móviles */
+  }
+}

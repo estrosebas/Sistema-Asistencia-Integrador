@@ -1,0 +1,50 @@
+#custom-calendar {
+  width: auto;
+  height: auto;
+  font-size: 12px;
+}
+
+#custom-calendar .react-calendar {
+  width: auto;
+  height: 100%;
+  font-size: 1.2em;
+}
+
+#custom-calendar .react-calendar__tile {
+  max-height: 52px;
+  border-radius: 15px;
+}
+
+#custom-calendar .react-calendar__month-view__days__day {
+  padding: 5px;
+}
+
+#custom-calendar .react-calendar__tile--active {
+  background-color: inherit;
+  color: inherit;
+}
+
+#custom-calendar .asiste {
+  background-color: lightgreen !important;
+  color: black;
+}
+
+#custom-calendar .falta {
+  background-color: lightcoral !important;
+  color: black;
+}
+
+#custom-calendar .tarde {
+  background-color: lightsalmon !important;
+  color: black;
+}
+
+#custom-calendar .justificado {
+  background-color: lightblue !important;
+  color: black;
+}
+
+#custom-calendar .gris {
+  background-color: lightgray !important;
+  color: black;
+}
