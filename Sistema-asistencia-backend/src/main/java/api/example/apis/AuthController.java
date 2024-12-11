@@ -289,6 +289,7 @@ public class AuthController {
         }
     }
 
+
     /**
      * Método que obtiene los registros de asistencia.
      *
