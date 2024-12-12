@@ -1,4 +1,5 @@
 package api.example.apis;
+
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -21,6 +22,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+/**
+ * Controlador REST para generar reportes de eventos en formato PDF y Excel.
+ */
 @RestController
 @RequestMapping("/api/reporte")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:80", "http://localhost", "http://localhost:5173"}, allowedHeaders = "*", allowCredentials = "true")
@@ -28,10 +32,22 @@ public class ReporteController {
 
     private final DataSource dataSource;
 
+    /**
+     * Constructor que inicializa el DataSource.
+     *
+     * @param dataSource el DataSource para conectar a la base de datos
+     */
     public ReporteController(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    /**
+     * Genera un reporte en formato PDF para un evento específico.
+     *
+     * @param eventoId  el ID del evento
+     * @param usuarioId  el ID del usuario que genera el reporte
+     * @return una ResponseEntity con el archivo PDF generado
+     */
     @GetMapping("/pdf/{eventoId}")
     public ResponseEntity<byte[]> generarReportePDF(@PathVariable Long eventoId, @RequestParam Long usuarioId) {
         try (Connection connection = dataSource.getConnection()) {
@@ -136,6 +152,13 @@ public class ReporteController {
         }
     }
 
+    /**
+     * Genera un reporte en formato Excel para un evento específico.
+     *
+     * @param eventoId  el ID del evento
+     * @param usuarioId  el ID del usuario que genera el reporte
+     * @return una ResponseEntity con el archivo Excel generado
+     */
     @GetMapping("/excel/{eventoId}")
     public ResponseEntity<byte[]> generarReporteExcel(@PathVariable Long eventoId, @RequestParam Long usuarioId) {
         try (Connection connection = dataSource.getConnection()) {

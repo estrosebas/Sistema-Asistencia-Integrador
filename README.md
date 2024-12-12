@@ -9,6 +9,17 @@ Sistema Asistencia Integrador es una aplicación diseñada para gestionar y asis
 ## 💡 Diagrama Casos de Uso
 <p align="center"><img src=image.jpeg></p>
 
+## 🗒️ Lista Casos de uso
+- **Iniciar Sesión (CU-01)**
+- **Registrar Nuevo usuario (CU-02)**
+- **Crear registro de asistencia (CU-03)**
+- **Marcar asistencia (CU-04)**
+- **Generar QR (CU-05)**
+- **Generar reporte de asistencia(CU-06)**
+- **Consultar historial de asistencia (CU-07)**
+- **Configurar registro de asistencia (CU-08)**
+- **Gestionar Usuario (CU-09)**
+
 ---
 
 
@@ -27,10 +38,10 @@ Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y 
 
 | Integrante                     | %   | Contribucion                                            |
 | ------------------------------ | --- | ------------------------------------------------------- |
-| Cristofer Torres Castillo      | 25% | Vista principal y backend                               |
-| Cristian Huaracha Venturas     | 25% | Vista del login y administrador                         |
-| Winston Apaza Mamani           | 25% | Vista del formulario de registro de usuario             |
-| Diego Sebastian Gonzales Gomez | 25% | Backend login y registro de usuario                     |
+| Cristofer Torres Castillo      | 25% | Vista manager                                           |
+| Cristian Huaracha Venturas     | 25% | Backend y frontend                                      |
+| Winston Apaza Mamani           | 25% | Vista usuario                                           |
+| Diego Sebastian Gonzales Gomez | 25% | Backend verificacion y desplazamiento                   |
 
 ---
 
@@ -105,3 +116,4 @@ Para cualquier consulta o colaboración, no dudes en ponerte en contacto con nos
 ---
 
 > **Nota:** Este proyecto es el resultado del esfuerzo colaborativo y el compromiso de todos los miembros del equipo. Continuaremos trabajando para alcanzar los objetivos establecidos en los plazos acordados.
+

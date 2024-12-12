@@ -6,18 +6,48 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./UserPanel.css";
 
+/**
+ * Componente principal del panel de usuario.
+ * @returns {JSX.Element} El componente UserPanel.
+ */
 const UserPanel: React.FC = () => {
+  /**
+   * Estado que controla la vista activa en el panel.
+   */
   const [vistaActiva, setVistaActiva] = useState<string>("registro");
+
+  /**
+   * Estado que controla si el menú lateral está abierto o cerrado.
+   */
   const [menuAbierto, setMenuAbierto] = useState<boolean>(false);
+
+  /**
+   * Estado que controla el modo oscuro.
+   */
   const [modoOscuro, setModoOscuro] = useState<boolean>(false);
+
+  /**
+   * Función para alternar el estado del menú lateral.
+   */
   const toggleMenu = () => setMenuAbierto(!menuAbierto);
+
+  /**
+   * Función para alternar el modo oscuro.
+   */
   const toggleModoOscuro = () => setModoOscuro(!modoOscuro);
 
+  /**
+   * Función para seleccionar la vista activa.
+   * @param {string} id - El identificador de la vista a seleccionar.
+   */
   const seleccionarVista = (id: string) => {
     setVistaActiva(id);
-    if (window.innerWidth <= 768) setMenuAbierto(false);
+    if (window.innerWidth <= 768) setMenuAbierto(false); // Cierra el menú en pantallas pequeñas
   };
 
+  /**
+   * Opciones del menú de navegación.
+   */
   const opcionesMenu = [
     {
       id: "registro",
@@ -33,8 +63,14 @@ const UserPanel: React.FC = () => {
     },
   ];
 
-  // Función para manejar el cierre de sesión
+  /**
+   * Hook para la navegación.
+   */
   const navigate = useNavigate();
+
+  /**
+   * Función para manejar el cierre de sesión.
+   */
   const cerrarSesion = async () => {
     try {
       // Llamada al backend para cerrar sesión
@@ -58,7 +94,14 @@ const UserPanel: React.FC = () => {
     }
   };
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Estado de autenticación
+  /**
+   * Estado que controla si el usuario está autenticado.
+   */
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  /**
+   * Efecto para verificar la autenticación del usuario al montar el componente.
+   */
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
@@ -87,10 +130,16 @@ const UserPanel: React.FC = () => {
     checkAuthentication();
   }, [navigate]);
 
+  /**
+   * Si el usuario no está autenticado, redirige a la página de inicio de sesión.
+   */
   if (!isAuthenticated) {
     return <div>Redirigiendo...</div>; // Muestra algo mientras se verifica el estado
   }
 
+  /**
+   * Renderiza el componente UserPanel.
+   */
   return (
     <div id="user-panel">
       <div className={`container-fluid-1 ${modoOscuro ? "modo-oscuro" : ""}`}>

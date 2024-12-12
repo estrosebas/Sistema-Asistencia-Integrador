@@ -4,25 +4,30 @@ import { BrowserMultiFormatReader, Exception, Result } from "@zxing/library";
 import "./estilos/Asistencia.css";
 import axios from "axios";
 
+// Interfaz para el registro manual de asistencia
 interface RegistroManual {
   dni: string;
   evento: string;
 }
 
+// Interfaz para los datos del QR escaneado
 interface QRDataType {
   id: string;
   hora: string;
   evento: string;
 }
 
+// Interfaz para los eventos
 interface Evento {
   id: number;
   nombreEvento: string;
 }
 
+// URL de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Asistencia: React.FC = () => {
+  // Estados para manejar los datos del QR, eventos seleccionados, registro manual, etc.
   const [qrData, setQrData] = useState<QRDataType | null>(null);
   const [eventoQRSeleccionado, setEventoQRSeleccionado] = useState<string>("");
   const [eventoManualSeleccionado, setEventoManualSeleccionado] = useState<string>("");
@@ -36,10 +41,12 @@ const Asistencia: React.FC = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [currentDeviceId, setCurrentDeviceId] = useState<string>("");
 
+  // Referencias para el video y el lector de QR
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
   const eventoQRSeleccionadoRef = useRef<string>("");
 
+  // Función para verificar el tiempo entre escaneos
   const verificarTiempoEscaneo = (dni: string): boolean => {
     const tiempoActual = Date.now();
     const ultimoTiempo = ultimoEscaneo[dni] || 0;
@@ -55,6 +62,7 @@ const Asistencia: React.FC = () => {
     return true;
   };
 
+  // Función para obtener los eventos del usuario
   const fetchEventos = async () => {
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     const userId = userData.usuarioId;
@@ -78,6 +86,7 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  // Función para procesar el código QR escaneado
   const procesarQR = async (qrCode: string) => {
     const eventoActual = eventoQRSeleccionadoRef.current;
     console.log("Contenido escaneado:", qrCode);
@@ -97,6 +106,7 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  // Función para registrar la asistencia
   const registrarAsistencia = async (dni: string, idEvento: string) => {
     const fechaRegistro = new Date();
     fechaRegistro.setHours(fechaRegistro.getHours() - 5); // Ajuste por zona horaria
@@ -123,6 +133,7 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  // Función para iniciar la cámara y el lector de QR
   const startCamera = async () => {
     codeReaderRef.current = new BrowserMultiFormatReader();
 
@@ -152,12 +163,14 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  // Función para manejar el cambio de evento en el escáner QR
   const handleEventoQRChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const nuevoEvento = e.target.value;
     setEventoQRSeleccionado(nuevoEvento);
     eventoQRSeleccionadoRef.current = nuevoEvento; // Actualiza el valor del ref
   };
 
+  // Función para manejar el registro manual de asistencia
   const handleRegistroManual = async (e: React.FormEvent) => {
     e.preventDefault();
     if (registroManual.dni && eventoManualSeleccionado) {
@@ -175,6 +188,7 @@ const Asistencia: React.FC = () => {
     }
   };
 
+  // Efecto para cargar los eventos y comenzar la cámara al montar el componente
   useEffect(() => {
     fetchEventos();
     startCamera();

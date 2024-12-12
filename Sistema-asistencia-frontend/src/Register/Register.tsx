@@ -2,13 +2,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Registration.css";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
 import Estrellas from "../../public/efectos/estrellas";
 
-// Definir la constante para la URL base
-//const API_URL = import.meta.env.VITE_API_URL;
-
 const Registration = () => {
+  // Estados para manejar los datos del formulario de registro
   const [nombres, setNombres] = useState("");
   const [correo, setCorreo] = useState("");
   const [apeMaterno, setApeMaterno] = useState("");
@@ -21,8 +18,14 @@ const Registration = () => {
   const [genero, setGenero] = useState("");
   const [rol, setRol] = useState("");
   const [error, setError] = useState("");
+
+  // Función para navegar entre páginas
   const navigate = useNavigate();
+
+  // URL de la API
   const API_URL = import.meta.env.VITE_API_URL;
+
+  // Función para manejar el envío del formulario de registro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Resetear mensaje de error
@@ -43,8 +46,8 @@ const Registration = () => {
     };
 
     try {
+      // Llamada al backend para registrar el usuario
       const response = await fetch(`${API_URL}/auth/register`, {
-        // Usamos la constante API_URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",

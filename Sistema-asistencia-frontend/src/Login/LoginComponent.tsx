@@ -4,16 +4,49 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import Estrellas from "../../public/efectos/estrellas";
 
+/**
+ * Login Component
+ *
+ * This component represents the login page of the application.
+ * It includes a form for users to enter their email and password,
+ * and handles the login process by sending a request to the backend.
+ */
 const Login = () => {
+  /**
+   * State to manage the email input.
+   * @type {string}
+   */
   const [email, setEmail] = useState("");
+
+  /**
+   * State to manage the password input.
+   * @type {string}
+   */
   const [password, setPassword] = useState("");
+
+  /**
+   * State to manage the error message.
+   * @type {string}
+   */
   const [error, setError] = useState("");
+
+  /**
+   * Navigate function from react-router-dom.
+   */
   const navigate = useNavigate();
 
+  /**
+   * Function to handle form submission.
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Resetear el error
+    setError(""); // Reset the error message
 
+    /**
+     * Login data object.
+     * @type {{email: string, password: string}}
+     */
     const loginData = {
       email: email,
       password: password,
@@ -21,7 +54,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/login`, // Usando la variable de entorno
+        `${import.meta.env.VITE_API_URL}/auth/login`, // Using the environment variable
         {
           method: "POST",
           headers: {
@@ -34,25 +67,25 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data.message); // Aquí puedes manejar el mensaje de la respuesta
+        console.log(data.message); // Handle the response message here
         console.log(data.nomRol);
 
-        // Guardar los datos del usuario en localStorage
+        // Save user data in localStorage
         localStorage.setItem("userData", JSON.stringify(data));
 
-        // Redirigir a diferentes páginas según el rol
+        // Redirect to different pages based on the user role
         if (data.nomRol === "Administrador") {
-          navigate("/admin"); // Ruta para administradores
+          navigate("/admin"); // Route for administrators
         } else if (data.nomRol === "Usuario") {
-          navigate("/user"); // Ruta para usuarios regulares
+          navigate("/user"); // Route for regular users
         } else if (data.nomRol === "Gerente") {
-          navigate("/manager"); // Ruta para gerente
+          navigate("/manager"); // Route for managers
         } else {
-          navigate("/"); // Ruta por defecto si no coincide con los roles anteriores
+          navigate("/"); // Default route if the role does not match
         }
       } else {
-        const errorData = await response.json(); // Ahora esperamos un JSON
-        setError(errorData.message); // Mostrar mensaje de error del backend
+        const errorData = await response.json(); // Now we expect a JSON
+        setError(errorData.message); // Display error message from the backend
       }
     } catch (error) {
       setError("Credenciales incorrectas. Inténtalo de nuevo.");
@@ -60,6 +93,9 @@ const Login = () => {
     }
   };
 
+  /**
+   * Render the Login component.
+   */
   return (
     <div className="login-container">
       <div className="login-left">
