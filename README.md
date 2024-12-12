@@ -41,7 +41,7 @@ Cada integrante del equipo ha contribuido de manera igualitaria en las tareas y 
 | Cristofer Torres Castillo      | 25% | Vista manager                                           |
 | Cristian Huaracha Venturas     | 25% | Backend y frontend                                      |
 | Winston Apaza Mamani           | 25% | Vista usuario                                           |
-| Diego Sebastian Gonzales Gomez | 25% | Backend verificacion y desplazamiento                   |
+| Diego Sebastian Gonzales Gomez | 25% | Backend base y despliegue                               |
 
 ---
 
