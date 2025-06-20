@@ -1,0 +1,472 @@
+{
+  "info": {
+    "name": "Sistema de Asistencia API",
+    "description": "Colección de Postman para probar la API del Sistema de Asistencia",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Endpoints de autenticación y usuarios",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"contraseña123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Registro de Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ape_materno\": \"Pérez\",\n    \"ape_paterno\": \"Gómez\",\n    \"dni\": \"12345678\",\n    \"domicilio\": \"Calle Falsa 123\",\n    \"email\": \"nuevo@ejemplo.com\",\n    \"fech_nacimiento\": \"1990-01-01\",\n    \"genero\": \"M\",\n    \"nombre\": \"Juan\",\n    \"password\": \"contraseña123\",\n    \"telefono\": \"987654321\",\n    \"rol\": \"usuario\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Cerrar Sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Verificar Sesión",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/check-session",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "check-session"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Historial de Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/usuarios-historial",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "usuarios-historial"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eventos",
+      "description": "Endpoints para la gestión de eventos",
+      "item": [
+        {
+          "name": "Obtener Eventos de Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/eventos?usuarioId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "eventos"],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Evento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombreEvento\": \"Conferencia de Prueba\",\n    \"descripcion\": \"Evento de prueba para la API\",\n    \"capacidad\": 100,\n    \"fechaHoraEntrada\": \"2025-12-31 09:00:00\",\n    \"fechaHoraSalida\": \"2025-12-31 18:00:00\",\n    \"idUsuario\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-evento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-evento"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Evento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombreEvento\": \"Conferencia Actualizada\",\n    \"descripcion\": \"Evento actualizado\",\n    \"capacidad\": 150,\n    \"fechaHoraEntrada\": \"2025-12-31 10:00:00\",\n    \"fechaHoraSalida\": \"2025-12-31 19:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/eventos/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "eventos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Evento",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/eventos/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "eventos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Usuarios por Evento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios-evento?eventoId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usuarios-evento"],
+              "query": [
+                {
+                  "key": "eventoId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Agregar Usuario a Evento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"usuarioId\": 2,\n    \"eventoId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/add-asiste",
+              "host": ["{{base_url}}"],
+              "path": ["api", "add-asiste"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Usuario de Evento",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"usuarioId\": 2,\n    \"eventoId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/delete-asiste",
+              "host": ["{{base_url}}"],
+              "path": ["api", "delete-asiste"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Evento por Nombre",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/evento-por-nombre?nombre=conferencia",
+              "host": ["{{base_url}}"],
+              "path": ["api", "evento-por-nombre"],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "conferencia"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Registro de Asistencia",
+      "description": "Endpoints para el registro de asistencia",
+      "item": [
+        {
+          "name": "Obtener Registros de Asistencia",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/registros-asistencia",
+              "host": ["{{base_url}}"],
+              "path": ["api", "registros-asistencia"]
+            }
+          }
+        },
+        {
+          "name": "Registrar Asistencia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"dni\": \"12345678\",\n    \"idEvento\": 1,\n    \"fechaRegistro\": \"2025-12-31 09:30:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/registrar-asistencia",
+              "host": ["{{base_url}}"],
+              "path": ["api", "registrar-asistencia"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Registros de Asistencia por Usuario y Evento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/registros-asistencia-usuario-evento?usuarioId=1&eventoId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "registros-asistencia-usuario-evento"],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "1"
+                },
+                {
+                  "key": "eventoId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
